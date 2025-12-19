@@ -46,6 +46,9 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
+    <!-- UI Enhancements CSS -->
+    <link rel="stylesheet" href="{{ asset('css/enhancements.css') }}">
+
     @stack('styles')
 </head>
 
@@ -72,6 +75,9 @@
 
     <!-- Custom JS -->
     <script src="{{ asset('js/app.js') }}"></script>
+
+    <!-- UI Enhancements JS -->
+    <script src="{{ asset('js/enhancements.js') }}"></script>
 
     <script>
         // Initialize AOS
