@@ -67,6 +67,18 @@
                     <span>العملاء</span>
                 </a>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}"
+                    href="{{ route('admin.notifications.index') }}">
+                    <i class="bi bi-bell-fill"></i>
+                    <span>الإشعارات</span>
+                    @php $unreadCount = \App\Models\AdminNotification::unread()->count(); @endphp
+                    @if ($unreadCount > 0)
+                        <span class="badge bg-danger ms-auto">{{ $unreadCount }}</span>
+                    @endif
+                </a>
+            </li>
         </ul>
     </nav>
 

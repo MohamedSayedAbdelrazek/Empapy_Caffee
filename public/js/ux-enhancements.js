@@ -670,54 +670,25 @@
     }
 
     // ========================================
-    // 4. PAGE LOADER
+    // 4. PAGE LOADER (DISABLED)
     // ========================================
 
     class PageLoader {
         constructor() {
+            // DISABLED: User preferred faster navigation without loading animation
             this.loader = null;
-            this.init();
         }
 
         init() {
-            // Create loader element
-            this.loader = document.createElement('div');
-            this.loader.className = 'page-loader';
-            this.loader.innerHTML = `
-                <div class="page-loader-content">
-                    <div class="coffee-loader">
-                        <div class="coffee-steam">
-                            <div class="steam"></div>
-                            <div class="steam"></div>
-                            <div class="steam"></div>
-                        </div>
-                        <div class="coffee-cup"></div>
-                    </div>
-                    <div class="page-loader-text">
-                        جاري التحميل
-                        <span class="loading-dots">
-                            <span></span>
-                            <span></span>
-                            <span></span>
-                        </span>
-                    </div>
-                </div>
-            `;
-
-            document.body.appendChild(this.loader);
-
-            // Hide on page load
-            window.addEventListener('load', () => {
-                setTimeout(() => this.hide(), 500);
-            });
+            // DISABLED - Coffee cup loader removed for faster navigation
         }
 
         show() {
-            this.loader.classList.remove('hidden');
+            // DISABLED
         }
 
         hide() {
-            this.loader.classList.add('hidden');
+            // DISABLED
         }
     }
 
@@ -796,6 +767,11 @@
             const target = e.target.closest('.ripple, .btn-golden, .btn-action, .btn');
             if (!target) return;
 
+            // Skip ripple on cart toggle to prevent hiding the badge
+            if (target.classList.contains('cart-toggle') || target.id === 'cartToggle') {
+                return;
+            }
+
             const rect = target.getBoundingClientRect();
             const ripple = document.createElement('span');
             ripple.className = 'ripple-effect';
@@ -805,11 +781,18 @@
             ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
             ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
 
+            // Store original overflow value
+            const originalOverflow = target.style.overflow;
+            
             target.style.position = 'relative';
             target.style.overflow = 'hidden';
             target.appendChild(ripple);
 
-            setTimeout(() => ripple.remove(), 600);
+            setTimeout(() => {
+                ripple.remove();
+                // Restore overflow after animation
+                target.style.overflow = originalOverflow || '';
+            }, 600);
         });
     }
 

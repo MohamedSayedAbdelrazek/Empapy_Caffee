@@ -2,7 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\Order;
 use App\Models\Product;
+use App\Models\Review;
+use App\Models\User;
+use App\Observers\OrderObserver;
+use App\Observers\ReviewObserver;
+use App\Observers\UserObserver;
 use App\Policies\ProductPolicy;
 use App\Services\CartService;
 use App\Services\ProductService;
@@ -33,5 +39,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Register Policies
         Gate::policy(Product::class, ProductPolicy::class);
+
+        // Register Observers for notifications
+        Order::observe(OrderObserver::class);
+        User::observe(UserObserver::class);
+        Review::observe(ReviewObserver::class);
     }
 }

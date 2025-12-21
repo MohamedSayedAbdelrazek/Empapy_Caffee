@@ -529,3 +529,137 @@
         margin-right: 0;
     }
 }
+
+/* ========================================
+   Pagination Styles (Laravel/Tailwind Override)
+   ======================================== */
+
+/* Reset all pagination elements first */
+.admin-body nav[role="navigation"],
+.admin-body nav[aria-label*="Pagination"],
+.admin-body .pagination {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+/* Wrapper divs */
+.admin-body nav[role="navigation"]>div,
+.admin-body nav[aria-label*="Pagination"]>div {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+}
+
+/* ALL links in pagination - dark background */
+.admin-body nav[role="navigation"] a,
+.admin-body nav[aria-label*="Pagination"] a,
+.admin-body .pagination a,
+.admin-body .page-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    padding: 8px 16px !important;
+    background: var(--admin-card) !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: 10px !important;
+    color: var(--admin-text) !important;
+    font-weight: 500 !important;
+    text-decoration: none !important;
+    transition: all 0.3s ease !important;
+}
+
+/* Hover state */
+.admin-body nav[role="navigation"] a:hover,
+.admin-body nav[aria-label*="Pagination"] a:hover,
+.admin-body .pagination a:hover,
+.admin-body .page-link:hover {
+    background: rgba(201, 162, 39, 0.2) !important;
+    border-color: var(--admin-primary) !important;
+    color: var(--admin-primary) !important;
+}
+
+/* Active/Current page - GOLDEN */
+.admin-body nav[role="navigation"] span[aria-current="page"],
+.admin-body nav[aria-label*="Pagination"] span[aria-current="page"],
+.admin-body .pagination .active .page-link,
+.admin-body .page-item.active .page-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    padding: 8px 14px !important;
+    background: linear-gradient(135deg, var(--admin-primary), #e8c547) !important;
+    border: 1px solid var(--admin-primary) !important;
+    border-radius: 10px !important;
+    color: #1a1a2e !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 15px var(--admin-primary-glow) !important;
+}
+
+/* Disabled state (grayed out) */
+.admin-body nav[role="navigation"] span[aria-disabled="true"],
+.admin-body nav[role="navigation"] span.cursor-default,
+.admin-body nav[aria-label*="Pagination"] span[aria-disabled="true"],
+.admin-body .pagination .disabled .page-link,
+.admin-body .page-item.disabled .page-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    padding: 8px 16px !important;
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: 10px !important;
+    color: var(--admin-text-muted) !important;
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+}
+
+/* SVG Icons - proper sizing */
+.admin-body nav[role="navigation"] svg,
+.admin-body nav[aria-label*="Pagination"] svg,
+.admin-body .pagination svg {
+    width: 18px !important;
+    height: 18px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+    fill: currentColor !important;
+}
+
+/* Results text */
+.admin-body nav[role="navigation"] p,
+.admin-body nav[aria-label*="Pagination"] p,
+.admin-body .pagination-info {
+    color: var(--admin-text-muted) !important;
+    font-size: 0.9rem !important;
+    text-align: center !important;
+}
+
+/* Hide any weird nested spans that might show numbers */
+.admin-body nav[role="navigation"] span span:not([aria-current]),
+.admin-body nav[aria-label*="Pagination"] span span:not([aria-current]) {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 42px !important;
+    height: 42px !important;
+    padding: 8px 14px !important;
+    background: var(--admin-card) !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: 10px !important;
+    color: var(--admin-text) !important;
+}
+
+/* Ensure text colors are visible */
+.admin-body nav[role="navigation"] *,
+.admin-body nav[aria-label*="Pagination"] * {
+    color: inherit;
+}
