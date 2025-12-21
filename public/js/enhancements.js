@@ -553,17 +553,11 @@ function initBackToTop() {
 
 /**
  * 13. Page Transitions
+ * DISABLED - User prefers coffee loader only
  */
 function initPageTransitions() {
-    // Create transition overlay
-    const transition = document.createElement('div');
-    transition.className = 'page-transition';
-    transition.innerHTML = `
-        <div class="page-transition-content">
-            <i class="bi bi-cup-hot-fill"></i>
-        </div>
-    `;
-    document.body.appendChild(transition);
+    // Disabled - keeping only the coffee loader animation
+    return;
 
     // Intercept link clicks for smooth transitions
     document.querySelectorAll('a[href^="/"], a[href^="' + window.location.origin + '"]').forEach(link => {

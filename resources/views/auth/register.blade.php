@@ -9,11 +9,9 @@
                 <div class="col-md-6 col-lg-5" data-aos="fade-up">
                     <div class="text-center mb-5">
                         <a href="{{ route('home') }}"
-                            class="d-inline-flex align-items-center gap-2 text-white text-decoration-none">
-                            <span class="brand-icon"
-                                style="width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; background: var(--gradient-gold); border-radius: 50%; font-size: 1.8rem;">
-                                <i class="bi bi-cup-hot-fill" style="color: var(--espresso);"></i>
-                            </span>
+                            class="d-inline-flex align-items-center gap-3 text-white text-decoration-none">
+                            <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه"
+                                style="height: 70px; width: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
                             <span style="font-size: 1.8rem; font-weight: 800;">إمبابي كافيه</span>
                         </a>
                     </div>

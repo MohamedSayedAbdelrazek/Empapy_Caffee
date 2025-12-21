@@ -3,7 +3,7 @@
     <div class="container">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ route('home') }}">
-            <span class="brand-icon"><i class="bi bi-cup-hot-fill"></i></span>
+            <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه" class="navbar-logo" style="height: 45px; width: auto; border-radius: 8px;">
             <span class="brand-text">إمبابي كافيه</span>
         </a>
 

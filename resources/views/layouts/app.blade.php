@@ -7,6 +7,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'إمبابي كافيه - قهوة فاخرة')</title>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/jpeg" href="{{ asset('logo.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('logo.jpg') }}">
+
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
     <meta name="keywords" content="قهوة, كافيه, قهوة فاخرة, بن, إمبابي, espresso, coffee">
@@ -49,10 +53,65 @@
     <!-- UI Enhancements CSS -->
     <link rel="stylesheet" href="{{ asset('css/enhancements.css') }}">
 
+    <!-- Creative Premium Effects CSS -->
+    <link rel="stylesheet" href="{{ asset('css/creative-effects.css') }}">
+
+    <!-- UX Enhancements CSS -->
+    <link rel="stylesheet" href="{{ asset('css/ux-enhancements.css') }}">
+
     @stack('styles')
 </head>
 
 <body>
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <div class="announcement-track">
+            <div class="announcement-content">
+                <span class="announcement-item">
+                    <i class="bi bi-truck"></i>
+                    توصيل مجاني للطلبات أكثر من 500 ج.م
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-gift"></i>
+                    خصم 15% على طلبك الأول - كود: WELCOME15
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-star-fill"></i>
+                    قهوة طازجة محمصة يومياً
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-clock"></i>
+                    توصيل سريع خلال 24 ساعة
+                </span>
+                <span class="announcement-divider">☕</span>
+                <!-- Repeat for seamless loop -->
+                <span class="announcement-item">
+                    <i class="bi bi-truck"></i>
+                    توصيل مجاني للطلبات أكثر من 500 ج.م
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-gift"></i>
+                    خصم 15% على طلبك الأول - كود: WELCOME15
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-star-fill"></i>
+                    قهوة طازجة محمصة يومياً
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-clock"></i>
+                    توصيل سريع خلال 24 ساعة
+                </span>
+                <span class="announcement-divider">☕</span>
+            </div>
+        </div>
+    </div>
+
     <!-- Navbar -->
     @include('components.navbar')
 
@@ -88,6 +147,12 @@
             offset: 50
         });
     </script>
+
+    <!-- Creative Premium Effects JS -->
+    <script src="{{ asset('js/creative-effects.js') }}"></script>
+
+    <!-- UX Enhancements JS -->
+    <script src="{{ asset('js/ux-enhancements.js') }}"></script>
 
     @stack('scripts')
 </body>

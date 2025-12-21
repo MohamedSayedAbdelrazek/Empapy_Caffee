@@ -1,71 +1,438 @@
-<!-- Product Card Component -->
+<!-- Enhanced Product Card Component -->
 @props(['product'])
 
 @php
     $inWishlist = \App\Models\Wishlist::hasProduct($product->id);
 @endphp
 
-<div class="product-card glass-card" data-aos="fade-up">
+<div class="product-card glass-card tilt-card" data-aos="fade-up" data-product-id="{{ $product->id }}">
     <!-- Image -->
     <div class="product-image">
+        <!-- Badges -->
         @if ($product->is_on_sale)
-            <span class="product-badge sale">خصم {{ $product->discount_percentage }}%</span>
+            <span class="product-badge sale animate-pulse">
+                <i class="bi bi-lightning-fill me-1"></i>
+                خصم {{ $product->discount_percentage }}%
+            </span>
         @endif
         @if ($product->is_featured)
-            <span class="product-badge featured">مميز</span>
+            <span class="product-badge featured">
+                <i class="bi bi-star-fill me-1"></i>
+                مميز
+            </span>
         @endif
 
         <!-- Stock Status -->
         @if ($product->stock <= 0)
-            <span class="product-badge out-of-stock">نفذ المخزون</span>
+            <span class="product-badge out-of-stock">
+                <i class="bi bi-x-circle me-1"></i>
+                نفذ المخزون
+            </span>
         @elseif($product->stock <= 5)
-            <span class="product-badge low-stock">متبقي {{ $product->stock }} فقط</span>
+            <span class="product-badge low-stock animate-pulse">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                متبقي {{ $product->stock }} فقط
+            </span>
         @endif
 
-        <img src="{{ $product->image }}" alt="{{ $product->name_ar }}" loading="lazy">
+        <!-- Product Image with Skeleton Loading -->
+        <div class="product-image-wrapper">
+            <div class="skeleton-placeholder skeleton" style="position: absolute; inset: 0; z-index: 1;"></div>
+            <img src="{{ $product->image }}" alt="{{ $product->name_ar }}" loading="lazy"
+                onload="this.previousElementSibling.style.display='none'; this.classList.add('loaded');">
+        </div>
 
         <!-- Quick Actions -->
         <div class="product-actions">
-            <button class="btn btn-action wishlist-btn {{ $inWishlist ? 'active' : '' }}"
+            <button class="btn btn-action wishlist-btn ripple {{ $inWishlist ? 'active' : '' }}"
                 onclick="toggleWishlist({{ $product->id }}, this)"
-                title="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}">
-                <i class="bi {{ $inWishlist ? 'bi-heart-fill text-danger' : 'bi-heart' }}"></i>
+                title="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}"
+                aria-label="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}">
+                <i class="bi {{ $inWishlist ? 'bi-heart-fill' : 'bi-heart' }}"></i>
             </button>
             @if ($product->stock > 0)
-                <button class="btn btn-action add-to-cart-btn" data-product-id="{{ $product->id }}" title="أضف للسلة">
+                <button class="btn btn-action add-to-cart-btn ripple" data-product-id="{{ $product->id }}"
+                    title="أضف للسلة" aria-label="أضف للسلة">
                     <i class="bi bi-bag-plus"></i>
                 </button>
             @endif
-            <a href="{{ route('shop.show', $product) }}" class="btn btn-action" title="عرض التفاصيل">
+            <a href="{{ route('shop.show', $product) }}" class="btn btn-action ripple" title="عرض التفاصيل"
+                aria-label="عرض التفاصيل">
                 <i class="bi bi-eye"></i>
             </a>
+        </div>
+
+        <!-- Quick Add Overlay -->
+        <div class="quick-add-overlay">
+            @if ($product->stock > 0)
+                <button class="quick-add-btn ripple"
+                    onclick="event.stopPropagation(); addToCartQuick({{ $product->id }}, this)">
+                    <i class="bi bi-bag-plus me-2"></i>
+                    إضافة سريعة
+                </button>
+            @else
+                <span class="out-of-stock-msg">
+                    <i class="bi bi-x-circle me-2"></i>
+                    غير متوفر
+                </span>
+            @endif
         </div>
     </div>
 
     <!-- Content -->
     <div class="product-content">
-        <span class="product-category">{{ $product->category?->name_ar }}</span>
+        <div class="product-category-wrapper">
+            <span class="product-category">
+                <i class="bi bi-tag me-1"></i>
+                {{ $product->category?->name_ar }}
+            </span>
+        </div>
+
         <h3 class="product-title">
-            <a href="{{ route('shop.show', $product) }}">{{ $product->name_ar }}</a>
+            <a href="{{ route('shop.show', $product) }}" class="animated-link">
+                {{ $product->name_ar }}
+            </a>
         </h3>
 
         <div class="product-meta">
             @if ($product->origin_ar)
-                <span class="meta-item"><i class="bi bi-geo-alt"></i> {{ $product->origin_ar }}</span>
+                <span class="meta-item">
+                    <i class="bi bi-geo-alt"></i>
+                    {{ $product->origin_ar }}
+                </span>
             @endif
             @if ($product->roast_level)
-                <span class="meta-item"><i class="bi bi-fire"></i>
-                    {{ $product->roast_level === 'light' ? 'تحميص فاتح' : ($product->roast_level === 'medium' ? 'تحميص متوسط' : 'تحميص داكن') }}</span>
+                <span class="meta-item">
+                    <i class="bi bi-fire"></i>
+                    @switch($product->roast_level)
+                        @case('light')
+                            فاتح
+                        @break
+
+                        @case('medium')
+                            متوسط
+                        @break
+
+                        @case('dark')
+                            داكن
+                        @break
+                    @endswitch
+                </span>
+            @endif
+            @if ($product->weight)
+                <span class="meta-item">
+                    <i class="bi bi-box"></i>
+                    {{ $product->weight }}
+                </span>
             @endif
         </div>
 
-        <div class="product-price">
-            @if ($product->is_on_sale)
-                <span class="price-old">{{ number_format($product->price) }} ج.م</span>
-                <span class="price-current">{{ number_format($product->sale_price) }} ج.م</span>
-            @else
-                <span class="price-current">{{ number_format($product->price) }} ج.م</span>
+        <div class="product-footer">
+            <div class="product-price">
+                @if ($product->is_on_sale)
+                    <span class="price-old">{{ number_format($product->price) }} ج.م</span>
+                    <span class="price-current">{{ number_format($product->sale_price) }} ج.م</span>
+                @else
+                    <span class="price-current">{{ number_format($product->price) }} ج.م</span>
+                @endif
+            </div>
+
+            <!-- Mobile Add to Cart -->
+            @if ($product->stock > 0)
+                <button class="btn-add-mobile add-to-cart-btn ripple" data-product-id="{{ $product->id }}"
+                    aria-label="أضف للسلة">
+                    <i class="bi bi-plus-lg"></i>
+                </button>
             @endif
         </div>
     </div>
 </div>
+
+<style>
+    /* Enhanced Product Card Styles */
+    .product-card {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        height: 100%;
+        border-radius: var(--radius-lg);
+    }
+
+    .product-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(201, 162, 39, 0.2);
+    }
+
+    /* Image wrapper with skeleton */
+    .product-image-wrapper {
+        position: relative;
+        width: 100%;
+        height: 100%;
+    }
+
+    .product-image-wrapper img {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+    }
+
+    .product-image-wrapper img.loaded {
+        opacity: 1;
+    }
+
+    .skeleton-placeholder {
+        border-radius: 0;
+    }
+
+    /* Animate pulse for badges */
+    .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.7;
+        }
+    }
+
+    /* Quick Add Overlay */
+    .quick-add-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 15px;
+        background: linear-gradient(to top, rgba(44, 24, 16, 0.95), transparent);
+        transform: translateY(100%);
+        opacity: 0;
+        transition: all 0.3s ease;
+        display: flex;
+        justify-content: center;
+    }
+
+    .product-card:hover .quick-add-overlay {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .quick-add-btn {
+        background: var(--gradient-gold);
+        border: none;
+        padding: 12px 25px;
+        border-radius: var(--radius-full);
+        font-weight: 600;
+        color: var(--espresso);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+
+    .quick-add-btn:hover {
+        transform: scale(1.05);
+        box-shadow: 0 5px 20px rgba(201, 162, 39, 0.4);
+    }
+
+    .out-of-stock-msg {
+        color: white;
+        font-size: 0.9rem;
+        opacity: 0.8;
+    }
+
+    /* Product Category */
+    .product-category-wrapper {
+        margin-bottom: 8px;
+    }
+
+    .product-category {
+        font-size: 0.75rem;
+        color: var(--gold);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: inline-flex;
+        align-items: center;
+        background: rgba(201, 162, 39, 0.1);
+        padding: 4px 10px;
+        border-radius: var(--radius-full);
+    }
+
+    /* Product Footer */
+    .product-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid var(--gray-100);
+    }
+
+    /* Mobile Add Button */
+    .btn-add-mobile {
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-full);
+        background: var(--gradient-gold);
+        border: none;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        color: var(--espresso);
+        font-size: 1.2rem;
+    }
+
+    .btn-add-mobile:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+    }
+
+    @media (max-width: 768px) {
+        .btn-add-mobile {
+            display: flex;
+        }
+
+        .product-actions {
+            opacity: 1 !important;
+            transform: translateX(-50%) translateY(0) !important;
+        }
+
+        .quick-add-overlay {
+            display: none;
+        }
+    }
+
+    /* Low stock badge */
+    .product-badge.low-stock {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        top: auto;
+        bottom: 15px;
+        right: 15px;
+    }
+
+    /* Out of stock badge */
+    .product-badge.out-of-stock {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: white;
+        top: 50px;
+    }
+
+    /* Wishlist active state */
+    .wishlist-btn.active {
+        background: #ff6b9d;
+        color: white;
+    }
+
+    .wishlist-btn.active:hover {
+        background: #ff4785;
+    }
+
+    /* Product actions hover effects */
+    .btn-action {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .btn-action:hover {
+        transform: scale(1.15) translateY(-2px);
+    }
+
+    /* Add loading state to cart buttons */
+    .add-to-cart-btn.loading {
+        pointer-events: none;
+    }
+
+    .add-to-cart-btn.loading i {
+        animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .add-to-cart-btn.success {
+        background: #22c55e !important;
+        color: white !important;
+    }
+
+    .add-to-cart-btn.success i::before {
+        content: "\F26B";
+    }
+</style>
+
+<script>
+    // Quick add to cart function
+    function addToCartQuick(productId, button) {
+        if (button.classList.contains('loading')) return;
+
+        button.classList.add('loading');
+        button.innerHTML = '<span class="loading-dots"><span></span><span></span><span></span></span>';
+
+        fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: 1
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                button.classList.remove('loading');
+
+                if (data.success) {
+                    button.innerHTML = '<i class="bi bi-check-lg me-2"></i>تمت الإضافة!';
+                    button.style.background = '#22c55e';
+                    button.style.color = 'white';
+
+                    // Show toast
+                    if (window.Toast) {
+                        window.Toast.cart('تمت الإضافة! 🎉', 'تمت إضافة المنتج إلى سلة التسوق');
+                    }
+
+                    // Confetti
+                    if (window.createConfetti) {
+                        window.createConfetti();
+                    }
+
+                    // Update cart count
+                    if (typeof updateCartCount === 'function') {
+                        updateCartCount();
+                    }
+
+                    // Reset button
+                    setTimeout(() => {
+                        button.innerHTML = '<i class="bi bi-bag-plus me-2"></i>إضافة سريعة';
+                        button.style.background = '';
+                        button.style.color = '';
+                    }, 2000);
+                } else {
+                    button.innerHTML = '<i class="bi bi-bag-plus me-2"></i>إضافة سريعة';
+                    if (window.Toast) {
+                        window.Toast.error('خطأ', data.message || 'حدث خطأ');
+                    }
+                }
+            })
+            .catch(() => {
+                button.classList.remove('loading');
+                button.innerHTML = '<i class="bi bi-bag-plus me-2"></i>إضافة سريعة';
+                if (window.Toast) {
+                    window.Toast.error('خطأ', 'حدث خطأ في الاتصال');
+                }
+            });
+    }
+</script>

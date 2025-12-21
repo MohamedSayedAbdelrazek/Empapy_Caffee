@@ -174,7 +174,7 @@
                     </div>
                     <div id="galleryPreview" class="d-flex flex-wrap gap-2">
                         @if ($product->gallery)
-                            @foreach (json_decode($product->gallery, true) ?? [] as $galleryImage)
+                            @foreach ($product->gallery as $galleryImage)
                                 <div class="gallery-item">
                                     <img src="{{ $galleryImage }}" alt="Gallery">
                                 </div>

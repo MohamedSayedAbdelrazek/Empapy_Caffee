@@ -193,7 +193,7 @@ function updateBadgeUI(count) {
 }
 
 /**
- * Add to cart function
+ * Add to cart function - Enhanced with new UX
  */
 function addToCart(productId, quantity = 1) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -213,21 +213,47 @@ function addToCart(productId, quantity = 1) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                showToast(data.message, 'success');
-                updateCartBadge();
+                // Use new Toast system if available
+                if (window.Toast) {
+                    window.Toast.cart('تمت الإضافة! 🎉', data.message || 'تمت إضافة المنتج للسلة');
+                } else {
+                    showToast(data.message, 'success');
+                }
+
+                // Create confetti effect
+                if (window.createConfetti) {
+                    window.createConfetti();
+                }
+
+                updateCartBadge(true); // Force refresh
 
                 const badge = document.getElementById('cartBadge');
                 if (badge) {
                     badge.textContent = data.cartCount;
+                    badge.classList.add('bounce');
+                    setTimeout(() => badge.classList.remove('bounce'), 500);
                 }
             } else {
-                showToast('حدث خطأ', 'error');
+                if (window.Toast) {
+                    window.Toast.error('خطأ', data.message || 'حدث خطأ');
+                } else {
+                    showToast('حدث خطأ', 'error');
+                }
             }
         })
         .catch(error => {
-            showToast('حدث خطأ في الاتصال', 'error');
+            if (window.Toast) {
+                window.Toast.error('خطأ في الاتصال', 'يرجى التحقق من اتصالك بالإنترنت');
+            } else {
+                showToast('حدث خطأ في الاتصال', 'error');
+            }
         });
 }
+
+// Global updateCartCount function
+window.updateCartCount = function () {
+    updateCartBadge(true);
+};
 
 /**
  * Initialize product cards
@@ -258,10 +284,31 @@ function initProductCards() {
 }
 
 /**
- * Show toast notification
+ * Show toast notification - Uses new Toast system if available
  */
 function showToast(message, type = 'success') {
-    // Remove existing toasts
+    // Use new Toast system if available
+    if (window.Toast) {
+        switch (type) {
+            case 'success':
+                window.Toast.success('نجاح', message);
+                break;
+            case 'error':
+                window.Toast.error('خطأ', message);
+                break;
+            case 'warning':
+                window.Toast.warning('تنبيه', message);
+                break;
+            case 'cart':
+                window.Toast.cart('السلة', message);
+                break;
+            default:
+                window.Toast.info('معلومة', message);
+        }
+        return;
+    }
+
+    // Fallback to old toast system
     document.querySelectorAll('.toast-custom').forEach(t => t.remove());
 
     const toast = document.createElement('div');
@@ -272,10 +319,11 @@ function showToast(message, type = 'success') {
     `;
 
     // Create container if not exists
-    let container = document.querySelector('.toast-container');
+    let container = document.querySelector('.toast-container-legacy');
     if (!container) {
         container = document.createElement('div');
-        container.className = 'toast-container';
+        container.className = 'toast-container-legacy';
+        container.style.cssText = 'position: fixed; top: 100px; left: 20px; z-index: 9999;';
         document.body.appendChild(container);
     }
 

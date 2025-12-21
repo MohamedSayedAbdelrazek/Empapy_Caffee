@@ -32,8 +32,8 @@ class ProductUpdateRequest extends FormRequest
             'roast_level' => 'nullable|in:light,medium,dark',
             'origin' => 'nullable|string|max:100',
             'origin_ar' => 'nullable|string|max:100',
-            'is_featured' => 'boolean',
-            'is_active' => 'boolean',
+            'is_featured' => 'nullable',
+            'is_active' => 'nullable',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ];

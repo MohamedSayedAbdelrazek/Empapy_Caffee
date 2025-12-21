@@ -2,7 +2,8 @@
 <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-header">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-            <span class="brand-icon"><i class="bi bi-cup-hot-fill"></i></span>
+            <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه" class="sidebar-logo"
+                style="height: 40px; width: auto; border-radius: 6px;">
             <span class="brand-text">إمبابي كافيه</span>
         </a>
     </div>

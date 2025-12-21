@@ -1,0 +1,1104 @@
+/**
+ * Empapy Caffe - Creative Premium Effects CSS
+ * Advanced animations and visual effects
+ */
+
+/* ========================================
+   0. Announcement Bar (Marquee)
+   ======================================== */
+.announcement-bar {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2317 100%);
+    color: #fff;
+    padding: 10px 0;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1100;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+/* Push body content down to account for fixed announcement bar */
+body {
+    padding-top: 42px !important;
+}
+
+/* Ensure navbar is positioned below announcement bar */
+.navbar-main {
+    margin-top: 42px;
+}
+
+.announcement-track {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+
+.announcement-content {
+    display: flex;
+    animation: marquee 30s linear infinite;
+    white-space: nowrap;
+}
+
+.announcement-content:hover {
+    animation-play-state: paused;
+}
+
+.announcement-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.announcement-item i {
+    color: #C9A227;
+    font-size: 1rem;
+}
+
+.announcement-divider {
+    color: #C9A227;
+    padding: 0 15px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .announcement-bar {
+        padding: 8px 0;
+    }
+
+    .announcement-item {
+        font-size: 0.8rem;
+        padding: 0 15px;
+    }
+
+    .announcement-content {
+        animation-duration: 20s;
+    }
+}
+
+/* ========================================
+   1. Custom Coffee Cursor
+   ======================================== */
+.custom-cursor-active * {
+    cursor: none !important;
+}
+
+.coffee-cursor {
+    position: fixed;
+    width: 40px;
+    height: 40px;
+    pointer-events: none;
+    z-index: 99999;
+    transform: translate(-50%, -50%);
+    transition: transform 0.15s ease;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+
+.coffee-cursor.hover {
+    transform: translate(-50%, -50%) scale(1.3);
+}
+
+.coffee-cursor.hover svg path {
+    fill: #E8C547;
+}
+
+.cursor-trail {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99998;
+}
+
+.trail-particle {
+    position: fixed;
+    background: radial-gradient(circle, rgba(201, 162, 39, 0.6) 0%, transparent 70%);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ========================================
+   2. Coffee Loading Screen
+   ======================================== */
+.coffee-loader {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, #2C1810 0%, #3D2317 100%);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s, visibility 0.5s;
+}
+
+.coffee-loader.loaded {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.coffee-loader-content {
+    text-align: center;
+}
+
+.coffee-cup-loader {
+    position: relative;
+    width: 120px;
+    height: 140px;
+    margin: 0 auto 30px;
+}
+
+.cup-body {
+    position: absolute;
+    bottom: 0;
+    left: 20px;
+    width: 80px;
+    height: 100px;
+    background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
+    border-radius: 0 0 40px 40px;
+    overflow: hidden;
+    box-shadow: inset 0 -20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.coffee-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 0;
+    background: linear-gradient(180deg, #8B5A2B 0%, #5D3A1F 100%);
+    animation: fillCup 1.5s ease-out forwards;
+}
+
+@keyframes fillCup {
+    0% {
+        height: 0;
+    }
+
+    100% {
+        height: 80%;
+    }
+}
+
+.coffee-bubbles {
+    position: absolute;
+    bottom: 10%;
+    left: 0;
+    right: 0;
+    height: 70%;
+}
+
+.coffee-bubbles span {
+    position: absolute;
+    bottom: 0;
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: bubble 1s infinite;
+}
+
+.coffee-bubbles span:nth-child(1) {
+    left: 20%;
+    animation-delay: 0s;
+}
+
+.coffee-bubbles span:nth-child(2) {
+    left: 40%;
+    animation-delay: 0.2s;
+}
+
+.coffee-bubbles span:nth-child(3) {
+    left: 60%;
+    animation-delay: 0.4s;
+}
+
+.coffee-bubbles span:nth-child(4) {
+    left: 80%;
+    animation-delay: 0.6s;
+}
+
+.coffee-bubbles span:nth-child(5) {
+    left: 50%;
+    animation-delay: 0.8s;
+}
+
+@keyframes bubble {
+    0% {
+        transform: translateY(0) scale(1);
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(-60px) scale(0.5);
+        opacity: 0;
+    }
+}
+
+.cup-handle {
+    position: absolute;
+    right: -5px;
+    top: 30px;
+    width: 25px;
+    height: 40px;
+    border: 8px solid #fff;
+    border-left: none;
+    border-radius: 0 20px 20px 0;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.cup-steam {
+    position: absolute;
+    top: -30px;
+    left: 30px;
+    width: 40px;
+    height: 40px;
+}
+
+.cup-steam span {
+    position: absolute;
+    bottom: 0;
+    width: 8px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: steam 1.5s infinite;
+}
+
+.cup-steam span:nth-child(1) {
+    left: 0;
+    animation-delay: 0s;
+}
+
+.cup-steam span:nth-child(2) {
+    left: 15px;
+    animation-delay: 0.3s;
+}
+
+.cup-steam span:nth-child(3) {
+    left: 30px;
+    animation-delay: 0.6s;
+}
+
+@keyframes steam {
+    0% {
+        transform: translateY(0) scaleX(1);
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 1;
+    }
+
+    50% {
+        transform: translateY(-20px) scaleX(1.5);
+    }
+
+    100% {
+        transform: translateY(-40px) scaleX(2);
+        opacity: 0;
+    }
+}
+
+.loader-text {
+    color: #C9A227;
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.loader-progress {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.loader-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #C9A227, #E8C547, #C9A227);
+    background-size: 200% 100%;
+    animation: progressShine 1.5s linear forwards, shine 1s linear infinite;
+}
+
+@keyframes progressShine {
+    0% {
+        width: 0;
+    }
+
+    100% {
+        width: 100%;
+    }
+}
+
+@keyframes shine {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* ========================================
+   3. Coffee Scroll Progress Cup
+   ======================================== */
+.coffee-scroll-progress {
+    position: fixed;
+    bottom: 100px;
+    left: 30px;
+    z-index: 9990;
+    opacity: 0;
+    transform: translateX(-100px);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.coffee-scroll-progress.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.progress-cup {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(44, 24, 16, 0.95);
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.progress-cup svg {
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+.progress-cup .cup-outline {
+    transition: stroke 0.3s;
+}
+
+.progress-cup:hover .cup-outline {
+    stroke: #E8C547;
+}
+
+.progress-percent {
+    color: #C9A227;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+/* ========================================
+   4. Steam Effect
+   ======================================== */
+.steam-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    pointer-events: none;
+    z-index: 10;
+    overflow: hidden;
+}
+
+.steam-particle {
+    position: absolute;
+    bottom: 0;
+    width: 20px;
+    height: 60px;
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.4), transparent);
+    border-radius: 50%;
+    animation: steamRise 3s ease-out infinite;
+    filter: blur(8px);
+}
+
+@keyframes steamRise {
+    0% {
+        transform: translateY(0) scaleX(1) rotate(0deg);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 0.6;
+    }
+
+    100% {
+        transform: translateY(-120px) scaleX(2) rotate(10deg);
+        opacity: 0;
+    }
+}
+
+/* Product card steam - more subtle */
+.product-image .steam-container {
+    height: 50px;
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.product-card:hover .steam-container {
+    opacity: 1;
+}
+
+.product-image .steam-particle {
+    width: 15px;
+    height: 40px;
+    filter: blur(5px);
+}
+
+/* ========================================
+   5. Typing Animation Cursor
+   ======================================== */
+.hero-title {
+    position: relative;
+}
+
+.hero-title::after {
+    content: '|';
+    color: #C9A227;
+    animation: blink 0.7s infinite;
+    margin-right: 5px;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
+
+/* Remove cursor after typing completes */
+.hero-title.typed::after {
+    display: none;
+}
+
+/* ========================================
+   6. Interactive Particles Canvas
+   ======================================== */
+.particles-canvas {
+    mix-blend-mode: screen;
+}
+
+/* ========================================
+   7. Time Theme Indicator
+   ======================================== */
+.time-theme-indicator {
+    position: fixed;
+    top: 100px;
+    right: 30px;
+    background: rgba(44, 24, 16, 0.95);
+    color: #C9A227;
+    padding: 12px 25px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    z-index: 9999;
+    opacity: 0;
+    transform: translateX(100px);
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.time-theme-indicator.visible {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.time-theme-indicator i {
+    margin-left: 8px;
+    font-size: 1.1rem;
+}
+
+/* ========================================
+   8. Advanced 3D Card Effects
+   ======================================== */
+.card-shine {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    z-index: 5;
+}
+
+.product-card {
+    transform-style: preserve-3d;
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.product-card:hover {
+    box-shadow:
+        0 25px 50px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(201, 162, 39, 0.1);
+}
+
+/* Floating effect on cards */
+.product-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+
+.product-card:hover::before {
+    opacity: 1;
+}
+
+/* ========================================
+   9. Magnetic Button Inner
+   ======================================== */
+.btn-inner {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ========================================
+   10. Enhanced Glass Effects
+   ======================================== */
+.glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.4),
+            transparent);
+    transition: left 0.8s;
+}
+
+.glass-card:hover::before {
+    left: 100%;
+}
+
+/* ========================================
+   11. Category Cards Parallax Overlay
+   ======================================== */
+.category-card {
+    perspective: 1000px;
+}
+
+.category-card:hover .category-overlay {
+    transform: translateZ(30px);
+}
+
+.category-overlay {
+    transition: transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+    transform-style: preserve-3d;
+}
+
+/* ========================================
+   12. CTA Section Glow
+   ======================================== */
+.glass-dark {
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-dark::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle,
+            rgba(201, 162, 39, 0.1) 0%,
+            transparent 50%);
+    animation: glow 10s linear infinite;
+}
+
+@keyframes glow {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* ========================================
+   13. Hero Stats Hover Effect
+   ======================================== */
+.stat-item {
+    padding: 15px;
+    border-radius: 15px;
+    transition: all 0.3s;
+    cursor: default;
+}
+
+.stat-item:hover {
+    background: rgba(201, 162, 39, 0.1);
+    transform: translateY(-5px);
+}
+
+.stat-number {
+    background: linear-gradient(135deg, #C9A227, #E8C547);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ========================================
+   14. Section Dividers
+   ======================================== */
+.section-title h2 {
+    position: relative;
+}
+
+.section-title h2::before {
+    content: '☕';
+    position: absolute;
+    right: -40px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.5rem;
+    opacity: 0;
+    animation: coffeeFloat 2s ease-in-out infinite;
+}
+
+.section-title:hover h2::before {
+    opacity: 1;
+}
+
+@keyframes coffeeFloat {
+
+    0%,
+    100% {
+        transform: translateY(-50%) rotate(-10deg);
+    }
+
+    50% {
+        transform: translateY(-60%) rotate(10deg);
+    }
+}
+
+/* ========================================
+   15. Dark Mode Enhancements
+   ======================================== */
+[data-theme="dark"] .coffee-scroll-progress .progress-cup {
+    background: rgba(0, 0, 0, 0.95);
+}
+
+[data-theme="dark"] .steam-particle {
+    background: linear-gradient(to top, rgba(201, 162, 39, 0.3), transparent);
+}
+
+[data-theme="dark"] .glass-card {
+    background: rgba(44, 24, 16, 0.85);
+    border-color: rgba(201, 162, 39, 0.2);
+}
+
+[data-theme="dark"] .glass-card::before {
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(201, 162, 39, 0.2),
+            transparent);
+}
+
+/* ========================================
+   16. Responsive Adjustments
+   ======================================== */
+@media (max-width: 1023px) {
+
+    .coffee-cursor,
+    .cursor-trail,
+    .coffee-scroll-progress {
+        display: none !important;
+    }
+
+    .custom-cursor-active * {
+        cursor: auto !important;
+    }
+}
+
+@media (max-width: 768px) {
+    .time-theme-indicator {
+        top: auto;
+        bottom: 20px;
+        right: 50%;
+        transform: translateX(50%);
+    }
+
+    .time-theme-indicator.visible {
+        transform: translateX(50%);
+    }
+
+    .steam-container {
+        display: none;
+    }
+}
+
+/* ========================================
+   17. Print Styles (disable effects)
+   ======================================== */
+@media print {
+
+    .coffee-loader,
+    .coffee-cursor,
+    .cursor-trail,
+    .coffee-scroll-progress,
+    .steam-container,
+    .time-theme-indicator,
+    .particles-canvas {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   18. Animated Gradient Text
+   ======================================== */
+.gradient-text-animated {
+    background: linear-gradient(90deg,
+            #C9A227,
+            #E8C547,
+            #FFD700,
+            #E8C547,
+            #C9A227);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientFlow 3s linear infinite;
+}
+
+@keyframes gradientFlow {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+/* ========================================
+   19. Smooth Reveal Elements
+   ======================================== */
+.reveal-element {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.reveal-element.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered reveal for grid items */
+.reveal-element:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+.reveal-element:nth-child(2) {
+    transition-delay: 0.2s;
+}
+
+.reveal-element:nth-child(3) {
+    transition-delay: 0.3s;
+}
+
+.reveal-element:nth-child(4) {
+    transition-delay: 0.4s;
+}
+
+/* ========================================
+   20. Button Glow Effect
+   ======================================== */
+.btn-golden {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-golden::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent 70%);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+    border-radius: 50%;
+}
+
+.btn-golden:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* ========================================
+   21. Product Card Floating Animation
+   ======================================== */
+@keyframes cardFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.product-card:hover {
+    animation: cardFloat 2s ease-in-out infinite;
+}
+
+/* ========================================
+   22. Text Shadow Effect for Headings
+   ======================================== */
+.hero-title {
+    text-shadow:
+        0 0 40px rgba(201, 162, 39, 0.3),
+        0 0 80px rgba(201, 162, 39, 0.2);
+}
+
+/* ========================================
+   23. Link Hover Underline Animation
+   ======================================== */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #C9A227);
+    transition: width 0.4s;
+}
+
+.nav-link:hover::before {
+    width: 100%;
+}
+
+/* ========================================
+   24. Image Hover Brightness
+   ======================================== */
+.category-card img,
+.product-image img {
+    transition: transform 0.5s, filter 0.5s;
+}
+
+.category-card:hover img,
+.product-card:hover .product-image img {
+    filter: brightness(1.1) contrast(1.05);
+}
+
+/* ========================================
+   25. Newsletter Form Glow
+   ======================================== */
+.glass-dark input[type="email"]:focus {
+    box-shadow:
+        0 0 0 3px rgba(201, 162, 39, 0.3),
+        0 0 20px rgba(201, 162, 39, 0.2);
+    border-color: #C9A227;
+}
+
+/* ========================================
+   26. Scroll Indicator (Hero Bottom)
+   ======================================== */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 50px;
+    border: 2px solid rgba(201, 162, 39, 0.5);
+    border-radius: 20px;
+    z-index: 100;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    bottom: 42px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 10px;
+    background: #C9A227;
+    border-radius: 3px;
+    z-index: 101;
+    animation: scrollIndicator 2s ease-in-out infinite;
+}
+
+@keyframes scrollIndicator {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: translateX(-50%) translateY(15px);
+    }
+}
+
+/* ========================================
+   27. Badge Pulse Animation
+   ======================================== */
+.product-badge.sale {
+    animation: badgePulse 2s ease-in-out infinite;
+}
+
+@keyframes badgePulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+}
+
+/* ========================================
+   28. Footer Social Icons Bounce
+   ======================================== */
+.footer a[href*="facebook"]:hover,
+.footer a[href*="twitter"]:hover,
+.footer a[href*="instagram"]:hover,
+.footer .social-icon:hover {
+    animation: socialBounce 0.5s ease;
+}
+
+@keyframes socialBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    25% {
+        transform: translateY(-8px);
+    }
+
+    50% {
+        transform: translateY(0);
+    }
+
+    75% {
+        transform: translateY(-4px);
+    }
+}
+
+/* ========================================
+   29. Loading Skeleton for Images
+   ======================================== */
+.product-image::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg,
+            #f0f0f0 25%,
+            #e0e0e0 50%,
+            #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: skeleton 1.5s linear infinite;
+    z-index: -1;
+}
+
+@keyframes skeleton {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.product-image img {
+    position: relative;
+    z-index: 1;
+}
+
+/* ========================================
+   30. Toast Notification Animation
+   ======================================== */
+.toast-custom {
+    animation: toastSlide 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes toastSlide {
+    0% {
+        transform: translateX(100%) scale(0.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translateX(0) scale(1);
+        opacity: 1;
+    }
+}
