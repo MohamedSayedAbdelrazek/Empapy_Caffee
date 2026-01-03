@@ -3,9 +3,27 @@
 @section('title', 'الطلبات')
 
 @section('content')
-    <div class="page-header-admin mb-4">
-        <h1 class="page-title-admin">الطلبات</h1>
-        <p class="page-subtitle-admin">إدارة طلبات العملاء</p>
+    <div class="page-header-admin mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h1 class="page-title-admin">الطلبات</h1>
+            <p class="page-subtitle-admin">إدارة طلبات العملاء</p>
+        </div>
+
+        <!-- View Toggle -->
+        <div class="d-flex align-items-center gap-3">
+            <div class="btn-group" style="background: rgba(255,255,255,0.05); border-radius: 10px; padding: 4px;">
+                <a href="{{ route('admin.orders.index') }}"
+                    class="btn btn-sm {{ request()->routeIs('admin.orders.index') ? 'btn-admin-primary' : 'btn-outline-light' }}"
+                    style="border-radius: 8px;">
+                    <i class="bi bi-list-ul me-1"></i>قائمة
+                </a>
+                <a href="{{ route('admin.orders.kanban') }}"
+                    class="btn btn-sm {{ request()->routeIs('admin.orders.kanban') ? 'btn-admin-primary' : 'btn-outline-light' }}"
+                    style="border-radius: 8px;">
+                    <i class="bi bi-kanban me-1"></i>Kanban
+                </a>
+            </div>
+        </div>
     </div>
 
     <!-- Filters -->

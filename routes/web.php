@@ -122,10 +122,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
 
     // Orders
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/kanban', [OrderController::class, 'kanban'])->name('orders.kanban');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('orders.status');
+    Route::post('/orders/{order}/status-ajax', [OrderController::class, 'updateStatusAjax'])->name('orders.status-ajax');
     Route::patch('/orders/{order}/payment-status', [OrderController::class, 'updatePaymentStatus'])->name('orders.payment-status');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::get('/orders/{order}/details-ajax', [OrderController::class, 'getOrderDetails'])->name('orders.details-ajax');
 
     // Users
     Route::get('/users', [UserController::class, 'index'])->name('users.index');

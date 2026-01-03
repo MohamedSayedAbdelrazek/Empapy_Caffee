@@ -37,7 +37,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}"
+                <a class="nav-link {{ request()->routeIs('admin.orders.index') ? 'active' : '' }}"
                     href="{{ route('admin.orders.index') }}">
                     <i class="bi bi-receipt"></i>
                     <span>الطلبات</span>
@@ -45,6 +45,15 @@
                     @if ($pendingCount > 0)
                         <span class="badge bg-warning text-dark ms-auto">{{ $pendingCount }}</span>
                     @endif
+                </a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.orders.kanban') ? 'active' : '' }}"
+                    href="{{ route('admin.orders.kanban') }}">
+                    <i class="bi bi-kanban"></i>
+                    <span>لوحة الطلبات</span>
+                    <span class="badge bg-primary ms-auto" style="font-size: 0.65rem; padding: 3px 6px;">NEW</span>
                 </a>
             </li>
 
