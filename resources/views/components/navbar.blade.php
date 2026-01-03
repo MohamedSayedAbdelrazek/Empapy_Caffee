@@ -3,7 +3,8 @@
     <div class="container">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ route('home') }}">
-            <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه" class="navbar-logo" style="height: 45px; width: auto; border-radius: 8px;">
+            <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه" class="navbar-logo"
+                style="height: 45px; width: auto; border-radius: 8px;">
             <span class="brand-text">إمبابي كافيه</span>
         </a>
 
@@ -82,6 +83,15 @@
                             <li>
                                 <a class="dropdown-item" href="{{ route('orders.track') }}">
                                     <i class="bi bi-geo-alt me-2"></i>تتبع طلب
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('loyalty.index') }}">
+                                    <i class="bi bi-award me-2 text-warning"></i>نقاطي
+                                    @if (auth()->user()->loyaltyPoints)
+                                        <span
+                                            class="badge bg-warning text-dark ms-2">{{ number_format(auth()->user()->loyaltyPoints->available_points) }}</span>
+                                    @endif
                                 </a>
                             </li>
                             <li>

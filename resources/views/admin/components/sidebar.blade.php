@@ -67,6 +67,15 @@
                 </a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link {{ request()->routeIs('admin.loyalty.*') ? 'active' : '' }}"
+                    href="{{ route('admin.loyalty.dashboard') }}">
+                    <i class="bi bi-award"></i>
+                    <span>نظام الولاء</span>
+                    <span class="badge bg-success ms-auto" style="font-size: 0.65rem; padding: 3px 6px;">NEW</span>
+                </a>
+            </li>
+
             <li class="nav-section">إدارة المستخدمين</li>
 
             <li class="nav-item">

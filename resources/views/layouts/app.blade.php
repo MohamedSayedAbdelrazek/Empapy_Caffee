@@ -59,6 +59,9 @@
     <!-- UX Enhancements CSS -->
     <link rel="stylesheet" href="{{ asset('css/ux-enhancements.css') }}">
 
+    <!-- Loyalty System CSS -->
+    <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
+
     @stack('styles')
 </head>
 

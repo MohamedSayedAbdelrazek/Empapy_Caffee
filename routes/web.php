@@ -163,3 +163,61 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+/*
+|--------------------------------------------------------------------------
+| Loyalty Routes (User)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->prefix('loyalty')->name('loyalty.')->group(function () {
+    Route::get('/', [App\Http\Controllers\LoyaltyController::class, 'index'])->name('index');
+    Route::get('/rewards', [App\Http\Controllers\LoyaltyController::class, 'rewards'])->name('rewards');
+    Route::post('/rewards/{reward}/redeem', [App\Http\Controllers\LoyaltyController::class, 'redeem'])->name('redeem');
+    Route::get('/redemptions', [App\Http\Controllers\LoyaltyController::class, 'redemptions'])->name('redemptions');
+    Route::get('/referral', [App\Http\Controllers\LoyaltyController::class, 'referral'])->name('referral');
+    Route::get('/history', [App\Http\Controllers\LoyaltyController::class, 'history'])->name('history');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Loyalty Routes (Added to Admin group)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin/loyalty')->name('admin.loyalty.')->middleware(['auth', 'admin'])->group(function () {
+    // Dashboard
+    Route::get('/', [App\Http\Controllers\Admin\LoyaltyController::class, 'index'])->name('dashboard');
+
+    // Point Rules
+    Route::get('/rules', [App\Http\Controllers\Admin\LoyaltyController::class, 'rules'])->name('rules');
+    Route::get('/rules/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createRule'])->name('rules.create');
+    Route::post('/rules', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeRule'])->name('rules.store');
+    Route::get('/rules/{rule}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editRule'])->name('rules.edit');
+    Route::put('/rules/{rule}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateRule'])->name('rules.update');
+    Route::delete('/rules/{rule}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyRule'])->name('rules.destroy');
+
+    // Tiers
+    Route::get('/tiers', [App\Http\Controllers\Admin\LoyaltyController::class, 'tiers'])->name('tiers');
+    Route::get('/tiers/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createTier'])->name('tiers.create');
+    Route::post('/tiers', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeTier'])->name('tiers.store');
+    Route::get('/tiers/{tier}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editTier'])->name('tiers.edit');
+    Route::put('/tiers/{tier}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateTier'])->name('tiers.update');
+    Route::delete('/tiers/{tier}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyTier'])->name('tiers.destroy');
+
+    // Rewards
+    Route::get('/rewards', [App\Http\Controllers\Admin\LoyaltyController::class, 'rewards'])->name('rewards');
+    Route::get('/rewards/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createReward'])->name('rewards.create');
+    Route::post('/rewards', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeReward'])->name('rewards.store');
+    Route::get('/rewards/{reward}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editReward'])->name('rewards.edit');
+    Route::put('/rewards/{reward}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateReward'])->name('rewards.update');
+    Route::delete('/rewards/{reward}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyReward'])->name('rewards.destroy');
+
+    // User Points Management
+    Route::get('/users', [App\Http\Controllers\Admin\LoyaltyController::class, 'users'])->name('users');
+    Route::get('/users/{user}', [App\Http\Controllers\Admin\LoyaltyController::class, 'showUser'])->name('users.show');
+    Route::post('/users/{user}/adjust', [App\Http\Controllers\Admin\LoyaltyController::class, 'adjustPoints'])->name('users.adjust');
+
+    // Transactions
+    Route::get('/transactions', [App\Http\Controllers\Admin\LoyaltyController::class, 'transactions'])->name('transactions');
+});

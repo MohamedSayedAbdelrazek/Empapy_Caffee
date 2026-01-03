@@ -5,9 +5,17 @@ namespace App\Observers;
 use App\Models\AdminNotification;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\LoyaltyService;
 
 class OrderObserver
 {
+    protected LoyaltyService $loyaltyService;
+
+    public function __construct(LoyaltyService $loyaltyService)
+    {
+        $this->loyaltyService = $loyaltyService;
+    }
+
     /**
      * Handle the Order "created" event.
      */
@@ -39,6 +47,10 @@ class OrderObserver
      */
     public function updated(Order $order): void
     {
-        // You can add notifications for status changes here if needed
+        // Check if status changed to 'delivered'
+        if ($order->isDirty('status') && $order->status === 'delivered') {
+            // Award loyalty points for completed order
+            $this->loyaltyService->processOrderPoints($order);
+        }
     }
 }

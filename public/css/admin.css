@@ -276,6 +276,89 @@
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 }
 
+/* Bootstrap Card Override for Dark Theme */
+.admin-body .card {
+    background: var(--admin-card);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text);
+}
+
+.admin-body .card-header {
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--admin-border);
+    color: var(--admin-text);
+}
+
+.admin-body .card-footer {
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid var(--admin-border);
+}
+
+.admin-body .card-body {
+    color: var(--admin-text);
+}
+
+/* Bootstrap Table Override */
+.admin-body .table {
+    color: var(--admin-text);
+}
+
+.admin-body .table-light,
+.admin-body .table thead th {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--admin-text) !important;
+}
+
+.admin-body .table-hover tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+    color: var(--admin-text);
+}
+
+.admin-body .table td,
+.admin-body .table th {
+    border-color: var(--admin-border);
+}
+
+/* Breadcrumb Override */
+.admin-body .breadcrumb {
+    background: transparent;
+}
+
+.admin-body .breadcrumb-item a {
+    color: var(--admin-primary);
+}
+
+.admin-body .breadcrumb-item.active {
+    color: var(--admin-text-muted);
+}
+
+.admin-body .breadcrumb-item+.breadcrumb-item::before {
+    color: var(--admin-text-muted);
+}
+
+/* Page Headers */
+.admin-body h1,
+.admin-body h2,
+.admin-body h3,
+.admin-body h4,
+.admin-body h5,
+.admin-body h6 {
+    color: var(--admin-text);
+}
+
+.admin-body .text-muted {
+    color: var(--admin-text-muted) !important;
+}
+
+.admin-body .form-check-label {
+    color: var(--admin-text);
+}
+
+.admin-body hr {
+    border-color: var(--admin-border);
+    opacity: 0.3;
+}
+
 .stat-card {
     position: relative;
     overflow: hidden;

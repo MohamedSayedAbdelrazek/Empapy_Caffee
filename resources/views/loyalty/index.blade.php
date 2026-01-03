@@ -1,0 +1,316 @@
+@extends('layouts.app')
+
+@section('title', 'نقاطي - برنامج الولاء')
+
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
+@endpush
+
+@section('content')
+    <div class="container py-5">
+        <!-- Hero Section -->
+        <div class="text-center mb-5" data-aos="fade-up">
+            <h1 class="display-5 fw-bold mb-3">🎖️ برنامج الولاء</h1>
+            <p class="lead text-muted">اجمع النقاط واستبدلها بمكافآت حصرية!</p>
+        </div>
+
+        <!-- Main Stats Row -->
+        <div class="row g-4 mb-5">
+            <!-- Points Card -->
+            <div class="col-lg-4" data-aos="fade-up">
+                <div class="glass-card p-4 text-center h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-coin text-warning fs-1"></i>
+                    </div>
+                    <h6 class="text-muted mb-2">رصيدك الحالي</h6>
+                    <div class="points-counter mb-2">{{ number_format($loyalty->available_points) }}</div>
+                    <p class="mb-0 text-muted">نقطة متاحة</p>
+                </div>
+            </div>
+
+            <!-- Tier Card -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="glass-card p-4 text-center h-100">
+                    <div class="mb-3">
+                        <span class="fs-1">{{ $currentTier->icon ?? '🥉' }}</span>
+                    </div>
+                    <h6 class="text-muted mb-2">مستواك الحالي</h6>
+                    <div class="tier-badge tier-badge-{{ $currentTier->slug ?? 'bronze' }} mx-auto mb-2">
+                        {{ $currentTier->name_ar ?? 'برونزي' }}
+                    </div>
+                    @if ($currentTier && $currentTier->discount_percent > 0)
+                        <p class="mb-0 small text-success">
+                            <i class="bi bi-check-circle me-1"></i>
+                            خصم {{ $currentTier->discount_percent }}% على كل طلب
+                        </p>
+                    @endif
+                </div>
+            </div>
+
+            <!-- Referrals Card -->
+            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="glass-card p-4 text-center h-100">
+                    <div class="mb-3">
+                        <i class="bi bi-people text-info fs-1"></i>
+                    </div>
+                    <h6 class="text-muted mb-2">إحالات ناجحة</h6>
+                    <h2 class="fw-bold text-info mb-2">{{ $stats['referrals'] }}</h2>
+                    <a href="{{ route('loyalty.referral') }}" class="btn btn-sm btn-outline-info">
+                        <i class="bi bi-share me-1"></i> ادعُ أصدقاءك
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tier Progress -->
+        @if ($nextTier)
+            <div class="glass-card p-4 mb-5" data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">
+                        <i class="bi bi-graph-up-arrow me-2 text-primary"></i>
+                        التقدم نحو المستوى التالي
+                    </h5>
+                    <span class="badge tier-badge tier-badge-{{ $nextTier->slug }}">
+                        {{ $nextTier->icon }} {{ $nextTier->name_ar }}
+                    </span>
+                </div>
+
+                <!-- Tier Icons -->
+                <div class="tier-icons-row mb-4">
+                    @foreach ($allTiers as $tier)
+                        <div class="tier-icon-item {{ $tier->slug === $currentTier?->slug ? 'active' : '' }}">
+                            <div class="tier-icon-circle {{ $tier->slug }}"
+                                style="border-color: {{ $tier->color }}; color: {{ $tier->color }};">
+                                {{ $tier->icon }}
+                            </div>
+                            <span>{{ $tier->name_ar }}</span>
+                        </div>
+                    @endforeach
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="tier-progress-bar mb-3">
+                    <div class="tier-progress-fill {{ $currentTier?->slug ?? 'bronze' }}"
+                        style="width: {{ $loyalty->progress_to_next_tier }}%;"></div>
+                </div>
+
+                <div class="tier-progress-labels">
+                    <span>{{ number_format($loyalty->tier_points) }} نقطة</span>
+                    <span class="fw-bold">{{ number_format($loyalty->points_to_next_tier) }} نقطة متبقية</span>
+                    <span>{{ number_format($nextTier->min_points) }} نقطة</span>
+                </div>
+            </div>
+        @else
+            <div class="glass-card p-4 mb-5 text-center" data-aos="fade-up">
+                <div class="fs-1 mb-3">💎</div>
+                <h4 class="text-warning">مبروك! أنت في أعلى مستوى</h4>
+                <p class="text-muted mb-0">استمتع بجميع المزايا الحصرية لعملائنا VIP</p>
+            </div>
+        @endif
+
+        <!-- Current Tier Benefits -->
+        @if ($currentTier && count($currentTier->all_benefits) > 0)
+            <div class="glass-card p-4 mb-5" data-aos="fade-up">
+                <h5 class="mb-4">
+                    <i class="bi bi-star me-2 text-warning"></i>
+                    مزايا مستوى {{ $currentTier->name_ar }}
+                </h5>
+                <div class="row g-3">
+                    @foreach ($currentTier->all_benefits as $benefit)
+                        <div class="col-md-6 col-lg-4">
+                            <div class="d-flex align-items-center p-3 bg-success bg-opacity-10 rounded-3">
+                                <i class="bi bi-check2-circle text-success fs-4 me-3"></i>
+                                <span>{{ $benefit }}</span>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <!-- Featured Rewards -->
+        @if ($featuredRewards->count() > 0)
+            <div class="mb-5" data-aos="fade-up">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="mb-0">
+                        <i class="bi bi-gift me-2"></i>
+                        مكافآت مميزة
+                    </h4>
+                    <a href="{{ route('loyalty.rewards') }}" class="btn btn-outline-primary">
+                        عرض الكل <i class="bi bi-arrow-left ms-1"></i>
+                    </a>
+                </div>
+                <div class="row g-4">
+                    @foreach ($featuredRewards as $reward)
+                        <div class="col-md-4">
+                            <div
+                                class="reward-card {{ $reward->is_featured ? 'featured' : '' }} {{ $loyalty->available_points < $reward->points_required ? 'locked' : '' }}">
+                                <div class="reward-card-image">
+                                    @if ($reward->image)
+                                        <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name_ar }}"
+                                            class="img-fluid">
+                                    @else
+                                        <span>{{ $reward->icon }}</span>
+                                    @endif
+                                </div>
+                                <div class="reward-card-body">
+                                    <h6 class="reward-card-title">{{ $reward->name_ar }}</h6>
+                                    <p class="reward-card-description">{{ $reward->description_ar }}</p>
+                                    <div class="reward-card-points">
+                                        <i class="bi bi-coin"></i>
+                                        <span>{{ number_format($reward->points_required) }} نقطة</span>
+                                    </div>
+                                </div>
+                                <div class="reward-card-footer">
+                                    @if ($loyalty->available_points >= $reward->points_required)
+                                        <form action="{{ route('loyalty.redeem', $reward) }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="reward-redeem-btn available">
+                                                <i class="bi bi-gift"></i>
+                                                استبدال الآن
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button class="reward-redeem-btn unavailable" disabled>
+                                            <i class="bi bi-lock"></i>
+                                            تحتاج
+                                            {{ number_format($reward->points_required - $loyalty->available_points) }} نقطة
+                                            إضافية
+                                        </button>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        @endif
+
+        <!-- Pending Redemptions & Recent Transactions -->
+        <div class="row g-4">
+            <!-- Pending Redemptions -->
+            @if ($pendingRedemptions->count() > 0)
+                <div class="col-lg-6" data-aos="fade-up">
+                    <div class="glass-card p-4">
+                        <h5 class="mb-4">
+                            <i class="bi bi-ticket-perforated me-2 text-success"></i>
+                            مكافآتك الجاهزة للاستخدام
+                        </h5>
+                        @foreach ($pendingRedemptions as $redemption)
+                            <div
+                                class="d-flex align-items-center justify-content-between p-3 mb-2 bg-success bg-opacity-10 rounded-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="fs-4 me-3">{{ $redemption->reward->icon ?? '🎁' }}</span>
+                                    <div>
+                                        <h6 class="mb-0">{{ $redemption->reward->name_ar }}</h6>
+                                        <small class="text-muted">كود: {{ $redemption->redemption_code }}</small>
+                                    </div>
+                                </div>
+                                @if ($redemption->expires_at)
+                                    <small class="text-danger">
+                                        ينتهي {{ $redemption->expires_at->diffForHumans() }}
+                                    </small>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            <!-- Recent Transactions -->
+            <div class="{{ $pendingRedemptions->count() > 0 ? 'col-lg-6' : 'col-12' }}" data-aos="fade-up">
+                <div class="glass-card p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="bi bi-clock-history me-2"></i>
+                            آخر العمليات
+                        </h5>
+                        <a href="{{ route('loyalty.history') }}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+                    </div>
+
+                    @if ($transactions->count() > 0)
+                        <div class="transaction-timeline">
+                            @foreach ($transactions as $transaction)
+                                <div class="transaction-item {{ $transaction->type }}">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <span
+                                                class="transaction-points {{ $transaction->is_positive ? 'positive' : 'negative' }}">
+                                                {{ $transaction->formatted_points }}
+                                            </span>
+                                            <p class="mb-0">{{ $transaction->description_ar }}</p>
+                                        </div>
+                                        <small
+                                            class="transaction-meta">{{ $transaction->created_at->diffForHumans() }}</small>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <div class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                            <p class="mb-0">لا توجد عمليات بعد</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="glass-card p-4 mt-5" data-aos="fade-up">
+            <h5 class="mb-4 text-center">
+                <i class="bi bi-lightning me-2"></i>
+                طرق سريعة لكسب النقاط
+            </h5>
+            <div class="row g-3 text-center">
+                <div class="col-md-4">
+                    <div class="p-4 bg-warning bg-opacity-10 rounded-3">
+                        <i class="bi bi-cart-check fs-1 text-warning d-block mb-2"></i>
+                        <h6>اشترِ أكثر</h6>
+                        <p class="small text-muted mb-0">احصل على 1 نقطة لكل 1 ج.م</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 bg-info bg-opacity-10 rounded-3">
+                        <i class="bi bi-star fs-1 text-info d-block mb-2"></i>
+                        <h6>قيّم المنتجات</h6>
+                        <p class="small text-muted mb-0">10 نقاط لكل تقييم</p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="p-4 bg-success bg-opacity-10 rounded-3">
+                        <i class="bi bi-people fs-1 text-success d-block mb-2"></i>
+                        <h6>ادعُ أصدقاءك</h6>
+                        <p class="small text-muted mb-0">200 نقطة لكل إحالة ناجحة</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (session('success'))
+        <!-- Success Toast with Confetti -->
+        <div class="confetti-container" id="confettiContainer"></div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Show confetti
+                const colors = ['#FFD700', '#C9A227', '#8B4513', '#2ECC71', '#3498DB'];
+                const container = document.getElementById('confettiContainer');
+
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * 100 + 'vw';
+                        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                        confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                        confetti.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+                        container.appendChild(confetti);
+
+                        setTimeout(() => confetti.remove(), 4000);
+                    }, i * 50);
+                }
+            });
+        </script>
+    @endif
+@endsection
