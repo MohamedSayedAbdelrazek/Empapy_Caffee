@@ -662,7 +662,8 @@ img {
 .product-price {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 .price-current {
@@ -672,9 +673,25 @@ img {
 }
 
 .price-old {
-    font-size: 1rem;
+    font-size: 0.85rem;
     color: var(--gray-400);
     text-decoration: line-through;
+}
+
+/* Discount Price - Smaller font for consistency */
+.product-price.has-discount {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.product-price.has-discount .price-current {
+    font-size: 1.1rem;
+}
+
+.product-price.has-discount .price-old {
+    font-size: 0.8rem;
+    order: -1;
 }
 
 /* ========================================
@@ -684,7 +701,8 @@ img {
     position: relative;
     overflow: hidden;
     border-radius: var(--radius-lg);
-    aspect-ratio: 1;
+    aspect-ratio: 4/3;
+    max-height: 220px;
     transition: all var(--transition-normal);
 }
 
@@ -1315,4 +1333,49 @@ img {
 
 .page-header .breadcrumb-item+.breadcrumb-item::before {
     color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================
+   Custom Cart SVG Icons
+   ======================================== */
+.cart-icon,
+.cart-icon-add,
+.cart-icon-empty {
+    display: inline-block;
+    vertical-align: middle;
+    flex-shrink: 0;
+}
+
+.cart-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.cart-icon-add {
+    width: 18px;
+    height: 18px;
+}
+
+.cart-icon-empty {
+    width: 80px;
+    height: 80px;
+    opacity: 0.5;
+}
+
+/* Cart icon in buttons */
+.btn .cart-icon,
+.btn .cart-icon-add {
+    margin-left: 0;
+}
+
+/* Cart drawer header */
+.cart-drawer-header .cart-icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* Navbar cart icon */
+.cart-toggle .cart-icon {
+    width: 22px;
+    height: 22px;
 }

@@ -53,7 +53,7 @@
             @if ($product->stock > 0)
                 <button class="btn btn-action add-to-cart-btn ripple" data-product-id="{{ $product->id }}"
                     title="أضف للسلة" aria-label="أضف للسلة">
-                    <i class="bi bi-bag-plus"></i>
+                    <svg class="cart-icon-add" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
                 </button>
             @endif
             <a href="{{ route('shop.show', $product) }}" class="btn btn-action ripple" title="عرض التفاصيل"
@@ -67,7 +67,7 @@
             @if ($product->stock > 0)
                 <button class="quick-add-btn ripple"
                     onclick="event.stopPropagation(); addToCartQuick({{ $product->id }}, this)">
-                    <i class="bi bi-bag-plus me-2"></i>
+                    <svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
                     إضافة سريعة
                 </button>
             @else
@@ -128,21 +128,27 @@
         </div>
 
         <div class="product-footer">
-            <div class="product-price">
+            <div class="product-price {{ $product->is_on_sale ? 'has-discount' : '' }}">
                 @if ($product->is_on_sale)
-                    <span class="price-old">{{ number_format($product->price) }} ج.م</span>
+                    <span class="price-old">{{ number_format($product->price) }}</span>
                     <span class="price-current">{{ number_format($product->sale_price) }} ج.م</span>
                 @else
                     <span class="price-current">{{ number_format($product->price) }} ج.م</span>
                 @endif
             </div>
 
-            <!-- Mobile Add to Cart -->
+            <!-- Add to Cart Button - Always Visible -->
             @if ($product->stock > 0)
-                <button class="btn-add-mobile add-to-cart-btn ripple" data-product-id="{{ $product->id }}"
-                    aria-label="أضف للسلة">
-                    <i class="bi bi-plus-lg"></i>
+                <button class="btn-add-cart-main add-to-cart-btn ripple" data-product-id="{{ $product->id }}"
+                    aria-label="أضف للسلة" title="أضف للسلة">
+                    <svg class="cart-icon-btn" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
+                    <span class="btn-text">أضف للسلة</span>
                 </button>
+            @else
+                <span class="out-of-stock-label">
+                    <i class="bi bi-x-circle"></i>
+                    نفذ
+                </span>
             @endif
         </div>
     </div>
@@ -269,32 +275,79 @@
         margin-top: 15px;
         padding-top: 15px;
         border-top: 1px solid var(--gray-100);
+        gap: 10px;
     }
 
-    /* Mobile Add Button */
-    .btn-add-mobile {
-        width: 40px;
-        height: 40px;
+    /* Main Add to Cart Button - Always Visible */
+    .btn-add-cart-main {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 10px 16px;
         border-radius: var(--radius-full);
         background: var(--gradient-gold);
         border: none;
-        display: none;
-        align-items: center;
-        justify-content: center;
         cursor: pointer;
         transition: all 0.3s ease;
         color: var(--espresso);
-        font-size: 1.2rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        white-space: nowrap;
+        box-shadow: 0 2px 10px rgba(201, 162, 39, 0.3);
     }
 
-    .btn-add-mobile:hover {
-        transform: scale(1.1);
-        box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+    .btn-add-cart-main:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(201, 162, 39, 0.5);
+    }
+
+    .btn-add-cart-main:active {
+        transform: translateY(0);
+    }
+
+    .btn-add-cart-main .cart-icon-btn {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+    }
+
+    .btn-add-cart-main .btn-text {
+        display: inline;
+    }
+
+    .btn-add-cart-main.loading {
+        pointer-events: none;
+        opacity: 0.7;
+    }
+
+    .btn-add-cart-main.success {
+        background: #22c55e !important;
+        color: white !important;
+    }
+
+    /* Out of Stock Label */
+    .out-of-stock-label {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 14px;
+        border-radius: var(--radius-full);
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        font-size: 0.8rem;
+        font-weight: 600;
     }
 
     @media (max-width: 768px) {
-        .btn-add-mobile {
-            display: flex;
+        .btn-add-cart-main .btn-text {
+            display: none;
+        }
+
+        .btn-add-cart-main {
+            padding: 10px;
+            min-width: 40px;
+            min-height: 40px;
         }
 
         .product-actions {
@@ -304,6 +357,23 @@
 
         .quick-add-overlay {
             display: none;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .product-footer {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+        }
+
+        .btn-add-cart-main {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-add-cart-main .btn-text {
+            display: inline;
         }
     }
 
@@ -416,12 +486,12 @@
 
                     // Reset button
                     setTimeout(() => {
-                        button.innerHTML = '<i class="bi bi-bag-plus me-2"></i>إضافة سريعة';
+                        button.innerHTML = '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
                         button.style.background = '';
                         button.style.color = '';
                     }, 2000);
                 } else {
-                    button.innerHTML = '<i class="bi bi-bag-plus me-2"></i>إضافة سريعة';
+                    button.innerHTML = '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
                     if (window.Toast) {
                         window.Toast.error('خطأ', data.message || 'حدث خطأ');
                     }
@@ -429,7 +499,7 @@
             })
             .catch(() => {
                 button.classList.remove('loading');
-                button.innerHTML = '<i class="bi bi-bag-plus me-2"></i>إضافة سريعة';
+                button.innerHTML = '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
                 if (window.Toast) {
                     window.Toast.error('خطأ', 'حدث خطأ في الاتصال');
                 }

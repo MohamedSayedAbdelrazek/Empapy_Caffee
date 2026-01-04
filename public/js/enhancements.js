@@ -45,15 +45,9 @@ function initScrollProgress() {
  * 2. Dark Mode Toggle
  */
 function initDarkMode() {
-    // Create toggle button
-    const toggleBtn = document.createElement('button');
-    toggleBtn.className = 'theme-toggle';
-    toggleBtn.setAttribute('aria-label', 'Toggle dark mode');
-    toggleBtn.innerHTML = `
-        <i class="bi bi-sun-fill sun-icon"></i>
-        <i class="bi bi-moon-fill moon-icon"></i>
-    `;
-    document.body.appendChild(toggleBtn);
+    // Get the toggle button from navbar
+    const toggleBtn = document.getElementById('themeToggleNavbar');
+    if (!toggleBtn) return;
 
     // Check for saved preference
     const savedTheme = localStorage.getItem('theme') || 'light';
