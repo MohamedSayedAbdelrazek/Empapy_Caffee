@@ -119,7 +119,25 @@
                         <div class="product-price-lg mb-4 p-4 glass-card">
                             <div class="d-flex align-items-center justify-content-between">
                                 <div>
-                                    @if ($product->is_on_sale)
+                                    @if ($product->has_options)
+                                        {{-- Product with options: show price range --}}
+                                        @php
+                                            $minPrice = $product->min_price;
+                                            $maxPrice = $product->max_price;
+                                        @endphp
+                                        @if ($minPrice != $maxPrice)
+                                            <span class="price-current price-range"
+                                                style="font-size: 2.2rem; font-weight: 800; color: var(--espresso);">
+                                                {{ number_format($minPrice) }} ج.م – {{ number_format($maxPrice) }} ج.م
+                                            </span>
+                                        @else
+                                            <span class="price-current"
+                                                style="font-size: 2.5rem; font-weight: 800; color: var(--espresso);">
+                                                {{ number_format($minPrice) }} ج.م
+                                            </span>
+                                        @endif
+                                    @elseif ($product->is_on_sale)
+                                        {{-- Product on sale --}}
                                         <span class="text-decoration-line-through text-muted d-block"
                                             style="font-size: 1.3rem;">
                                             {{ number_format($product->price) }} ج.م
@@ -129,13 +147,14 @@
                                             {{ number_format($product->sale_price) }} ج.م
                                         </span>
                                     @else
+                                        {{-- Regular product --}}
                                         <span class="price-current"
                                             style="font-size: 2.5rem; font-weight: 800; color: var(--espresso);">
                                             {{ number_format($product->price) }} ج.م
                                         </span>
                                     @endif
                                 </div>
-                                @if ($product->is_on_sale)
+                                @if ($product->is_on_sale && !$product->has_weight_options)
                                     <div class="save-badge">
                                         <span class="badge bg-danger px-3 py-2" style="font-size: 1rem;">
                                             وفّر {{ number_format($product->price - $product->sale_price) }} ج.م
@@ -147,16 +166,7 @@
 
                         <!-- Product Meta Info Cards -->
                         <div class="row g-3 mb-4">
-                            @if ($product->origin_ar)
-                                <div class="col-6">
-                                    <div class="glass-card p-3 text-center h-100 meta-card">
-                                        <i class="bi bi-geo-alt text-gold fs-4"></i>
-                                        <p class="mb-0 mt-2 small text-muted">المصدر</p>
-                                        <strong>{{ $product->origin_ar }}</strong>
-                                    </div>
-                                </div>
-                            @endif
-                            @if ($product->roast_level)
+                            @if ($product->roast_level && !$product->has_roast_options)
                                 <div class="col-6">
                                     <div class="glass-card p-3 text-center h-100 meta-card">
                                         <i class="bi bi-fire text-gold fs-4"></i>
@@ -179,7 +189,7 @@
                                     </div>
                                 </div>
                             @endif
-                            @if ($product->weight)
+                            @if ($product->weight && !$product->has_weight_options)
                                 <div class="col-6">
                                     <div class="glass-card p-3 text-center h-100 meta-card">
                                         <i class="bi bi-box-seam text-gold fs-4"></i>
@@ -188,31 +198,117 @@
                                     </div>
                                 </div>
                             @endif
-                            <div class="col-6">
-                                <div class="glass-card p-3 text-center h-100 meta-card">
-                                    <i class="bi bi-archive text-gold fs-4"></i>
-                                    <p class="mb-0 mt-2 small text-muted">المخزون</p>
-                                    <strong>
-                                        @if ($product->stock > 10)
-                                            <span class="text-success">
-                                                <i class="bi bi-check-circle-fill me-1"></i>
-                                                متوفر
-                                            </span>
-                                        @elseif($product->stock > 0)
-                                            <span class="text-warning">
-                                                <i class="bi bi-exclamation-circle-fill me-1"></i>
-                                                {{ $product->stock }} قطع فقط
-                                            </span>
-                                        @else
-                                            <span class="text-danger">
-                                                <i class="bi bi-x-circle-fill me-1"></i>
-                                                غير متوفر
-                                            </span>
-                                        @endif
-                                    </strong>
+                        </div>
+
+                        {{-- Product Options Section (Weight, Roast, Additives) --}}
+                        @if ($product->has_options)
+                            <div class="product-options-section mb-4" id="productOptionsSection">
+                                @php
+                                    $weightValues = $product->weight_values;
+                                    $roastValues = $product->roast_values;
+                                    $additiveValues = $product->additive_values;
+                                    $basePrice = $product->current_price;
+                                @endphp
+
+                                {{-- Weight Options --}}
+                                @if ($product->has_weight_options && $weightValues->isNotEmpty())
+                                    <div class="option-group glass-card p-3 mb-3">
+                                        <h6 class="option-title mb-3">
+                                            <i class="bi bi-box-seam text-gold me-2"></i>
+                                            الوزن
+                                        </h6>
+                                        <div class="option-pills d-flex flex-wrap gap-2">
+                                            @foreach ($weightValues as $value)
+                                                <button type="button"
+                                                    class="option-pill {{ $value->is_default ? 'active' : '' }}"
+                                                    data-option-type="weight" data-option-id="{{ $value->id }}"
+                                                    data-price-modifier="{{ $value->price_modifier }}"
+                                                    data-value="{{ $value->value_ar }}">
+                                                    <span class="option-value">{{ $value->value_ar }}</span>
+                                                    {{-- Weight shows full price (not modifier) --}}
+                                                    <span class="option-price-tag">
+                                                        {{ number_format($value->price_modifier) }} ج.م
+                                                    </span>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                        <input type="hidden" name="selected_weight" id="selected_weight"
+                                            value="{{ $weightValues->firstWhere('is_default', true)?->id ?? $weightValues->first()?->id }}">
+                                    </div>
+                                @endif
+
+                                {{-- Roast Options --}}
+                                @if ($product->has_roast_options && $roastValues->isNotEmpty())
+                                    <div class="option-group glass-card p-3 mb-3">
+                                        <h6 class="option-title mb-3">
+                                            <i class="bi bi-fire text-gold me-2"></i>
+                                            درجة التحميص
+                                        </h6>
+                                        <div class="option-pills d-flex flex-wrap gap-2">
+                                            @foreach ($roastValues as $value)
+                                                <button type="button"
+                                                    class="option-pill roast {{ $value->is_default ? 'active' : '' }}"
+                                                    data-option-type="roast" data-option-id="{{ $value->id }}"
+                                                    data-price-modifier="{{ $value->price_modifier }}"
+                                                    data-value="{{ $value->value_ar }}">
+                                                    <span class="option-value">{{ $value->value_ar }}</span>
+                                                    @if ($value->price_modifier != 0)
+                                                        <span
+                                                            class="option-price-mod {{ $value->price_modifier > 0 ? 'positive' : 'negative' }}">
+                                                            {{ $value->price_modifier > 0 ? '+' : '' }}{{ number_format($value->price_modifier) }}
+                                                        </span>
+                                                    @endif
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                        <input type="hidden" name="selected_roast" id="selected_roast"
+                                            value="{{ $roastValues->firstWhere('is_default', true)?->id ?? $roastValues->first()?->id }}">
+                                    </div>
+                                @endif
+
+                                {{-- Additive Options --}}
+                                @if ($product->has_additive_options && $additiveValues->isNotEmpty())
+                                    <div class="option-group glass-card p-3 mb-3">
+                                        <h6 class="option-title mb-3">
+                                            <i class="bi bi-plus-circle text-gold me-2"></i>
+                                            الإضافات
+                                        </h6>
+                                        <div class="option-pills d-flex flex-wrap gap-2">
+                                            @foreach ($additiveValues as $value)
+                                                <button type="button"
+                                                    class="option-pill additive {{ $value->is_default ? 'active' : '' }}"
+                                                    data-option-type="additive" data-option-id="{{ $value->id }}"
+                                                    data-price-modifier="{{ $value->price_modifier }}"
+                                                    data-value="{{ $value->value_ar }}">
+                                                    <span class="option-value">{{ $value->value_ar }}</span>
+                                                    @if ($value->price_modifier != 0)
+                                                        <span
+                                                            class="option-price-mod {{ $value->price_modifier > 0 ? 'positive' : 'negative' }}">
+                                                            {{ $value->price_modifier > 0 ? '+' : '' }}{{ number_format($value->price_modifier) }}
+                                                        </span>
+                                                    @endif
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                        <input type="hidden" name="selected_additive" id="selected_additive"
+                                            value="{{ $additiveValues->firstWhere('is_default', true)?->id ?? $additiveValues->first()?->id }}">
+                                    </div>
+                                @endif
+
+                                {{-- Dynamic Price Display --}}
+                                <div class="calculated-price glass-card p-3 text-center">
+                                    <div class="d-flex align-items-center justify-content-center gap-3">
+                                        <span class="price-label">السعر الإجمالي:</span>
+                                        <span class="dynamic-price" id="dynamicPrice"
+                                            data-base-price="{{ $basePrice }}"
+                                            style="font-size: 1.8rem; font-weight: 800; color: var(--espresso);">
+                                            {{ number_format($product->starting_price) }} ج.م
+                                        </span>
+                                    </div>
+                                    <small class="text-muted" id="priceBreakdown"></small>
                                 </div>
                             </div>
-                        </div>
+                        @endif
 
                         <!-- Description -->
                         <div class="mb-4">
@@ -224,123 +320,108 @@
                         </div>
 
                         <!-- Add to Cart Section -->
-                        @if ($product->stock > 0)
-                            <div class="add-to-cart-section glass-card p-4 mb-4">
-                                <div class="d-flex gap-3 align-items-center flex-wrap">
-                                    <div class="quantity-selector">
-                                        <button type="button" class="qty-btn qty-minus" aria-label="Decrease">
-                                            <i class="bi bi-dash-lg"></i>
-                                        </button>
-                                        <input type="number" id="quantity" value="1" min="1"
-                                            max="{{ min($product->stock, 10) }}" class="qty-input" readonly>
-                                        <button type="button" class="qty-btn qty-plus" aria-label="Increase">
-                                            <i class="bi bi-plus-lg"></i>
-                                        </button>
-                                    </div>
-                                    <button class="btn btn-golden btn-lg flex-grow-1 add-cart-btn ripple"
-                                        id="addToCartBtn" data-product-id="{{ $product->id }}">
-                                        <span class="btn-content">
-                                            <svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 -960 960 960" width="20px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
-                                            أضف للسلة
-                                        </span>
-                                        <span class="btn-loading d-none">
-                                            <span class="loading-dots">
-                                                <span></span><span></span><span></span>
-                                            </span>
-                                        </span>
-                                        <span class="btn-success-state d-none">
-                                            <i class="bi bi-check-lg me-2"></i>
-                                            تمت الإضافة!
-                                        </span>
-                                    </button>
-                                </div>
+                        <div class="quantity-selector">
+                            <button type="button" class="qty-btn qty-minus" aria-label="Decrease">
+                                <i class="bi bi-dash-lg"></i>
+                            </button>
+                            <input type="number" id="quantity" value="1" min="1" class="qty-input"
+                                readonly>
+                            <button type="button" class="qty-btn qty-plus" aria-label="Increase">
+                                <i class="bi bi-plus-lg"></i>
+                            </button>
+                        </div>
+                        <button class="btn btn-golden btn-lg flex-grow-1 add-cart-btn ripple" id="addToCartBtn"
+                            data-product-id="{{ $product->id }}">
+                            <span class="btn-content">
+                                <svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="20px"
+                                    viewBox="0 -960 960 960" width="20px" fill="currentColor">
+                                    <path
+                                        d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
+                                </svg>
+                                أضف للسلة
+                            </span>
+                            <span class="btn-loading d-none">
+                                <span class="loading-dots">
+                                    <span></span><span></span><span></span>
+                                </span>
+                            </span>
+                            <span class="btn-success-state d-none">
+                                <i class="bi bi-check-lg me-2"></i>
+                                تمت الإضافة!
+                            </span>
+                        </button>
+                    </div>
 
-                                <!-- Wishlist Button -->
-                                @auth
-                                    <div class="mt-3">
-                                        <button class="btn btn-outline-secondary w-100 wishlist-btn"
-                                            data-product-id="{{ $product->id }}">
-                                            <i class="bi bi-heart me-2"></i>
-                                            أضف للمفضلة
-                                        </button>
-                                    </div>
-                                @endauth
-                            </div>
-                        @else
-                            <div class="alert alert-warning glass-card border-0 p-4">
-                                <div class="d-flex align-items-center gap-3">
-                                    <div class="alert-icon">
-                                        <i class="bi bi-exclamation-triangle display-6 text-warning"></i>
-                                    </div>
-                                    <div>
-                                        <h5 class="mb-1">المنتج غير متوفر حالياً</h5>
-                                        <p class="mb-0 text-muted">سيتم إعلامك فور توفره مجدداً</p>
-                                    </div>
-                                </div>
-                                <button class="btn btn-outline-warning mt-3 w-100">
-                                    <i class="bi bi-bell me-2"></i>
-                                    تنبيهي عند التوفر
-                                </button>
-                            </div>
-                        @endif
+                    <!-- Wishlist Button -->
+                    @auth
+                        <div class="mt-3">
+                            <button class="btn btn-outline-secondary w-100 wishlist-btn"
+                                data-product-id="{{ $product->id }}">
+                                <i class="bi bi-heart me-2"></i>
+                                أضف للمفضلة
+                            </button>
+                        </div>
+                    @endauth
+                </div>
 
-                        <!-- Product Features -->
-                        <div class="product-features mt-4">
-                            <div class="row g-3">
-                                <div class="col-6">
-                                    <div class="feature-item">
-                                        <i class="bi bi-truck text-gold"></i>
-                                        <span>توصيل سريع</span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="feature-item">
-                                        <i class="bi bi-shield-check text-gold"></i>
-                                        <span>جودة مضمونة</span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="feature-item">
-                                        <i class="bi bi-arrow-repeat text-gold"></i>
-                                        <span>استبدال سهل</span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="feature-item">
-                                        <i class="bi bi-headset text-gold"></i>
-                                        <span>دعم متواصل</span>
-                                    </div>
-                                </div>
+
+                <!-- Product Features -->
+                <div class="product-features mt-4">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="feature-item">
+                                <i class="bi bi-truck text-gold"></i>
+                                <span>توصيل سريع</span>
                             </div>
                         </div>
-
-                        <!-- Share Section -->
-                        <div class="share-section mt-4 pt-4 border-top">
-                            <h6 class="mb-3">
-                                <i class="bi bi-share text-gold me-2"></i>
-                                مشاركة المنتج
-                            </h6>
-                            <div class="d-flex gap-2">
-                                <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
-                                    target="_blank" class="share-btn facebook">
-                                    <i class="bi bi-facebook"></i>
-                                </a>
-                                <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($product->name_ar) }}"
-                                    target="_blank" class="share-btn twitter">
-                                    <i class="bi bi-twitter-x"></i>
-                                </a>
-                                <a href="https://wa.me/?text={{ urlencode($product->name_ar . ' - ' . request()->url()) }}"
-                                    target="_blank" class="share-btn whatsapp">
-                                    <i class="bi bi-whatsapp"></i>
-                                </a>
-                                <button class="share-btn copy-link" onclick="copyProductLink()">
-                                    <i class="bi bi-link-45deg"></i>
-                                </button>
+                        <div class="col-6">
+                            <div class="feature-item">
+                                <i class="bi bi-shield-check text-gold"></i>
+                                <span>جودة مضمونة</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="feature-item">
+                                <i class="bi bi-arrow-repeat text-gold"></i>
+                                <span>استبدال سهل</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="feature-item">
+                                <i class="bi bi-headset text-gold"></i>
+                                <span>دعم متواصل</span>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Share Section -->
+                <div class="share-section mt-4 pt-4 border-top">
+                    <h6 class="mb-3">
+                        <i class="bi bi-share text-gold me-2"></i>
+                        مشاركة المنتج
+                    </h6>
+                    <div class="d-flex gap-2">
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}"
+                            target="_blank" class="share-btn facebook">
+                            <i class="bi bi-facebook"></i>
+                        </a>
+                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($product->name_ar) }}"
+                            target="_blank" class="share-btn twitter">
+                            <i class="bi bi-twitter-x"></i>
+                        </a>
+                        <a href="https://wa.me/?text={{ urlencode($product->name_ar . ' - ' . request()->url()) }}"
+                            target="_blank" class="share-btn whatsapp">
+                            <i class="bi bi-whatsapp"></i>
+                        </a>
+                        <button class="share-btn copy-link" onclick="copyProductLink()">
+                            <i class="bi bi-link-45deg"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
+        </div>
+        </div>
         </div>
     </section>
 
@@ -557,6 +638,157 @@
 
         .meta-card:hover i {
             transform: scale(1.2);
+        }
+
+        /* Product Options Styles */
+        .product-options-section {
+            margin-top: 1.5rem;
+        }
+
+        .option-group {
+            border: 1px solid rgba(201, 162, 39, 0.2);
+        }
+
+        .option-title {
+            font-weight: 700;
+            color: var(--espresso);
+            display: flex;
+            align-items: center;
+        }
+
+        .option-pills {
+            margin-bottom: 0;
+        }
+
+        .option-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: var(--white);
+            border: 2px solid rgba(201, 162, 39, 0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: var(--espresso);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-pill::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 0;
+        }
+
+        .option-pill:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.3);
+        }
+
+        .option-pill.active {
+            border-color: var(--gold);
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--white);
+            box-shadow: 0 4px 20px rgba(201, 162, 39, 0.4);
+        }
+
+        .option-pill.active .option-value,
+        .option-pill.active .option-price-mod {
+            position: relative;
+            z-index: 1;
+        }
+
+        .option-value {
+            position: relative;
+            z-index: 1;
+        }
+
+        .option-price-mod {
+            position: relative;
+            z-index: 1;
+            font-size: 0.85rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+        }
+
+        .option-price-mod.positive {
+            background: rgba(34, 197, 94, 0.15);
+            color: #16a34a;
+        }
+
+        .option-price-mod.negative {
+            background: rgba(239, 68, 68, 0.15);
+            color: #dc2626;
+        }
+
+        .option-pill.active .option-price-mod.positive {
+            background: rgba(255, 255, 255, 0.25);
+            color: var(--white);
+        }
+
+        .option-pill.active .option-price-mod.negative {
+            background: rgba(255, 255, 255, 0.25);
+            color: var(--white);
+        }
+
+        /* Weight price tag (shows full price, not modifier) */
+        .option-price-tag {
+            font-size: 0.85rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-weight: 700;
+            background: rgba(201, 162, 39, 0.15);
+            color: var(--gold-dark);
+        }
+
+        .option-pill.active .option-price-tag {
+            background: rgba(255, 255, 255, 0.25);
+            color: var(--white);
+        }
+
+        /* Roast level specific colors */
+        .option-pill.roast.active {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        /* Additive specific colors */
+        .option-pill.additive.active {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .calculated-price {
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(201, 162, 39, 0.05));
+            border: 2px solid var(--gold);
+            margin-top: 1rem;
+        }
+
+        .price-label {
+            font-size: 1rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .dynamic-price {
+            transition: all 0.3s ease;
+        }
+
+        .dynamic-price.updating {
+            transform: scale(1.1);
+            color: var(--gold) !important;
+        }
+
+        #priceBreakdown {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.85rem;
         }
 
         /* Product Features */
@@ -776,6 +1008,14 @@
                 const productId = this.dataset.productId;
                 const quantity = parseInt(quantityInput.value) || 1;
 
+                // Get options from dataset (populated by separate listener)
+                let options = {};
+                try {
+                    options = JSON.parse(this.dataset.selectedOptions || '{}');
+                } catch (e) {
+                    console.error('Error parsing options', e);
+                }
+
                 // Show loading state
                 this.classList.add('loading');
                 this.disabled = true;
@@ -789,7 +1029,8 @@
                         },
                         body: JSON.stringify({
                             product_id: productId,
-                            quantity: quantity
+                            quantity: quantity,
+                            options: options
                         })
                     })
                     .then(response => response.json())
@@ -1028,6 +1269,120 @@
                         window.Toast.success('تم النسخ!', 'تم نسخ رابط المنتج بنجاح');
                     }
                 });
+            }
+
+            // ====== Product Options Dynamic Pricing ======
+            const optionsSection = document.getElementById('productOptionsSection');
+
+            if (optionsSection) {
+                const optionPills = document.querySelectorAll('.option-pill');
+                const dynamicPriceEl = document.getElementById('dynamicPrice');
+                const priceBreakdownEl = document.getElementById('priceBreakdown');
+                const basePrice = parseFloat(dynamicPriceEl?.dataset.basePrice || 0);
+
+                // Handle option selection
+                optionPills.forEach(pill => {
+                    pill.addEventListener('click', function() {
+                        const type = this.dataset.optionType;
+                        const optionId = this.dataset.optionId;
+
+                        // Remove active from same type pills
+                        document.querySelectorAll(`.option-pill[data-option-type="${type}"]`)
+                            .forEach(p => {
+                                p.classList.remove('active');
+                            });
+
+                        // Add active to clicked pill
+                        this.classList.add('active');
+
+                        // Update hidden input
+                        const hiddenInput = document.getElementById(`selected_${type}`);
+                        if (hiddenInput) {
+                            hiddenInput.value = optionId;
+                        }
+
+                        // Recalculate price
+                        updateDynamicPrice();
+                    });
+                });
+
+                // Calculate and update dynamic price
+                // NEW LOGIC:
+                // - Weight option: its price IS the base price (not added to product base)
+                // - Roast/Additive: modifiers added to weight price
+                function updateDynamicPrice() {
+                    let weightPrice = basePrice; // Default to product base if no weight option
+                    let additionalModifiers = 0;
+                    const breakdown = [];
+
+                    // Get all active options
+                    document.querySelectorAll('.option-pill.active').forEach(pill => {
+                        const modifier = parseFloat(pill.dataset.priceModifier || 0);
+                        const value = pill.dataset.value;
+                        const type = pill.dataset.optionType;
+
+                        if (type === 'weight') {
+                            // Weight: the price_modifier IS the full price
+                            weightPrice = modifier;
+                            breakdown.push(`${value}: ${formatNumber(modifier)} ج.م`);
+                        } else {
+                            // Roast/Additive: these are modifiers
+                            additionalModifiers += modifier;
+                            if (modifier !== 0) {
+                                const sign = modifier > 0 ? '+' : '';
+                                breakdown.push(`${value}: ${sign}${formatNumber(modifier)}`);
+                            }
+                        }
+                    });
+
+                    const finalPrice = weightPrice + additionalModifiers;
+
+                    // Animate price change
+                    if (dynamicPriceEl) {
+                        dynamicPriceEl.classList.add('updating');
+                        dynamicPriceEl.textContent = formatNumber(finalPrice) + ' ج.م';
+
+                        setTimeout(() => {
+                            dynamicPriceEl.classList.remove('updating');
+                        }, 300);
+                    }
+
+                    // Show breakdown only if there are modifiers
+                    if (priceBreakdownEl && additionalModifiers !== 0) {
+                        priceBreakdownEl.textContent = `(${breakdown.join(' | ')})`;
+                    } else if (priceBreakdownEl) {
+                        priceBreakdownEl.textContent = '';
+                    }
+                }
+
+                // Format number with Arabic-style thousands separator
+                function formatNumber(num) {
+                    return new Intl.NumberFormat('ar-EG').format(Math.round(num));
+                }
+
+                // Initial price calculation
+                updateDynamicPrice();
+
+                // Update add to cart to include options
+                const addToCartBtn = document.getElementById('addToCartBtn');
+                if (addToCartBtn) {
+                    const originalClickHandler = addToCartBtn.onclick;
+
+                    addToCartBtn.addEventListener('click', function(e) {
+                        // Collect selected options before cart action
+                        const selectedOptions = {};
+
+                        ['weight', 'roast', 'additive'].forEach(type => {
+                            const input = document.getElementById(`selected_${type}`);
+                            if (input && input.value) {
+                                selectedOptions[type] = input.value;
+                            }
+                        });
+
+                        // Store in data attribute for cart handler
+                        this.dataset.selectedOptions = JSON.stringify(selectedOptions);
+                    });
+                }
             }
         });
     </script>

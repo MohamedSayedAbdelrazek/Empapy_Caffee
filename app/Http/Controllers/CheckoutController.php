@@ -25,15 +25,20 @@ class CheckoutController extends Controller
         $cartItems = [];
         $subtotal = 0;
 
-        foreach ($cart as $id => $item) {
-            $product = Product::find($id);
+        foreach ($cart as $key => $item) {
+            $product = Product::find($item['product_id']);
             if ($product) {
+                $options = $item['options'] ?? [];
+                $optionValueIds = array_values($options);
+                $unitPrice = $product->calculatePriceWithOptions($optionValueIds);
+
                 $cartItems[] = [
                     'product' => $product,
                     'quantity' => $item['quantity'],
-                    'subtotal' => $product->current_price * $item['quantity']
+                    'subtotal' => $unitPrice * $item['quantity'],
+                    'options' => $options
                 ];
-                $subtotal += $product->current_price * $item['quantity'];
+                $subtotal += $unitPrice * $item['quantity'];
             }
         }
 
@@ -73,23 +78,29 @@ class CheckoutController extends Controller
             $subtotal = 0;
             $orderItems = [];
 
-            foreach ($cart as $id => $item) {
-                $product = Product::find($id);
+            foreach ($cart as $key => $item) {
+                $product = Product::find($item['product_id']);
                 if ($product) {
-                    $itemTotal = $product->current_price * $item['quantity'];
+                    $options = $item['options'] ?? [];
+                    // Calculate price with options
+                    $optionValueIds = array_values($options);
+                    $unitPrice = $product->calculatePriceWithOptions($optionValueIds);
+
+                    $itemTotal = $unitPrice * $item['quantity'];
                     $subtotal += $itemTotal;
 
                     $orderItems[] = [
                         'product_id' => $product->id,
                         'product_name' => $product->name,
                         'product_name_ar' => $product->name_ar,
-                        'price' => $product->current_price,
+                        'price' => $unitPrice,
                         'quantity' => $item['quantity'],
-                        'total' => $itemTotal
+                        'total' => $itemTotal,
+                        'options' => $options // temporarily hold options to save later
                     ];
 
-                    // Reduce stock
-                    $product->decrement('stock', $item['quantity']);
+                    // Reduce stock (if we were tracking it)
+                    // $product->decrement('stock', $item['quantity']);
                 }
             }
 
@@ -134,7 +145,30 @@ class CheckoutController extends Controller
 
             // Create order items
             foreach ($orderItems as $item) {
-                $order->items()->create($item);
+                $optionsToSave = $item['options'] ?? [];
+                // Remove options from item array before creating OrderItem
+                unset($item['options']);
+
+                $orderItem = $order->items()->create($item);
+
+                // Save selected options
+                if (!empty($optionsToSave)) {
+                    foreach ($optionsToSave as $type => $valueId) {
+                        $optionValue = \App\Models\ProductOptionValue::with('option')->find($valueId);
+                        if ($optionValue) {
+                            \App\Models\OrderItemOption::create([
+                                'order_item_id' => $orderItem->id,
+                                'product_option_value_id' => $optionValue->id,
+                                'option_type' => $optionValue->option->type,
+                                'option_name' => $optionValue->option->name ?? $optionValue->option->name_ar, // Fallback
+                                'option_name_ar' => $optionValue->option->name_ar ?? $optionValue->option->name,
+                                'value_name' => $optionValue->value,
+                                'value_name_ar' => $optionValue->value_ar,
+                                'price_modifier' => $optionValue->price_modifier
+                            ]);
+                        }
+                    }
+                }
             }
 
             // Clear cart

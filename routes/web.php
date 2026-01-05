@@ -40,6 +40,10 @@ Route::prefix('cart')->name('cart.')->middleware(['throttle:60,1'])->group(funct
     Route::get('/data', [CartController::class, 'getCart'])->name('data');
 });
 
+// API Routes for Product Details (used by Quick Shop Modal)
+Route::get('/api/products/{id}', [App\Http\Controllers\Api\ProductController::class, 'show'])->name('api.products.show');
+
+
 // Checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');

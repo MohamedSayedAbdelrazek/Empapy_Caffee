@@ -129,6 +129,9 @@
     <!-- Cart Drawer -->
     @include('components.cart-drawer')
 
+    <!-- Quick Shop Modal -->
+    @include('components.quick-shop-modal')
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

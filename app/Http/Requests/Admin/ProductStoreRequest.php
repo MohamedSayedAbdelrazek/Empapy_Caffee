@@ -27,16 +27,28 @@ class ProductStoreRequest extends FormRequest
             'description_ar' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0|lt:price',
-            'stock' => 'required|integer|min:0',
+            // 'stock' => 'required|integer|min:0', // Removed as per request (always available)
             'weight' => 'nullable|string|max:50',
             'roast_level' => 'nullable|in:light,medium,dark',
-            'origin' => 'nullable|string|max:100',
-            'origin_ar' => 'nullable|string|max:100',
+            'weight' => 'nullable|string|max:50',
+            'roast_level' => 'nullable|in:light,medium,dark',
+            // 'origin' => 'nullable|string|max:100', // Removed
+            // 'origin_ar' => 'nullable|string|max:100', // Removed
             'is_featured' => 'nullable',
             'is_active' => 'nullable',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ];
+    }
+
+    /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'stock' => 9999,
+        ]);
     }
 
     /**

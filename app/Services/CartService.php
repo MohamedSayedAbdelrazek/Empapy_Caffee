@@ -30,28 +30,68 @@ class CartService
             ];
         }
 
+        // Collect all product IDs from cart items
+        $productIds = array_column($cart, 'product_id');
+
         // Single query to get all products
-        $products = Product::whereIn('id', array_keys($cart))
+        $products = Product::whereIn('id', $productIds)
             ->get()
             ->keyBy('id');
 
         $items = [];
         $total = 0;
 
-        foreach ($cart as $id => $item) {
-            if ($products->has($id)) {
-                $product = $products->get($id);
-                $subtotal = $product->current_price * $item['quantity'];
+        foreach ($cart as $key => $item) {
+            $productId = $item['product_id'];
+
+            if ($products->has($productId)) {
+                $product = $products->get($productId);
+
+                // Calculate unit price based on options
+                $options = $item['options'] ?? [];
+                // Map option types to their value IDs handling the structure {type: value_id}
+                $optionValueIds = array_values($options);
+
+                // Calculate dynamic price
+                $unitPrice = $product->calculatePriceWithOptions($optionValueIds);
+                $subtotal = $unitPrice * $item['quantity'];
+
+                // Load option details for display
+                // We need to fetch the value names, effectively
+                // But for now, let's just pass the option IDs and let the view handle/or fetch them here
+                // A better approach is to fetch OptionValues here
+                // For simplicity in this step, we will rely on loading them if needed, or better:
+                // Let's load the option values to pass to the view
+                $optionDetails = [];
+                if (!empty($optionValueIds)) {
+                    // This N+1 is small (cart usually has few items), but we could optimize.
+                    // For now, let's use the helper relation on product or model
+                    foreach ($options as $type => $valueId) {
+                        $val = \App\Models\ProductOptionValue::find($valueId);
+                        if ($val) {
+                            $optionDetails[] = [
+                                'type' => $type,
+                                'label' => $val->option->name_ar,
+                                'value' => $val->value_ar,
+                                'price' => $val->price_modifier
+                            ];
+                        }
+                    }
+                }
 
                 $items[] = [
+                    'key' => $key, // Unique cart item key
                     'id' => $product->id,
+                    'product_id' => $product->id,
                     'product' => $product,
                     'name' => $product->name,
                     'name_ar' => $product->name_ar,
                     'image' => $product->image,
-                    'price' => $product->current_price,
+                    'price' => $unitPrice,
                     'quantity' => $item['quantity'],
-                    'subtotal' => $subtotal
+                    'subtotal' => $subtotal,
+                    'options' => $optionDetails,
+                    'raw_options' => $options
                 ];
 
                 $total += $subtotal;
@@ -68,7 +108,7 @@ class CartService
     /**
      * Add product to cart
      */
-    public function addToCart(Product $product, int $quantity = 1): array
+    public function addToCart(Product $product, int $quantity = 1, array $options = []): array
     {
         // Check if product is active
         if (!$product->is_active) {
@@ -79,21 +119,40 @@ class CartService
         }
 
         $cart = $this->getCart();
-        $currentQty = $cart[$product->id]['quantity'] ?? 0;
-        $totalRequested = $currentQty + $quantity;
 
-        // Check stock availability
+        // Generate unique key based on product ID and sorted options to distinguish variants
+        // Sort options by key to ensure consistency
+        ksort($options);
+        $key = md5($product->id . serialize($options));
+
+        // Check stock availability (Global check for product, regardless of variant for now)
+        // Aggregating quantity of this product in cart
+        // Since stock is infinite (9999), this is less critical but good specific logic
+        /*
+        $currentQtyInCart = 0;
+        foreach ($cart as $cartItem) {
+            if ($cartItem['product_id'] == $product->id) {
+                $currentQtyInCart += $cartItem['quantity'];
+            }
+        }
+        $totalRequested = $currentQtyInCart + $quantity;
+        
         if ($product->stock < $totalRequested) {
-            return [
+             return [
                 'success' => false,
                 'message' => 'الكمية المطلوبة غير متوفرة في المخزون. المتوفر: ' . $product->stock
             ];
         }
+        */
 
-        if (isset($cart[$product->id])) {
-            $cart[$product->id]['quantity'] += $quantity;
+        if (isset($cart[$key])) {
+            $cart[$key]['quantity'] += $quantity;
         } else {
-            $cart[$product->id] = ['quantity' => $quantity];
+            $cart[$key] = [
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+                'options' => $options
+            ];
         }
 
         session()->put('cart', $cart);
@@ -109,25 +168,21 @@ class CartService
     /**
      * Update cart item quantity
      */
-    public function updateQuantity(int $productId, int $quantity): array
+    public function updateQuantity(string $key, int $quantity): array
     {
         $cart = $this->getCart();
 
-        if ($quantity === 0) {
-            unset($cart[$productId]);
-        } else {
-            // Check stock before updating
-            $product = Product::find($productId);
-            if ($product && $product->stock < $quantity) {
-                return [
-                    'success' => false,
-                    'message' => 'الكمية المطلوبة غير متوفرة. المتوفر: ' . $product->stock
-                ];
-            }
+        if (!isset($cart[$key])) {
+            return ['success' => false, 'message' => 'المنتج غير موجود في السلة'];
+        }
 
-            if (isset($cart[$productId])) {
-                $cart[$productId]['quantity'] = $quantity;
-            }
+        if ($quantity <= 0) {
+            unset($cart[$key]);
+        } else {
+            // Stock check skipped as per "Always Available" requirement
+            // But if we needed it, we would check Product::find($cart[$key]['product_id'])->stock
+
+            $cart[$key]['quantity'] = $quantity;
         }
 
         session()->put('cart', $cart);
@@ -142,10 +197,10 @@ class CartService
     /**
      * Remove item from cart
      */
-    public function removeFromCart(int $productId): array
+    public function removeFromCart(string $key): array
     {
         $cart = $this->getCart();
-        unset($cart[$productId]);
+        unset($cart[$key]);
         session()->put('cart', $cart);
 
         return [
@@ -185,25 +240,8 @@ class CartService
      */
     public function getCartTotal(): float
     {
-        $cart = $this->getCart();
-
-        if (empty($cart)) {
-            return 0.0;
-        }
-
-        $products = Product::whereIn('id', array_keys($cart))
-            ->get()
-            ->keyBy('id');
-
-        $total = 0.0;
-
-        foreach ($cart as $id => $item) {
-            if ($products->has($id)) {
-                $total += $products->get($id)->current_price * $item['quantity'];
-            }
-        }
-
-        return $total;
+        $data = $this->getCartWithProducts();
+        return $data['total'];
     }
 
     /**
@@ -211,40 +249,35 @@ class CartService
      */
     public function validateCart(): array
     {
+        // Simple validation since stock is removed
         $cart = $this->getCart();
-        $errors = [];
         $validItems = [];
+        $errors = [];
 
         if (empty($cart)) {
             return ['valid' => true, 'errors' => [], 'items' => []];
         }
 
-        $products = Product::whereIn('id', array_keys($cart))
-            ->get()
-            ->keyBy('id');
+        $productIds = array_column($cart, 'product_id');
+        $products = Product::whereIn('id', $productIds)->get()->keyBy('id');
 
-        foreach ($cart as $id => $item) {
-            if (!$products->has($id)) {
-                $errors[] = "منتج غير موجود في السلة";
+        foreach ($cart as $key => $item) {
+            $productId = $item['product_id'];
+
+            if (!$products->has($productId)) {
+                $errors[] = "منتج غير موجود";
                 continue;
             }
 
-            $product = $products->get($id);
-
+            $product = $products->get($productId);
             if (!$product->is_active) {
                 $errors[] = "المنتج '{$product->name_ar}' غير متوفر حالياً";
                 continue;
             }
 
-            if ($product->stock < $item['quantity']) {
-                $errors[] = "الكمية المطلوبة من '{$product->name_ar}' غير متوفرة. المتوفر: {$product->stock}";
-                continue;
-            }
-
-            $validItems[$id] = $item;
+            $validItems[$key] = $item;
         }
 
-        // Update cart to only include valid items
         if (count($validItems) !== count($cart)) {
             session()->put('cart', $validItems);
         }

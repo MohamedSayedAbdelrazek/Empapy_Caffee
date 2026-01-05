@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OrderItem extends Model
 {
@@ -39,5 +40,31 @@ class OrderItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    /**
+     * Get selected options for this order item
+     */
+    public function selectedOptions(): HasMany
+    {
+        return $this->hasMany(OrderItemOption::class);
+    }
+
+    /**
+     * Get total price modifier from all selected options
+     */
+    public function getOptionsPriceModifierAttribute(): float
+    {
+        return $this->selectedOptions()->sum('price_modifier');
+    }
+
+    /**
+     * Get formatted options text for display
+     */
+    public function getOptionsDisplayTextAttribute(): string
+    {
+        return $this->selectedOptions
+            ->map(fn($opt) => $opt->display_text)
+            ->implode(' | ');
     }
 }

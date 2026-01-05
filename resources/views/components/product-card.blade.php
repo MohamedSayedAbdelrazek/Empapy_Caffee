@@ -5,9 +5,10 @@
     $inWishlist = \App\Models\Wishlist::hasProduct($product->id);
 @endphp
 
-<div class="product-card glass-card tilt-card" data-aos="fade-up" data-product-id="{{ $product->id }}">
+<div class="product-card glass-card tilt-card" data-aos="fade-up" data-product-id="{{ $product->id }}"
+    onclick="window.location.href='{{ route('shop.show', $product) }}'" style="cursor: pointer;">
     <!-- Image -->
-    <div class="product-image">
+    <div class="product-image" onclick="event.stopPropagation();">
         <!-- Badges -->
         @if ($product->is_on_sale)
             <span class="product-badge sale animate-pulse">
@@ -22,19 +23,6 @@
             </span>
         @endif
 
-        <!-- Stock Status -->
-        @if ($product->stock <= 0)
-            <span class="product-badge out-of-stock">
-                <i class="bi bi-x-circle me-1"></i>
-                نفذ المخزون
-            </span>
-        @elseif($product->stock <= 5)
-            <span class="product-badge low-stock animate-pulse">
-                <i class="bi bi-exclamation-circle me-1"></i>
-                متبقي {{ $product->stock }} فقط
-            </span>
-        @endif
-
         <!-- Product Image with Skeleton Loading -->
         <div class="product-image-wrapper">
             <div class="skeleton-placeholder skeleton" style="position: absolute; inset: 0; z-index: 1;"></div>
@@ -45,38 +33,18 @@
         <!-- Quick Actions -->
         <div class="product-actions">
             <button class="btn btn-action wishlist-btn ripple {{ $inWishlist ? 'active' : '' }}"
-                onclick="toggleWishlist({{ $product->id }}, this)"
+                onclick="event.stopPropagation(); toggleWishlist({{ $product->id }}, this)"
                 title="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}"
                 aria-label="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}">
                 <i class="bi {{ $inWishlist ? 'bi-heart-fill' : 'bi-heart' }}"></i>
             </button>
-            @if ($product->stock > 0)
-                <button class="btn btn-action add-to-cart-btn ripple" data-product-id="{{ $product->id }}"
-                    title="أضف للسلة" aria-label="أضف للسلة">
-                    <svg class="cart-icon-add" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
-                </button>
-            @endif
             <a href="{{ route('shop.show', $product) }}" class="btn btn-action ripple" title="عرض التفاصيل"
-                aria-label="عرض التفاصيل">
+                aria-label="عرض التفاصيل" onclick="event.stopPropagation();">
                 <i class="bi bi-eye"></i>
             </a>
         </div>
 
-        <!-- Quick Add Overlay -->
-        <div class="quick-add-overlay">
-            @if ($product->stock > 0)
-                <button class="quick-add-btn ripple"
-                    onclick="event.stopPropagation(); addToCartQuick({{ $product->id }}, this)">
-                    <svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
-                    إضافة سريعة
-                </button>
-            @else
-                <span class="out-of-stock-msg">
-                    <i class="bi bi-x-circle me-2"></i>
-                    غير متوفر
-                </span>
-            @endif
-        </div>
+
     </div>
 
     <!-- Content -->
@@ -95,12 +63,6 @@
         </h3>
 
         <div class="product-meta">
-            @if ($product->origin_ar)
-                <span class="meta-item">
-                    <i class="bi bi-geo-alt"></i>
-                    {{ $product->origin_ar }}
-                </span>
-            @endif
             @if ($product->roast_level)
                 <span class="meta-item">
                     <i class="bi bi-fire"></i>
@@ -129,7 +91,19 @@
 
         <div class="product-footer">
             <div class="product-price {{ $product->is_on_sale ? 'has-discount' : '' }}">
-                @if ($product->is_on_sale)
+                @if ($product->has_options)
+                    {{-- Products with options show price range --}}
+                    @php
+                        $minPrice = $product->min_price;
+                        $maxPrice = $product->max_price;
+                    @endphp
+                    @if ($minPrice != $maxPrice)
+                        <span class="price-range">{{ number_format($minPrice) }} – {{ number_format($maxPrice) }}
+                            ج.م</span>
+                    @else
+                        <span class="price-current">{{ number_format($minPrice) }} ج.م</span>
+                    @endif
+                @elseif ($product->is_on_sale)
                     <span class="price-old">{{ number_format($product->price) }}</span>
                     <span class="price-current">{{ number_format($product->sale_price) }} ج.م</span>
                 @else
@@ -137,19 +111,18 @@
                 @endif
             </div>
 
-            <!-- Add to Cart Button - Always Visible -->
-            @if ($product->stock > 0)
-                <button class="btn-add-cart-main add-to-cart-btn ripple" data-product-id="{{ $product->id }}"
-                    aria-label="أضف للسلة" title="أضف للسلة">
-                    <svg class="cart-icon-btn" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>
-                    <span class="btn-text">أضف للسلة</span>
-                </button>
-            @else
-                <span class="out-of-stock-label">
-                    <i class="bi bi-x-circle"></i>
-                    نفذ
-                </span>
-            @endif
+            <!-- Quick Shop Button -->
+            <button class="btn-add-cart-main quick-shop-btn ripple" data-product-id="{{ $product->id }}"
+                data-has-options="{{ $product->has_options ? 'true' : 'false' }}"
+                onclick="event.stopPropagation(); openQuickShopModal({{ $product->id }}, {{ $product->has_options ? 'true' : 'false' }});"
+                aria-label="تسوق سريعاً" title="تسوق سريعاً">
+                <svg class="cart-icon-btn" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960"
+                    width="18px" fill="currentColor">
+                    <path
+                        d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-80 92L160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11Zm200-528 77-44-237-137-78 45 238 136Zm-160 93 78-45-237-137-78 45 237 137Z" />
+                </svg>
+                <span class="btn-text">تسوق سريعاً</span>
+            </button>
         </div>
     </div>
 </div>
@@ -265,6 +238,13 @@
         background: rgba(201, 162, 39, 0.1);
         padding: 4px 10px;
         border-radius: var(--radius-full);
+    }
+
+    /* Price Range for products with weight options */
+    .price-range {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--gold);
     }
 
     /* Product Footer */
@@ -486,12 +466,14 @@
 
                     // Reset button
                     setTimeout(() => {
-                        button.innerHTML = '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
+                        button.innerHTML =
+                            '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
                         button.style.background = '';
                         button.style.color = '';
                     }, 2000);
                 } else {
-                    button.innerHTML = '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
+                    button.innerHTML =
+                        '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
                     if (window.Toast) {
                         window.Toast.error('خطأ', data.message || 'حدث خطأ');
                     }
@@ -499,7 +481,8 @@
             })
             .catch(() => {
                 button.classList.remove('loading');
-                button.innerHTML = '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
+                button.innerHTML =
+                    '<svg class="cart-icon-add me-2" xmlns="http://www.w3.org/2000/svg" height="18px" viewBox="0 -960 960 960" width="18px" fill="currentColor"><path d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z"/></svg>إضافة سريعة';
                 if (window.Toast) {
                     window.Toast.error('خطأ', 'حدث خطأ في الاتصال');
                 }

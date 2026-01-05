@@ -54,6 +54,11 @@ class ProductController extends Controller
         $validated['is_featured'] = $request->has('is_featured');
         $validated['is_active'] = $request->has('is_active');
 
+        // Handle option flags
+        $validated['has_weight_options'] = $request->has('has_weight_options');
+        $validated['has_roast_options'] = $request->has('has_roast_options');
+        $validated['has_additive_options'] = $request->has('has_additive_options');
+
         // Handle main image upload
         if ($request->hasFile('image')) {
             $validated['image'] = $this->productService->handleImageUpload($request->file('image'));
@@ -65,7 +70,14 @@ class ProductController extends Controller
             $validated['gallery'] = $galleryPaths;
         }
 
-        $this->productService->createProduct($validated);
+        $product = $this->productService->createProduct($validated);
+
+        // Sync product options
+        $this->productService->syncProductOptions($product, [
+            'weight_values' => $request->input('weight_values', []),
+            'roast_values' => $request->input('roast_values', []),
+            'additive_values' => $request->input('additive_values', []),
+        ]);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'تم إضافة المنتج بنجاح');
@@ -86,7 +98,22 @@ class ProductController extends Controller
     public function edit(Product $product)
     {
         $categories = Category::active()->get();
-        return view('admin.products.edit', compact('product', 'categories'));
+
+        // Load options with values
+        $product->load(['options.values']);
+
+        // Prepare options data for the form
+        $weightValues = $product->weight_values;
+        $roastValues = $product->roast_values;
+        $additiveValues = $product->additive_values;
+
+        return view('admin.products.edit', compact(
+            'product',
+            'categories',
+            'weightValues',
+            'roastValues',
+            'additiveValues'
+        ));
     }
 
     /**
@@ -98,6 +125,11 @@ class ProductController extends Controller
 
         $validated['is_featured'] = $request->has('is_featured');
         $validated['is_active'] = $request->has('is_active');
+
+        // Handle option flags
+        $validated['has_weight_options'] = $request->has('has_weight_options');
+        $validated['has_roast_options'] = $request->has('has_roast_options');
+        $validated['has_additive_options'] = $request->has('has_additive_options');
 
         // Handle main image upload
         if ($request->hasFile('image')) {
@@ -116,6 +148,14 @@ class ProductController extends Controller
         }
 
         $this->productService->updateProduct($product, $validated);
+
+        // Sync product options
+        $product->refresh(); // Refresh to get updated option flags
+        $this->productService->syncProductOptions($product, [
+            'weight_values' => $request->input('weight_values', []),
+            'roast_values' => $request->input('roast_values', []),
+            'additive_values' => $request->input('additive_values', []),
+        ]);
 
         return redirect()->route('admin.products.index')
             ->with('success', 'تم تحديث المنتج بنجاح');

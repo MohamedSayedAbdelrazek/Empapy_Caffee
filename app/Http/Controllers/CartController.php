@@ -32,17 +32,22 @@ class CartController extends Controller
     /**
      * Add product to cart (AJAX)
      */
+    /**
+     * Add product to cart (AJAX)
+     */
     public function add(Request $request)
     {
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'quantity' => 'integer|min:1|max:10'
+            'quantity' => 'integer|min:1|max:10',
+            'options' => 'nullable|array'
         ]);
 
         $product = Product::findOrFail($request->product_id);
         $quantity = $request->get('quantity', 1);
+        $options = $request->get('options', []);
 
-        $result = $this->cartService->addToCart($product, $quantity);
+        $result = $this->cartService->addToCart($product, $quantity, $options);
 
         if (!$result['success']) {
             return response()->json($result, 400);
@@ -57,12 +62,12 @@ class CartController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'product_id' => 'required|exists:products,id',
+            'key' => 'required|string',
             'quantity' => 'required|integer|min:0|max:10'
         ]);
 
         $result = $this->cartService->updateQuantity(
-            $request->product_id,
+            $request->key,
             $request->quantity
         );
 
@@ -79,10 +84,10 @@ class CartController extends Controller
     public function remove(Request $request)
     {
         $request->validate([
-            'product_id' => 'required|exists:products,id'
+            'key' => 'required|string'
         ]);
 
-        $result = $this->cartService->removeFromCart($request->product_id);
+        $result = $this->cartService->removeFromCart($request->key);
 
         return response()->json($result);
     }

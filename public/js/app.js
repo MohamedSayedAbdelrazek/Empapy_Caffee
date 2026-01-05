@@ -103,10 +103,17 @@ function loadCartItems() {
                         <img src="${item.image}" alt="${item.name_ar}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1 small text-white">${item.name_ar}</h6>
+                            ${
+                                item.options && item.options.length > 0
+                                    ? `<div class="mb-1">
+                                        ${item.options.map(opt => `<span class="badge bg-secondary" style="font-size: 0.65rem;">${opt.label}: ${opt.value}</span>`).join(' ')}
+                                    </div>`
+                                    : ''
+                            }
                             <small class="text-muted">الكمية: ${item.quantity}</small>
                             <div class="text-warning fw-bold">${item.subtotal.toLocaleString()} ج.م</div>
                         </div>
-                        <button class="btn btn-sm btn-outline-danger" onclick="removeFromCartDrawer(${item.id})">
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeFromCartDrawer('${item.key}')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
@@ -135,7 +142,7 @@ function loadCartItems() {
 /**
  * Remove item from cart drawer
  */
-function removeFromCartDrawer(productId) {
+function removeFromCartDrawer(key) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
     fetch('/cart/remove', {
@@ -145,13 +152,16 @@ function removeFromCartDrawer(productId) {
             'Accept': 'application/json',
             'X-CSRF-TOKEN': csrfToken
         },
-        body: JSON.stringify({ product_id: productId })
+        body: JSON.stringify({ key: key })
     })
         .then(response => response.json())
         .then(data => {
             if (data.success) {
                 loadCartItems();
                 updateCartBadge();
+                if (window.Toast) {
+                    window.Toast.success('تم الحذف', 'تم حذف المنتج من السلة');
+                }
             }
         });
 }

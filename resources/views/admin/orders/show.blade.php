@@ -40,6 +40,18 @@
                                             <div>
                                                 <strong>{{ $item->product_name_ar }}</strong>
                                                 <br><small class="text-muted">{{ $item->product_name }}</small>
+                                                @if ($item->selectedOptions->count() > 0)
+                                                    <div class="mt-1">
+                                                        @foreach ($item->selectedOptions as $option)
+                                                            <span class="badge bg-light text-dark border me-1">
+                                                                {{ $option->option_name_ar }}: {{ $option->value_name_ar }}
+                                                                @if ($option->price_modifier != 0)
+                                                                    ({{ $option->formatted_price_modifier }})
+                                                                @endif
+                                                            </span>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
                                             </div>
                                         </div>
                                     </td>
