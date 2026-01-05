@@ -13,7 +13,7 @@
         </a>
     </div>
 
-    <form action="{{ route('admin.categories.update', $category) }}" method="POST">
+    <form action="{{ route('admin.categories.update', $category) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -42,13 +42,24 @@
                             <textarea name="description_ar" class="form-control" rows="3">{{ old('description_ar', $category->description_ar) }}</textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">رابط الصورة</label>
-                            <input type="url" name="image" class="form-control"
-                                value="{{ old('image', $category->image) }}">
+                            <label class="form-label">صورة الصنف</label>
                             @if ($category->image)
-                                <img src="{{ $category->image }}" alt="{{ $category->name_ar }}" class="rounded mt-3"
-                                    style="max-width: 200px;">
+                                <div class="mb-3">
+                                    <p class="text-muted small mb-2">الصورة الحالية:</p>
+                                    <img src="{{ $category->image }}" alt="{{ $category->name_ar }}" class="img-thumbnail"
+                                        style="max-height: 150px;">
+                                </div>
                             @endif
+                            <input type="file" name="image" class="form-control @error('image') is-invalid @enderror"
+                                accept="image/*" id="imageInput">
+                            @error('image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">اختر صورة جديدة لاستبدال الحالية (JPG, PNG, GIF - حد أقصى 2MB)</div>
+                            <div id="imagePreview" class="mt-3" style="display: none;">
+                                <p class="text-muted small mb-2">الصورة الجديدة:</p>
+                                <img src="" alt="معاينة الصورة" class="img-thumbnail" style="max-height: 150px;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,3 +83,24 @@
         </div>
     </form>
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const preview = document.getElementById('imagePreview');
+            const previewImg = preview.querySelector('img');
+            const file = e.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    </script>
+@endpush

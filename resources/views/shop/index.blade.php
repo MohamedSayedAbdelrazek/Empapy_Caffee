@@ -138,14 +138,19 @@
 
 @push('styles')
     <style>
+        .list-group-item {
+            color: #000000 !important;
+        }
+
         .list-group-item.active {
             background-color: var(--gold);
             border-color: var(--gold);
-            color: var(--espresso);
+            color: var(--espresso) !important;
         }
 
         .list-group-item:hover:not(.active) {
             background-color: var(--cream);
+            color: var(--gold) !important;
         }
 
         .page-link {
@@ -162,6 +167,46 @@
         .page-item.active .page-link {
             background-color: var(--espresso);
             border-color: var(--espresso);
+        }
+
+        /* Fix oversized pagination arrows */
+        .pagination {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pagination svg {
+            width: 16px !important;
+            height: 16px !important;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .pagination .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 40px;
+            height: 40px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .pagination .page-item {
+            margin: 0;
+        }
+
+        /* Hide the large arrow containers if using Tailwind pagination */
+        nav[role="navigation"]>div:first-child,
+        nav[role="navigation"]>div:last-child {
+            display: none;
+        }
+
+        nav[role="navigation"]>div:nth-child(2) {
+            width: 100%;
         }
     </style>
 @endpush

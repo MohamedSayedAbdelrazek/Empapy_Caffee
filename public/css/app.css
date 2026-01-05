@@ -958,6 +958,10 @@ img {
     margin-top: 3px;
 }
 
+.footer-contact span {
+    color: #ffffff !important;
+}
+
 .footer-bottom {
     padding: 25px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);

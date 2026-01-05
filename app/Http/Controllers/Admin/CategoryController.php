@@ -36,12 +36,20 @@ class CategoryController extends Controller
             'name_ar' => 'required|string|max:255',
             'description' => 'nullable|string',
             'description_ar' => 'nullable|string',
-            'image' => 'nullable|url',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'boolean'
         ]);
 
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_active'] = $request->has('is_active');
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/categories'), $imageName);
+            $validated['image'] = '/uploads/categories/' . $imageName;
+        }
 
         Category::create($validated);
 
@@ -76,11 +84,27 @@ class CategoryController extends Controller
             'name_ar' => 'required|string|max:255',
             'description' => 'nullable|string',
             'description_ar' => 'nullable|string',
-            'image' => 'nullable|url',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'is_active' => 'boolean'
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if it exists and is a local file
+            if ($category->image && str_starts_with($category->image, '/uploads/')) {
+                $oldImagePath = public_path($category->image);
+                if (file_exists($oldImagePath)) {
+                    unlink($oldImagePath);
+                }
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/categories'), $imageName);
+            $validated['image'] = '/uploads/categories/' . $imageName;
+        }
 
         $category->update($validated);
 

@@ -12,7 +12,7 @@
         </a>
     </div>
 
-    <form action="{{ route('admin.categories.store') }}" method="POST">
+    <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">
         @csrf
 
         <div class="row g-4">
@@ -46,9 +46,16 @@
                             <textarea name="description_ar" class="form-control" rows="3">{{ old('description_ar') }}</textarea>
                         </div>
                         <div class="col-12">
-                            <label class="form-label">رابط الصورة</label>
-                            <input type="url" name="image" class="form-control" value="{{ old('image') }}"
-                                placeholder="https://...">
+                            <label class="form-label">صورة الصنف</label>
+                            <input type="file" name="image" class="form-control @error('image') is-invalid @enderror"
+                                accept="image/*" id="imageInput">
+                            @error('image')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                            <div class="form-text">اختر صورة من جهازك (JPG, PNG, GIF - حد أقصى 2MB)</div>
+                            <div id="imagePreview" class="mt-3" style="display: none;">
+                                <img src="" alt="معاينة الصورة" class="img-thumbnail" style="max-height: 200px;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -72,3 +79,24 @@
         </div>
     </form>
 @endsection
+
+@push('scripts')
+    <script>
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const preview = document.getElementById('imagePreview');
+            const previewImg = preview.querySelector('img');
+            const file = e.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            } else {
+                preview.style.display = 'none';
+            }
+        });
+    </script>
+@endpush
