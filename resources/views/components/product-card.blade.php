@@ -5,10 +5,10 @@
     $inWishlist = \App\Models\Wishlist::hasProduct($product->id);
 @endphp
 
-<div class="product-card glass-card tilt-card" data-aos="fade-up" data-product-id="{{ $product->id }}"
+<div class="product-card glass-card tilt-card" data-product-id="{{ $product->id }}"
     onclick="window.location.href='{{ route('shop.show', $product) }}'" style="cursor: pointer;">
     <!-- Image -->
-    <div class="product-image" onclick="event.stopPropagation();">
+    <div class="product-image">
         <!-- Badges -->
         @if ($product->is_on_sale)
             <span class="product-badge sale animate-pulse">

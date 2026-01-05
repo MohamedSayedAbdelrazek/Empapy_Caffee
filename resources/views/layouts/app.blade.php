@@ -62,6 +62,9 @@
     <!-- Loyalty System CSS -->
     <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
 
+    <!-- User Dropdown Menu CSS -->
+    <link rel="stylesheet" href="{{ asset('css/user-dropdown.css') }}">
+
     @stack('styles')
 </head>
 

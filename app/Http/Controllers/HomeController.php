@@ -16,7 +16,7 @@ class HomeController extends Controller
     {
         // Cache featured products for 30 minutes
         $featuredProducts = Cache::remember('home_featured_products', 1800, function () {
-            return Product::with('category')
+            return Product::with(['category', 'options.values'])
                 ->active()
                 ->featured()
                 ->take(8)
@@ -32,7 +32,7 @@ class HomeController extends Controller
 
         // Cache latest products for 15 minutes
         $latestProducts = Cache::remember('home_latest_products', 900, function () {
-            return Product::with('category')
+            return Product::with(['category', 'options.values'])
                 ->active()
                 ->latest()
                 ->take(4)

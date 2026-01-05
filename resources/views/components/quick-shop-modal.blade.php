@@ -231,7 +231,17 @@
         color: white;
         font-size: 1.1rem;
         font-weight: 600;
+        -moz-appearance: textfield;
+        /* Firefox */
     }
+
+    /* Hide spinner arrows in Chrome, Safari, Edge, Opera */
+    .quantity-input::-webkit-outer-spin-button,
+    .quantity-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
 
     .modal-actions {
         display: grid;

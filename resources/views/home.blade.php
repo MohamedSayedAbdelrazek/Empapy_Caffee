@@ -6,7 +6,8 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-bg">
-            <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920&q=80" alt="Coffee Background">
+            <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920&q=80" alt="Coffee Background"
+                loading="lazy" decoding="async">
         </div>
         <div class="hero-overlay"></div>
 
@@ -33,7 +34,7 @@
                                 <svg class="cart-icon me-2" xmlns="http://www.w3.org/2000/svg" height="20px"
                                     viewBox="0 -960 960 960" width="20px" fill="currentColor">
                                     <path
-                                        d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
+                                        d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
                                 </svg>تسوق الآن
                             </a>
                             <a href="#featured" class="btn btn-outline-golden btn-lg">
@@ -49,7 +50,7 @@
                 <div class="col-lg-6 d-none d-lg-block" data-aos="fade-up" data-aos-delay="200">
                     <div class="hero-image text-center" style="position: relative; z-index: 100;">
                         <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=420&h=500&fit=crop"
-                            alt="Premium Coffee"
+                            alt="Premium Coffee" loading="lazy" decoding="async"
                             style="border-radius: 30px; max-height: 450px; width: auto; object-fit: cover;">
                     </div>
                 </div>
@@ -70,7 +71,8 @@
                     <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                         <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="category-card-vertical">
                             <div class="card-image">
-                                <img src="{{ $category->image }}" alt="{{ $category->name_ar }}">
+                                <img src="{{ $category->image }}" alt="{{ $category->name_ar }}" loading="lazy"
+                                    decoding="async">
                                 <div class="card-overlay"></div>
                                 <div class="card-shine"></div>
                             </div>
@@ -96,7 +98,8 @@
     <section class="video-showcase-section" data-aos="fade-up">
         <!-- Video Background -->
         <div class="video-background">
-            <video autoplay muted loop playsinline id="showcaseVideo">
+            <video autoplay muted loop playsinline preload="metadata" loading="lazy" class="d-none d-md-block"
+                id="showcaseVideo">
                 <source src="{{ asset('assets/videos/2675509-hd_1920_1080_24fps.mp4') }}" type="video/mp4">
             </video>
             <!-- Gradient Overlays -->
@@ -104,13 +107,7 @@
             <div class="video-overlay-gradient bottom"></div>
             <div class="video-overlay-dark"></div>
 
-            <!-- Animated Coffee Steam Effect -->
-            <div class="steam-particles">
-                <div class="steam steam-1"></div>
-                <div class="steam steam-2"></div>
-                <div class="steam steam-3"></div>
-                <div class="steam steam-4"></div>
-            </div>
+            <!-- Steam Animation Removed for Performance -->
         </div>
 
         <!-- Decorative Frame -->
@@ -443,8 +440,8 @@
         }
 
         /* =========================================
-               CINEMATIC VIDEO SHOWCASE SECTION STYLES
-               ========================================= */
+                   CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                   ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;

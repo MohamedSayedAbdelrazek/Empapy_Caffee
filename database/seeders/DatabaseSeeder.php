@@ -84,59 +84,9 @@ class DatabaseSeeder extends Seeder
             Category::create($category);
         }
 
-        // Create Products
+        // Create Products with Options/Variants
         $products = [
-            // Espresso Blends
-            [
-                'category_id' => 1,
-                'name' => 'Italian Espresso Blend',
-                'name_ar' => 'خلطة إسبريسو إيطالية',
-                'slug' => 'italian-espresso-blend',
-                'description' => 'Rich and intense Italian-style espresso with notes of dark chocolate and caramel. Perfect for a strong morning cup.',
-                'description_ar' => 'إسبريسو إيطالي غني ومكثف مع نكهات الشوكولاتة الداكنة والكراميل. مثالي لفنجان صباحي قوي.',
-                'price' => 350.00,
-                'sale_price' => 299.00,
-                'image' => 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop',
-                'stock' => 50,
-                'weight' => '500g',
-                'roast_level' => 'dark',
-                'origin' => 'Blend',
-                'origin_ar' => 'مزيج',
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 1,
-                'name' => 'Espresso Double Shot',
-                'name_ar' => 'إسبريسو مزدوج',
-                'slug' => 'espresso-double-shot',
-                'description' => 'Extra strong espresso blend for coffee lovers who need that extra kick.',
-                'description_ar' => 'خلطة إسبريسو قوية جداً لعشاق القهوة الذين يحتاجون إلى دفعة إضافية.',
-                'price' => 380.00,
-                'image' => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=400&fit=crop',
-                'stock' => 40,
-                'weight' => '500g',
-                'roast_level' => 'dark',
-                'origin' => 'Blend',
-                'origin_ar' => 'مزيج',
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 1,
-                'name' => 'French Roast Premium',
-                'name_ar' => 'تحميص فرنسي فاخر',
-                'slug' => 'french-roast-premium',
-                'description' => 'Smoky and bold with dark chocolate notes. A classic French roast experience.',
-                'description_ar' => 'مدخنة وجريئة مع نكهات الشوكولاتة الداكنة. تجربة تحميص فرنسي كلاسيكية.',
-                'price' => 320.00,
-                'image' => 'https://images.unsplash.com/photo-1497935586351-b67a49e012bf?w=400&h=400&fit=crop',
-                'stock' => 60,
-                'weight' => '500g',
-                'roast_level' => 'dark',
-                'origin' => 'Blend',
-                'origin_ar' => 'مزيج',
-            ],
-
-            // Single Origin
+            // Product 1: Ethiopian Yirgacheffe with full options
             [
                 'category_id' => 2,
                 'name' => 'Ethiopian Yirgacheffe',
@@ -144,16 +94,37 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'ethiopian-yirgacheffe',
                 'description' => 'Bright and fruity with notes of blueberry, citrus, and floral undertones. From the birthplace of coffee.',
                 'description_ar' => 'قهوة مشرقة وفاكهية مع نكهات التوت الأزرق والحمضيات والزهور. من مسقط رأس القهوة.',
-                'price' => 450.00,
-                'sale_price' => 399.00,
+                'price' => 150.00, // Base price
                 'image' => 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop',
-                'stock' => 35,
-                'weight' => '250g',
-                'roast_level' => 'light',
-                'origin' => 'Ethiopia',
-                'origin_ar' => 'إثيوبيا',
+                'stock' => 9999,
                 'is_featured' => true,
+                'has_weight_options' => true,
+                'has_roast_options' => true,
+                'has_additive_options' => true,
+                'options' => [
+                    // Weight options (absolute prices)
+                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
+                        ['value' => '125g', 'value_ar' => '125 جم', 'price_modifier' => 150.00, 'is_default' => true],
+                        ['value' => '250g', 'value_ar' => '250 جم', 'price_modifier' => 280.00, 'is_default' => false],
+                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 520.00, 'is_default' => false],
+                        ['value' => '1kg', 'value_ar' => '1 كجم', 'price_modifier' => 980.00, 'is_default' => false],
+                    ]],
+                    // Roast options (modifiers)
+                    ['type' => 'roast', 'name' => 'Roast Level', 'name_ar' => 'درجة التحميص', 'values' => [
+                        ['value' => 'Light', 'value_ar' => 'فاتح', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'Medium', 'value_ar' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
+                        ['value' => 'Medium-Dark', 'value_ar' => 'متوسط داكن', 'price_modifier' => 0, 'is_default' => false],
+                    ]],
+                    // Additive options (modifiers)
+                    ['type' => 'additive', 'name' => 'Additions', 'name_ar' => 'الإضافات', 'values' => [
+                        ['value' => 'Plain', 'value_ar' => 'عادية', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'With Cardamom', 'value_ar' => 'بالهيل', 'price_modifier' => 15.00, 'is_default' => false],
+                        ['value' => 'Extra Cardamom', 'value_ar' => 'هيل زيادة', 'price_modifier' => 25.00, 'is_default' => false],
+                    ]],
+                ],
             ],
+
+            // Product 2: Colombian Supremo with weight only
             [
                 'category_id' => 2,
                 'name' => 'Colombian Supremo',
@@ -161,30 +132,83 @@ class DatabaseSeeder extends Seeder
                 'slug' => 'colombian-supremo',
                 'description' => 'Smooth and balanced with caramel sweetness and nutty undertones.',
                 'description_ar' => 'قهوة ناعمة ومتوازنة مع حلاوة الكراميل ونكهات المكسرات.',
-                'price' => 380.00,
+                'price' => 120.00,
+                'sale_price' => 99.00,
                 'image' => 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop',
-                'stock' => 45,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Colombia',
-                'origin_ar' => 'كولومبيا',
+                'stock' => 9999,
                 'is_featured' => true,
+                'has_weight_options' => true,
+                'options' => [
+                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
+                        ['value' => '250g', 'value_ar' => '250 جم', 'price_modifier' => 220.00, 'is_default' => true],
+                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 380.00, 'is_default' => false],
+                        ['value' => '1kg', 'value_ar' => '1 كجم', 'price_modifier' => 720.00, 'is_default' => false],
+                    ]],
+                ],
             ],
+
+            // Product 3: Arabic Cardamom Coffee with roast and additive options
             [
-                'category_id' => 2,
-                'name' => 'Kenyan AA Premium',
-                'name_ar' => 'كيني AA الفاخر',
-                'slug' => 'kenyan-aa-premium',
-                'description' => 'Wine-like acidity with blackcurrant notes and a complex, fruity finish.',
-                'description_ar' => 'حموضة تشبه النبيذ مع نكهات الكشمش الأسود ونهاية فاكهية معقدة.',
-                'price' => 520.00,
-                'image' => 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&h=400&fit=crop',
-                'stock' => 25,
-                'weight' => '250g',
-                'roast_level' => 'medium',
-                'origin' => 'Kenya',
-                'origin_ar' => 'كينيا',
+                'category_id' => 5,
+                'name' => 'Arabic Cardamom Coffee',
+                'name_ar' => 'قهوة عربية بالهيل',
+                'slug' => 'arabic-cardamom-coffee',
+                'description' => 'Traditional Arabic coffee with premium cardamom. A taste of Arabian hospitality.',
+                'description_ar' => 'قهوة عربية تقليدية مع الهيل الفاخر. طعم الضيافة العربية.',
+                'price' => 300.00,
+                'image' => 'https://images.unsplash.com/photo-1578374173705-969cbe6f2d6b?w=400&h=400&fit=crop',
+                'stock' => 9999,
+                'is_featured' => true,
+                'has_weight_options' => true,
+                'has_roast_options' => true,
+                'has_additive_options' => true,
+                'options' => [
+                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
+                        ['value' => '250g', 'value_ar' => '250 جم', 'price_modifier' => 300.00, 'is_default' => true],
+                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 550.00, 'is_default' => false],
+                    ]],
+                    ['type' => 'roast', 'name' => 'Roast Level', 'name_ar' => 'درجة التحميص', 'values' => [
+                        ['value' => 'Light', 'value_ar' => 'فاتح', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'Medium', 'value_ar' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
+                    ]],
+                    ['type' => 'additive', 'name' => 'Cardamom Level', 'name_ar' => 'مستوى الهيل', 'values' => [
+                        ['value' => 'Regular Cardamom', 'value_ar' => 'هيل عادي', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'Extra Cardamom', 'value_ar' => 'هيل زيادة', 'price_modifier' => 20.00, 'is_default' => false],
+                        ['value' => 'With Saffron', 'value_ar' => 'مع الزعفران', 'price_modifier' => 50.00, 'is_default' => false],
+                        ['value' => 'With Mastic', 'value_ar' => 'مع المستكة', 'price_modifier' => 30.00, 'is_default' => false],
+                    ]],
+                ],
             ],
+
+            // Product 4: Italian Espresso - Weight + Roast
+            [
+                'category_id' => 1,
+                'name' => 'Italian Espresso Blend',
+                'name_ar' => 'خلطة إسبريسو إيطالية',
+                'slug' => 'italian-espresso-blend',
+                'description' => 'Rich and intense Italian-style espresso with notes of dark chocolate and caramel.',
+                'description_ar' => 'إسبريسو إيطالي غني ومكثف مع نكهات الشوكولاتة الداكنة والكراميل.',
+                'price' => 350.00,
+                'sale_price' => 299.00,
+                'image' => 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop',
+                'stock' => 9999,
+                'is_featured' => true,
+                'has_weight_options' => true,
+                'has_roast_options' => true,
+                'options' => [
+                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
+                        ['value' => '250g', 'value_ar' => '250 جم', 'price_modifier' => 350.00, 'is_default' => true],
+                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 650.00, 'is_default' => false],
+                    ]],
+                    ['type' => 'roast', 'name' => 'Roast Level', 'name_ar' => 'درجة التحميص', 'values' => [
+                        ['value' => 'Medium', 'value_ar' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
+                        ['value' => 'Dark', 'value_ar' => 'داكن', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'Extra Dark', 'value_ar' => 'داكن جداً', 'price_modifier' => 10.00, 'is_default' => false],
+                    ]],
+                ],
+            ],
+
+            // Product 5: Brazilian Santos - No options (regular product)
             [
                 'category_id' => 2,
                 'name' => 'Brazilian Santos',
@@ -194,203 +218,12 @@ class DatabaseSeeder extends Seeder
                 'description_ar' => 'نكهة المكسرات والشوكولاتة مع حموضة منخفضة. مثالية للشرب اليومي.',
                 'price' => 290.00,
                 'image' => 'https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=400&h=400&fit=crop',
-                'stock' => 70,
-                'weight' => '1kg',
-                'roast_level' => 'medium',
-                'origin' => 'Brazil',
-                'origin_ar' => 'البرازيل',
-            ],
-            [
-                'category_id' => 2,
-                'name' => 'Sumatra Mandheling',
-                'name_ar' => 'سومطرة ماندلينج',
-                'slug' => 'sumatra-mandheling',
-                'description' => 'Full-bodied with earthy, herbal notes and a smooth, syrupy finish.',
-                'description_ar' => 'قهوة كاملة القوام مع نكهات ترابية وعشبية ونهاية ناعمة.',
-                'price' => 420.00,
-                'image' => 'https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=400&h=400&fit=crop',
-                'stock' => 30,
+                'stock' => 9999,
                 'weight' => '500g',
-                'roast_level' => 'dark',
-                'origin' => 'Indonesia',
-                'origin_ar' => 'إندونيسيا',
-            ],
-            [
-                'category_id' => 2,
-                'name' => 'Costa Rican Tarrazu',
-                'name_ar' => 'كوستاريكا تارازو',
-                'slug' => 'costa-rican-tarrazu',
-                'description' => 'Bright acidity with honey and citrus notes. Clean and vibrant.',
-                'description_ar' => 'حموضة مشرقة مع نكهات العسل والحمضيات. نظيفة وحيوية.',
-                'price' => 480.00,
-                'image' => 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=400&h=400&fit=crop',
-                'stock' => 28,
-                'weight' => '250g',
-                'roast_level' => 'light',
-                'origin' => 'Costa Rica',
-                'origin_ar' => 'كوستاريكا',
-            ],
-            [
-                'category_id' => 2,
-                'name' => 'Panama Geisha Reserve',
-                'name_ar' => 'بنما جيشا الاحتياطي',
-                'slug' => 'panama-geisha-reserve',
-                'description' => 'Rare and exotic with jasmine, bergamot, and tropical fruit notes.',
-                'description_ar' => 'نادرة وغريبة مع الياسمين والبرغموت وفواكه استوائية.',
-                'price' => 850.00,
-                'image' => 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop',
-                'stock' => 10,
-                'weight' => '250g',
-                'roast_level' => 'light',
-                'origin' => 'Panama',
-                'origin_ar' => 'بنما',
-                'is_featured' => true,
+                'roast_level' => 'medium',
             ],
 
-            // Flavored Coffee
-            [
-                'category_id' => 3,
-                'name' => 'Hazelnut Cream',
-                'name_ar' => 'كريمة البندق',
-                'slug' => 'hazelnut-cream',
-                'description' => 'Smooth coffee infused with rich, creamy hazelnut flavor.',
-                'description_ar' => 'قهوة ناعمة مشبعة بنكهة البندق الكريمية الغنية.',
-                'price' => 280.00,
-                'image' => 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=400&fit=crop',
-                'stock' => 55,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Flavored',
-                'origin_ar' => 'منكّهة',
-            ],
-            [
-                'category_id' => 3,
-                'name' => 'Vanilla Caramel Swirl',
-                'name_ar' => 'فانيليا كراميل',
-                'slug' => 'vanilla-caramel-swirl',
-                'description' => 'Sweet vanilla and caramel notes for a dessert-like experience.',
-                'description_ar' => 'نكهات الفانيليا والكراميل الحلوة لتجربة تشبه الحلوى.',
-                'price' => 290.00,
-                'sale_price' => 249.00,
-                'image' => 'https://images.unsplash.com/photo-1578374173705-969cbe6f2d6b?w=400&h=400&fit=crop',
-                'stock' => 48,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Flavored',
-                'origin_ar' => 'منكّهة',
-            ],
-            [
-                'category_id' => 3,
-                'name' => 'Chocolate Mocha',
-                'name_ar' => 'موكا شوكولاتة',
-                'slug' => 'chocolate-mocha',
-                'description' => 'Rich chocolate flavor blended with premium coffee beans.',
-                'description_ar' => 'نكهة شوكولاتة غنية ممزوجة بحبوب قهوة فاخرة.',
-                'price' => 310.00,
-                'image' => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=400&fit=crop',
-                'stock' => 42,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Flavored',
-                'origin_ar' => 'منكّهة',
-            ],
-            [
-                'category_id' => 3,
-                'name' => 'Cinnamon Roll',
-                'name_ar' => 'لفائف القرفة',
-                'slug' => 'cinnamon-roll',
-                'description' => 'Warm cinnamon spice with sweet frosting notes.',
-                'description_ar' => 'توابل القرفة الدافئة مع نكهات الحلوى.',
-                'price' => 275.00,
-                'image' => 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop',
-                'stock' => 38,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Flavored',
-                'origin_ar' => 'منكّهة',
-            ],
-
-            // Cold Brew
-            [
-                'category_id' => 4,
-                'name' => 'Cold Brew Concentrate',
-                'name_ar' => 'مركز القهوة الباردة',
-                'slug' => 'cold-brew-concentrate',
-                'description' => 'Smooth and naturally sweet cold brew concentrate. Just add water or milk.',
-                'description_ar' => 'مركز قهوة باردة ناعم وحلو طبيعياً. أضف الماء أو الحليب فقط.',
-                'price' => 260.00,
-                'image' => 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=400&h=400&fit=crop',
-                'stock' => 65,
-                'weight' => '500ml',
-                'roast_level' => 'medium',
-                'origin' => 'Blend',
-                'origin_ar' => 'مزيج',
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 4,
-                'name' => 'Nitro Cold Brew Blend',
-                'name_ar' => 'قهوة باردة نيترو',
-                'slug' => 'nitro-cold-brew-blend',
-                'description' => 'Specially roasted for the smoothest nitro cold brew experience.',
-                'description_ar' => 'محمصة خصيصاً لأكثر تجربة قهوة نيترو باردة نعومة.',
-                'price' => 340.00,
-                'image' => 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=400&fit=crop',
-                'stock' => 30,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Blend',
-                'origin_ar' => 'مزيج',
-            ],
-            [
-                'category_id' => 4,
-                'name' => 'Iced Coffee Blend',
-                'name_ar' => 'خلطة القهوة المثلجة',
-                'slug' => 'iced-coffee-blend',
-                'description' => 'Bold and refreshing, perfect over ice.',
-                'description_ar' => 'جريئة ومنعشة، مثالية مع الثلج.',
-                'price' => 220.00,
-                'image' => 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop',
-                'stock' => 58,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Blend',
-                'origin_ar' => 'مزيج',
-            ],
-
-            // Arabic Coffee
-            [
-                'category_id' => 5,
-                'name' => 'Arabic Cardamom Coffee',
-                'name_ar' => 'قهوة عربية بالهيل',
-                'slug' => 'arabic-cardamom-coffee',
-                'description' => 'Traditional Arabic coffee with premium cardamom. A taste of Arabian hospitality.',
-                'description_ar' => 'قهوة عربية تقليدية مع الهيل الفاخر. طعم الضيافة العربية.',
-                'price' => 300.00,
-                'sale_price' => 269.00,
-                'image' => 'https://images.unsplash.com/photo-1578374173705-969cbe6f2d6b?w=400&h=400&fit=crop',
-                'stock' => 75,
-                'weight' => '500g',
-                'roast_level' => 'light',
-                'origin' => 'Arabia',
-                'origin_ar' => 'عربية',
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 5,
-                'name' => 'Yemeni Mocha',
-                'name_ar' => 'موكا يمني',
-                'slug' => 'yemeni-mocha',
-                'description' => 'The original mocha from Yemen. Complex with wine and chocolate notes.',
-                'description_ar' => 'الموكا الأصلية من اليمن. معقدة مع نكهات النبيذ والشوكولاتة.',
-                'price' => 650.00,
-                'image' => 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop',
-                'stock' => 15,
-                'weight' => '250g',
-                'roast_level' => 'light',
-                'origin' => 'Yemen',
-                'origin_ar' => 'اليمن',
-            ],
+            // Product 6: Turkish Coffee - Weight + Additive
             [
                 'category_id' => 5,
                 'name' => 'Turkish Coffee Blend',
@@ -400,47 +233,46 @@ class DatabaseSeeder extends Seeder
                 'description_ar' => 'مطحونة ناعماً للتحضير التركي التقليدي. غنية وعطرية.',
                 'price' => 240.00,
                 'image' => 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&h=400&fit=crop',
-                'stock' => 80,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Blend',
-                'origin_ar' => 'مزيج',
-            ],
-            [
-                'category_id' => 5,
-                'name' => 'Egyptian Coffee Special',
-                'name_ar' => 'قهوة مصرية خاصة',
-                'slug' => 'egyptian-coffee-special',
-                'description' => 'Our signature Egyptian-style blend with a hint of spice.',
-                'description_ar' => 'مزيجنا المميز على الطريقة المصرية مع لمسة من التوابل.',
-                'price' => 280.00,
-                'image' => 'https://images.unsplash.com/photo-1504630083234-14187a9df0f5?w=400&h=400&fit=crop',
-                'stock' => 90,
-                'weight' => '500g',
-                'roast_level' => 'medium',
-                'origin' => 'Blend',
-                'origin_ar' => 'مزيج',
-                'is_featured' => true,
-            ],
-            [
-                'category_id' => 5,
-                'name' => 'Saffron Gold Coffee',
-                'name_ar' => 'قهوة الزعفران الذهبية',
-                'slug' => 'saffron-gold-coffee',
-                'description' => 'Luxurious Arabic coffee with precious saffron threads.',
-                'description_ar' => 'قهوة عربية فاخرة مع خيوط الزعفران الثمينة.',
-                'price' => 750.00,
-                'image' => 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=400&h=400&fit=crop',
-                'stock' => 12,
-                'weight' => '250g',
-                'roast_level' => 'light',
-                'origin' => 'Arabia',
-                'origin_ar' => 'عربية',
+                'stock' => 9999,
+                'has_weight_options' => true,
+                'has_additive_options' => true,
+                'options' => [
+                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
+                        ['value' => '200g', 'value_ar' => '200 جم', 'price_modifier' => 240.00, 'is_default' => true],
+                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 550.00, 'is_default' => false],
+                    ]],
+                    ['type' => 'additive', 'name' => 'Spices', 'name_ar' => 'التوابل', 'values' => [
+                        ['value' => 'Plain', 'value_ar' => 'عادي', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'With Cardamom', 'value_ar' => 'مع الهيل', 'price_modifier' => 10.00, 'is_default' => false],
+                        ['value' => 'With Mastic', 'value_ar' => 'مع المستكة', 'price_modifier' => 15.00, 'is_default' => false],
+                    ]],
+                ],
             ],
         ];
 
-        foreach ($products as $product) {
-            Product::create($product);
+        foreach ($products as $productData) {
+            // Extract options if they exist
+            $options = $productData['options'] ?? [];
+            unset($productData['options']);
+
+            // Create the product
+            $product = Product::create($productData);
+
+            // Create options if they exist
+            if (!empty($options)) {
+                foreach ($options as $optionData) {
+                    $values = $optionData['values'];
+                    unset($optionData['values']);
+
+                    // Create the option
+                    $option = $product->options()->create($optionData);
+
+                    // Create option values
+                    foreach ($values as $valueData) {
+                        $option->values()->create($valueData);
+                    }
+                }
+            }
         }
 
         $this->command->info('✅ Database seeded successfully!');
