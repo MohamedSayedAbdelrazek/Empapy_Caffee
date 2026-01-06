@@ -31,18 +31,7 @@
         </div>
 
         <!-- Quick Actions -->
-        <div class="product-actions">
-            <button class="btn btn-action wishlist-btn ripple {{ $inWishlist ? 'active' : '' }}"
-                onclick="event.stopPropagation(); toggleWishlist({{ $product->id }}, this)"
-                title="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}"
-                aria-label="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}">
-                <i class="bi {{ $inWishlist ? 'bi-heart-fill' : 'bi-heart' }}"></i>
-            </button>
-            <a href="{{ route('shop.show', $product) }}" class="btn btn-action ripple" title="عرض التفاصيل"
-                aria-label="عرض التفاصيل" onclick="event.stopPropagation();">
-                <i class="bi bi-eye"></i>
-            </a>
-        </div>
+
 
 
     </div>
@@ -56,11 +45,20 @@
             </span>
         </div>
 
-        <h3 class="product-title">
-            <a href="{{ route('shop.show', $product) }}" class="animated-link">
-                {{ $product->name_ar }}
-            </a>
-        </h3>
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h3 class="product-title m-0">
+                <a href="{{ route('shop.show', $product) }}" class="animated-link">
+                    {{ $product->name_ar }}
+                </a>
+            </h3>
+            <button class="wishlist-btn-inline {{ $inWishlist ? 'active' : '' }}"
+                onclick="event.preventDefault(); event.stopPropagation(); toggleWishlist({{ $product->id }}, this)"
+                title="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}"
+                aria-label="{{ $inWishlist ? 'حذف من المفضلة' : 'أضف للمفضلة' }}"
+                style="position: relative; z-index: 10;">
+                <i class="bi {{ $inWishlist ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+            </button>
+        </div>
 
         <div class="product-meta">
             @if ($product->roast_level)
@@ -418,6 +416,36 @@
 
     .add-to-cart-btn.success i::before {
         content: "\F26B";
+    }
+
+    /* Inline Wishlist Button */
+    .wishlist-btn-inline {
+        background: transparent;
+        border: none;
+        color: #9ca3af;
+        padding: 0;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+    }
+
+    .wishlist-btn-inline:hover {
+        background: rgba(239, 68, 68, 0.1);
+        color: #ef4444;
+        transform: scale(1.1);
+    }
+
+    .wishlist-btn-inline.active {
+        color: #ef4444;
+    }
+    
+    .wishlist-btn-inline i {
+        font-size: 1.2rem;
     }
 </style>
 

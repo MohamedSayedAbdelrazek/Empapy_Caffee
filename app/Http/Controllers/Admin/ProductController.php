@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class ProductController extends Controller
 {
@@ -78,6 +79,9 @@ class ProductController extends Controller
             'roast_values' => $request->input('roast_values', []),
             'additive_values' => $request->input('additive_values', []),
         ]);
+
+        // Clear product caches so the new product appears immediately
+        $this->clearProductCaches();
 
         return redirect()->route('admin.products.index')
             ->with('success', 'تم إضافة المنتج بنجاح');
@@ -157,6 +161,9 @@ class ProductController extends Controller
             'additive_values' => $request->input('additive_values', []),
         ]);
 
+        // Clear product caches
+        $this->clearProductCaches();
+
         return redirect()->route('admin.products.index')
             ->with('success', 'تم تحديث المنتج بنجاح');
     }
@@ -167,6 +174,9 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         $this->productService->deleteProduct($product);
+
+        // Clear product caches
+        $this->clearProductCaches();
 
         return redirect()->route('admin.products.index')
             ->with('success', 'تم حذف المنتج بنجاح');
@@ -189,6 +199,9 @@ class ProductController extends Controller
         $product = Product::onlyTrashed()->findOrFail($id);
         $this->productService->restoreProduct($product);
 
+        // Clear product caches
+        $this->clearProductCaches();
+
         return redirect()->route('admin.products.index')
             ->with('success', 'تم استعادة المنتج بنجاح');
     }
@@ -201,7 +214,20 @@ class ProductController extends Controller
         $product = Product::onlyTrashed()->findOrFail($id);
         $this->productService->forceDeleteProduct($product);
 
+        // Clear product caches
+        $this->clearProductCaches();
+
         return redirect()->route('admin.products.trashed')
             ->with('success', 'تم حذف المنتج نهائياً');
+    }
+
+    /**
+     * Clear all product-related caches
+     */
+    protected function clearProductCaches(): void
+    {
+        Cache::forget('home_featured_products');
+        Cache::forget('home_latest_products');
+        Cache::forget('home_categories');
     }
 }

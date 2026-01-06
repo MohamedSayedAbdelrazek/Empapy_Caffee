@@ -103,13 +103,12 @@ function loadCartItems() {
                         <img src="${item.image}" alt="${item.name_ar}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                         <div class="flex-grow-1">
                             <h6 class="mb-1 small text-white">${item.name_ar}</h6>
-                            ${
-                                item.options && item.options.length > 0
-                                    ? `<div class="mb-1">
+                            ${item.options && item.options.length > 0
+                            ? `<div class="mb-1">
                                         ${item.options.map(opt => `<span class="badge bg-secondary" style="font-size: 0.65rem;">${opt.label}: ${opt.value}</span>`).join(' ')}
                                     </div>`
-                                    : ''
-                            }
+                            : ''
+                        }
                             <small class="text-muted">الكمية: ${item.quantity}</small>
                             <div class="text-warning fw-bold">${item.subtotal.toLocaleString()} ج.م</div>
                         </div>

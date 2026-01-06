@@ -66,9 +66,10 @@
                                 step="0.01" min="0">
                         </div>
                     </div>
+                </div>
 
-                    <div class="admin-card">
-                        <h5 class="mb-4">تفاصيل القهوة</h5>
+                <div class="admin-card mb-4">
+                    <h5 class="mb-4">تفاصيل القهوة</h5>
 
                         <div class="row g-3">
                             <div class="col-md-6">
@@ -91,11 +92,11 @@
                                     </option>
                                 </select>
                             </div>
-                        </div>
                     </div>
+                </div>
 
-                    {{-- Product Options Section --}}
-                    <div class="admin-card mt-4">
+                {{-- Product Options Section --}}
+                <div class="admin-card mt-4">
                         <h5 class="mb-4">
                             <i class="bi bi-sliders me-2"></i>
                             خيارات المنتج (متعددة الأسعار)
@@ -298,9 +299,10 @@
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="col-lg-4">
-                    <div class="admin-card mb-4">
+            <div class="col-lg-4">
+                <div class="admin-card mb-4">
                         <h5 class="mb-4">التصنيف</h5>
 
                         <label class="form-label">الصنف *</label>

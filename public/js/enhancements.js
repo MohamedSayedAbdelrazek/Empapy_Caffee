@@ -369,36 +369,7 @@ function initQuickView() {
         if (e.key === 'Escape') closeQuickView();
     });
 
-    // Add quick view buttons to product cards
-    document.querySelectorAll('.product-card').forEach(card => {
-        const productActions = card.querySelector('.product-actions');
-        if (productActions && !productActions.querySelector('.quick-view-btn')) {
-            const quickViewBtn = document.createElement('button');
-            quickViewBtn.className = 'btn-action quick-view-btn';
-            quickViewBtn.innerHTML = '<i class="bi bi-eye"></i>';
-            quickViewBtn.setAttribute('title', 'عرض سريع');
-
-            // Get product data from card
-            const productData = {
-                id: card.querySelector('.add-to-cart-btn')?.dataset.productId,
-                name: card.querySelector('.product-title a')?.textContent,
-                category: card.querySelector('.product-category')?.textContent,
-                price: card.querySelector('.price-current')?.textContent,
-                oldPrice: card.querySelector('.price-old')?.textContent,
-                image: card.querySelector('.product-image img')?.src,
-                link: card.querySelector('.product-title a')?.href,
-                description: 'قهوة فاخرة مختارة بعناية من أجود المزارع'
-            };
-
-            quickViewBtn.addEventListener('click', (e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openQuickView(productData);
-            });
-
-            productActions.insertBefore(quickViewBtn, productActions.firstChild);
-        }
-    });
+    // Quick view button functionality removed - only wishlist button shown on hover
 }
 
 function openQuickView(product) {
