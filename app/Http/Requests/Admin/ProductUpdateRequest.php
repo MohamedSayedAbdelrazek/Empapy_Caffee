@@ -25,7 +25,6 @@ class ProductUpdateRequest extends FormRequest
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0|lt:price',
-            // 'stock' => 'required|integer|min:0', // Removed as per request (always available)
             'weight' => 'nullable|string|max:50',
             'roast_level' => 'nullable|in:light,medium,dark',
             'is_featured' => 'nullable',
@@ -33,16 +32,6 @@ class ProductUpdateRequest extends FormRequest
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ];
-    }
-
-    /**
-     * Prepare the data for validation.
-     */
-    protected function prepareForValidation(): void
-    {
-        $this->merge([
-            'stock' => 9999,
-        ]);
     }
 
     /**
@@ -56,7 +45,6 @@ class ProductUpdateRequest extends FormRequest
             'description' => 'الوصف',
             'price' => 'السعر',
             'sale_price' => 'سعر التخفيض',
-            'stock' => 'المخزون',
             'weight' => 'الوزن',
             'roast_level' => 'درجة التحميص',
             'image' => 'صورة المنتج',
@@ -76,8 +64,6 @@ class ProductUpdateRequest extends FormRequest
             'price.required' => 'سعر المنتج مطلوب',
             'price.min' => 'السعر يجب أن يكون أكبر من صفر',
             'sale_price.lt' => 'سعر التخفيض يجب أن يكون أقل من السعر الأصلي',
-            'stock.required' => 'كمية المخزون مطلوبة',
-            'stock.min' => 'المخزون لا يمكن أن يكون سالباً',
             'image.image' => 'الملف يجب أن يكون صورة',
             'image.max' => 'حجم الصورة يجب ألا يتجاوز 2 ميجابايت',
         ];

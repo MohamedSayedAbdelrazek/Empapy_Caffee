@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -39,10 +40,16 @@ class HomeController extends Controller
                 ->get();
         });
 
+        // Load wishlist IDs once to avoid N+1 in product cards
+        $wishlistIds = auth()->check()
+            ? Wishlist::where('user_id', auth()->id())->pluck('product_id')->toArray()
+            : [];
+
         return view('home', compact(
             'featuredProducts',
             'categories',
-            'latestProducts'
+            'latestProducts',
+            'wishlistIds'
         ));
     }
 

@@ -22,8 +22,6 @@ class ProductResource extends JsonResource
             'current_price' => (float) $this->current_price,
             'discount_percentage' => $this->discount_percentage,
             'is_on_sale' => $this->is_on_sale,
-            'stock' => (int) $this->stock,
-            'in_stock' => $this->stock > 0,
             'image' => $this->image,
             'gallery' => $this->gallery,
             'weight' => $this->weight,

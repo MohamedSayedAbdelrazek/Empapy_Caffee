@@ -85,7 +85,7 @@ class OrderController extends Controller
     }
 
     /**
-     * Cancel order and restore stock
+     * Cancel order
      */
     public function cancel(Order $order)
     {
@@ -93,18 +93,11 @@ class OrderController extends Controller
             return back()->with('error', 'هذا الطلب ملغي بالفعل');
         }
 
-        // Restore stock
-        foreach ($order->items as $item) {
-            if ($item->product) {
-                $item->product->increment('stock', $item->quantity);
-            }
-        }
-
         $order->update([
             'status' => 'cancelled'
         ]);
 
-        return back()->with('success', 'تم إلغاء الطلب وإرجاع المخزون');
+        return back()->with('success', 'تم إلغاء الطلب');
     }
 
     /**

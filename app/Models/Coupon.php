@@ -25,6 +25,22 @@ class Coupon extends Model
         'is_active',
     ];
 
+    /**
+     * Accessor for name (alias for name_ar)
+     */
+    public function getNameAttribute()
+    {
+        return $this->name_ar;
+    }
+
+    /**
+     * Accessor for description (alias for description_ar)
+     */
+    public function getDescriptionAttribute()
+    {
+        return $this->description_ar;
+    }
+
     protected $casts = [
         'value' => 'decimal:2',
         'min_order_amount' => 'decimal:2',

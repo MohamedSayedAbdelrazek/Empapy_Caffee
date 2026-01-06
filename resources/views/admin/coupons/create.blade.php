@@ -32,9 +32,9 @@
                 <!-- Name -->
                 <div class="col-md-6">
                     <label class="form-label">اسم الكوبون *</label>
-                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                        value="{{ old('name') }}" required>
-                    @error('name')
+                    <input type="text" name="name_ar" class="form-control @error('name_ar') is-invalid @enderror"
+                        value="{{ old('name_ar') }}" required>
+                    @error('name_ar')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -42,7 +42,7 @@
                 <!-- Description -->
                 <div class="col-12">
                     <label class="form-label">الوصف</label>
-                    <textarea name="description" class="form-control" rows="2">{{ old('description') }}</textarea>
+                    <textarea name="description_ar" class="form-control" rows="2">{{ old('description_ar') }}</textarea>
                 </div>
 
                 <!-- Type -->

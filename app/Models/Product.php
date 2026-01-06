@@ -22,7 +22,6 @@ class Product extends Model
         'sale_price',
         'image',
         'gallery',
-        'stock',
         'weight',
         'roast_level',
         'origin',
@@ -103,14 +102,6 @@ class Product extends Model
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
-    }
-
-    /**
-     * Scope for in-stock products
-     */
-    public function scopeInStock($query)
-    {
-        return $query->where('stock', '>', 0);
     }
 
     /**

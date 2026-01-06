@@ -1,8 +1,8 @@
 <!-- Enhanced Product Card Component -->
-@props(['product'])
+@props(['product', 'wishlistIds' => []])
 
 @php
-    $inWishlist = \App\Models\Wishlist::hasProduct($product->id);
+    $inWishlist = in_array($product->id, $wishlistIds ?? []);
 @endphp
 
 <div class="product-card glass-card tilt-card" data-product-id="{{ $product->id }}"
@@ -443,7 +443,7 @@
     .wishlist-btn-inline.active {
         color: #ef4444;
     }
-    
+
     .wishlist-btn-inline i {
         font-size: 1.2rem;
     }

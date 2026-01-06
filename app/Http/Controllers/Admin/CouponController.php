@@ -32,8 +32,8 @@ class CouponController extends Controller
     {
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:coupons,code',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'name_ar' => 'required|string|max:255',
+            'description_ar' => 'nullable|string',
             'type' => 'required|in:percentage,fixed',
             'value' => 'required|numeric|min:0',
             'min_order_amount' => 'nullable|numeric|min:0',
@@ -45,6 +45,7 @@ class CouponController extends Controller
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['code'] = strtoupper($validated['code']);
 
         Coupon::create($validated);
 
@@ -67,8 +68,8 @@ class CouponController extends Controller
     {
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:coupons,code,' . $coupon->id,
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
+            'name_ar' => 'required|string|max:255',
+            'description_ar' => 'nullable|string',
             'type' => 'required|in:percentage,fixed',
             'value' => 'required|numeric|min:0',
             'min_order_amount' => 'nullable|numeric|min:0',
@@ -80,6 +81,7 @@ class CouponController extends Controller
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
+        $validated['code'] = strtoupper($validated['code']);
 
         $coupon->update($validated);
 

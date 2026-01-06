@@ -55,7 +55,6 @@
                         <th>المنتج</th>
                         <th>الصنف</th>
                         <th>السعر</th>
-                        <th>المخزون</th>
                         <th>الحالة</th>
                         <th style="width: 120px;">الإجراءات</th>
                     </tr>
@@ -79,15 +78,6 @@
                                     <br><strong class="text-success">{{ number_format($product->sale_price) }} ج.م</strong>
                                 @else
                                     <strong>{{ number_format($product->price) }} ج.م</strong>
-                                @endif
-                            </td>
-                            <td>
-                                @if ($product->stock > 10)
-                                    <span class="badge bg-success">{{ $product->stock }}</span>
-                                @elseif($product->stock > 0)
-                                    <span class="badge bg-warning text-dark">{{ $product->stock }}</span>
-                                @else
-                                    <span class="badge bg-danger">نفذ</span>
                                 @endif
                             </td>
                             <td>
@@ -119,7 +109,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-5">
+                            <td colspan="6" class="text-center text-muted py-5">
                                 <i class="bi bi-box display-4 d-block mb-3"></i>
                                 لا توجد منتجات
                             </td>

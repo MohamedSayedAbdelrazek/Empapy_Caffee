@@ -175,7 +175,10 @@
             <div class="row g-4">
                 @forelse($featuredProducts as $product)
                     <div class="col-6 col-md-4 col-lg-3">
-                        @include('components.product-card', ['product' => $product])
+                        @include('components.product-card', [
+                            'product' => $product,
+                            'wishlistIds' => $wishlistIds ?? [],
+                        ])
                     </div>
                 @empty
                     <div class="col-12 text-center py-5">
@@ -250,7 +253,10 @@
                 <div class="row g-4">
                     @foreach ($latestProducts as $product)
                         <div class="col-6 col-md-4 col-lg-3">
-                            @include('components.product-card', ['product' => $product])
+                            @include('components.product-card', [
+                                'product' => $product,
+                                'wishlistIds' => $wishlistIds ?? [],
+                            ])
                         </div>
                     @endforeach
                 </div>
@@ -440,8 +446,8 @@
         }
 
         /* =========================================
-                   CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                   ========================================= */
+                       CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                       ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;

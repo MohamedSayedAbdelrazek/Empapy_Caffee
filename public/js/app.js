@@ -135,7 +135,7 @@ function loadCartItems() {
                 if (cartFooter) cartFooter.style.display = 'none';
             }
         })
-        .catch(error => console.log('Error loading cart'));
+        .catch(() => { /* Silent error */ });
 }
 
 /**
@@ -194,7 +194,7 @@ function updateCartBadge(forceRefresh = false) {
             cartCache.timestamp = now;
             updateBadgeUI(data.cartCount);
         })
-        .catch(error => console.log('Cart not loaded'));
+        .catch(() => { /* Silent error */ });
 }
 
 function updateBadgeUI(count) {
@@ -328,14 +328,20 @@ function showToast(message, type = 'success') {
 
 /**
  * Floating coffee beans animation for hero
+ * OPTIMIZED: Uses IntersectionObserver to pause when not visible
  */
 function initFloatingBeans() {
     const container = document.querySelector('.floating-beans');
     if (!container) return;
 
     const beanIcons = ['☕', '🫘', '☕'];
+    let intervalId = null;
+    let isVisible = false;
 
     function createBean() {
+        // Limit max beans to prevent memory issues
+        if (container.children.length > 15) return;
+
         const bean = document.createElement('span');
         bean.className = 'bean';
         bean.textContent = beanIcons[Math.floor(Math.random() * beanIcons.length)];
@@ -349,13 +355,36 @@ function initFloatingBeans() {
         setTimeout(() => bean.remove(), 25000);
     }
 
-    // Create initial beans
-    for (let i = 0; i < 10; i++) {
-        setTimeout(createBean, i * 500);
+    function startAnimation() {
+        if (intervalId) return;
+        // Create initial beans
+        for (let i = 0; i < 5; i++) {
+            setTimeout(createBean, i * 500);
+        }
+        // Continue creating beans (slower rate)
+        intervalId = setInterval(createBean, 3000);
     }
 
-    // Continue creating beans
-    setInterval(createBean, 2000);
+    function stopAnimation() {
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+        }
+    }
+
+    // Use IntersectionObserver to pause when not visible
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            isVisible = entry.isIntersecting;
+            if (isVisible) {
+                startAnimation();
+            } else {
+                stopAnimation();
+            }
+        });
+    }, { threshold: 0.1 });
+
+    observer.observe(container);
 }
 
 /**

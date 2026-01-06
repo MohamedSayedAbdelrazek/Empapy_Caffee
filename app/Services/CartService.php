@@ -56,16 +56,9 @@ class CartService
                 $unitPrice = $product->calculatePriceWithOptions($optionValueIds);
                 $subtotal = $unitPrice * $item['quantity'];
 
-                // Load option details for display
-                // We need to fetch the value names, effectively
-                // But for now, let's just pass the option IDs and let the view handle/or fetch them here
-                // A better approach is to fetch OptionValues here
-                // For simplicity in this step, we will rely on loading them if needed, or better:
-                // Let's load the option values to pass to the view
+                // Load option details for display - optimized to avoid N+1
                 $optionDetails = [];
                 if (!empty($optionValueIds)) {
-                    // This N+1 is small (cart usually has few items), but we could optimize.
-                    // For now, let's use the helper relation on product or model
                     $optionLabels = [
                         'weight' => 'الوزن',
                         'roast' => 'التحميص',
@@ -73,9 +66,15 @@ class CartService
                         'size' => 'الحجم',
                     ];
 
+                    // Load all option values in a single query
+                    $optionValuesMap = \App\Models\ProductOptionValue::with('option')
+                        ->whereIn('id', $optionValueIds)
+                        ->get()
+                        ->keyBy('id');
+
                     foreach ($options as $type => $valueId) {
-                        $val = \App\Models\ProductOptionValue::find($valueId);
-                        if ($val) {
+                        if ($optionValuesMap->has($valueId)) {
+                            $val = $optionValuesMap->get($valueId);
                             $optionDetails[] = [
                                 'type' => $type,
                                 'label' => $optionLabels[$type] ?? $val->option->name,
@@ -132,26 +131,6 @@ class CartService
         ksort($options);
         $key = md5($product->id . serialize($options));
 
-        // Check stock availability (Global check for product, regardless of variant for now)
-        // Aggregating quantity of this product in cart
-        // Since stock is infinite (9999), this is less critical but good specific logic
-        /*
-        $currentQtyInCart = 0;
-        foreach ($cart as $cartItem) {
-            if ($cartItem['product_id'] == $product->id) {
-                $currentQtyInCart += $cartItem['quantity'];
-            }
-        }
-        $totalRequested = $currentQtyInCart + $quantity;
-        
-        if ($product->stock < $totalRequested) {
-             return [
-                'success' => false,
-                'message' => 'الكمية المطلوبة غير متوفرة في المخزون. المتوفر: ' . $product->stock
-            ];
-        }
-        */
-
         if (isset($cart[$key])) {
             $cart[$key]['quantity'] += $quantity;
         } else {
@@ -186,9 +165,6 @@ class CartService
         if ($quantity <= 0) {
             unset($cart[$key]);
         } else {
-            // Stock check skipped as per "Always Available" requirement
-            // But if we needed it, we would check Product::find($cart[$key]['product_id'])->stock
-
             $cart[$key]['quantity'] = $quantity;
         }
 
@@ -252,11 +228,10 @@ class CartService
     }
 
     /**
-     * Validate cart items (check stock and availability)
+     * Validate cart items (check availability)
      */
     public function validateCart(): array
     {
-        // Simple validation since stock is removed
         $cart = $this->getCart();
         $validItems = [];
         $errors = [];

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Wishlist;
 use Illuminate\Http\Request;
 
 class ShopController extends Controller
@@ -40,8 +41,6 @@ class ShopController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('name', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%");
             });
         }
@@ -64,7 +63,12 @@ class ShopController extends Controller
         $products = $query->paginate(12);
         $categories = Category::active()->withCount('products')->get();
 
-        return view('shop.index', compact('products', 'categories'));
+        // Load wishlist IDs once to avoid N+1 in product cards
+        $wishlistIds = auth()->check()
+            ? Wishlist::where('user_id', auth()->id())->pluck('product_id')->toArray()
+            : (session()->has('wishlist_ids') ? session('wishlist_ids') : []);
+
+        return view('shop.index', compact('products', 'categories', 'wishlistIds'));
     }
 
     /**
@@ -83,6 +87,11 @@ class ShopController extends Controller
             ->take(4)
             ->get();
 
-        return view('shop.show', compact('product', 'relatedProducts'));
+        // Load wishlist IDs once to avoid N+1 in product cards
+        $wishlistIds = auth()->check()
+            ? Wishlist::where('user_id', auth()->id())->pluck('product_id')->toArray()
+            : [];
+
+        return view('shop.show', compact('product', 'relatedProducts', 'wishlistIds'));
     }
 }

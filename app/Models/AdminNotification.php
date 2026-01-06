@@ -74,27 +74,6 @@ class AdminNotification extends Model
             ],
         ]);
     }
-
-    /**
-     * Create a low stock notification
-     */
-    public static function createLowStockNotification($product)
-    {
-        return self::create([
-            'type' => 'low_stock',
-            'title' => 'تنبيه مخزون منخفض! ⚠️',
-            'message' => "المنتج \"{$product->name_ar}\" متبقي منه {$product->stock} فقط",
-            'icon' => 'bi-exclamation-triangle-fill',
-            'icon_color' => 'warning',
-            'action_url' => route('admin.products.edit', $product->id),
-            'data' => [
-                'product_id' => $product->id,
-                'product_name' => $product->name_ar,
-                'stock' => $product->stock,
-            ],
-        ]);
-    }
-
     /**
      * Create a new customer notification
      */
@@ -124,7 +103,7 @@ class AdminNotification extends Model
         return self::create([
             'type' => 'new_review',
             'title' => 'تقييم جديد! ' . $stars,
-            'message' => "قام {$review->user->name} بتقييم \"{$review->product->name_ar}\" بـ {$review->rating} نجوم",
+            'message' => "قام {$review->user->name} بتقييم \"{$review->product->name}\" بـ {$review->rating} نجوم",
             'icon' => 'bi-star-fill',
             'icon_color' => 'warning',
             'action_url' => route('admin.products.show', $review->product_id),
@@ -143,7 +122,6 @@ class AdminNotification extends Model
     {
         return match ($this->type) {
             'new_order' => 'طلب جديد',
-            'low_stock' => 'مخزون منخفض',
             'new_customer' => 'عميل جديد',
             'new_review' => 'تقييم جديد',
             default => 'إشعار',

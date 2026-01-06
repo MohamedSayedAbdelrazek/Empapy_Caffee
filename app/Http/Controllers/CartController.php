@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CartResource;
 use App\Models\Product;
 use App\Services\CartService;
 use Illuminate\Http\Request;
@@ -29,9 +28,6 @@ class CartController extends Controller
         ]);
     }
 
-    /**
-     * Add product to cart (AJAX)
-     */
     /**
      * Add product to cart (AJAX)
      */

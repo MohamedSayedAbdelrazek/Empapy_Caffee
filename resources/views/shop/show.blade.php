@@ -480,7 +480,10 @@
                     @foreach ($relatedProducts as $related)
                         <div class="col-6 col-md-4 col-lg-3" data-aos="fade-up"
                             data-aos-delay="{{ $loop->index * 100 }}">
-                            @include('components.product-card', ['product' => $related])
+                            @include('components.product-card', [
+                                'product' => $related,
+                                'wishlistIds' => $wishlistIds ?? [],
+                            ])
                         </div>
                     @endforeach
                 </div>

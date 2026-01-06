@@ -110,7 +110,10 @@
                     <div class="row g-4">
                         @forelse($products as $product)
                             <div class="col-6 col-md-4">
-                                @include('components.product-card', ['product' => $product])
+                                @include('components.product-card', [
+                                    'product' => $product,
+                                    'wishlistIds' => $wishlistIds ?? [],
+                                ])
                             </div>
                         @empty
                             <div class="col-12">

@@ -97,9 +97,6 @@ class CheckoutController extends Controller
                         'total' => $itemTotal,
                         'options' => $options // temporarily hold options to save later
                     ];
-
-                    // Reduce stock (if we were tracking it)
-                    // $product->decrement('stock', $item['quantity']);
                 }
             }
 

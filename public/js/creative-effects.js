@@ -26,72 +26,6 @@ function initCreativeEffects() {
 function initCoffeeCursor() {
     // Disabled by user request
     return;
-
-    // Create cursor elements
-    const cursor = document.createElement('div');
-    cursor.className = 'coffee-cursor';
-    cursor.innerHTML = `
-        <svg viewBox="0 0 64 64" width="40" height="40">
-            <path fill="#C9A227" d="M52,20H48V16a4,4,0,0,0-4-4H16a4,4,0,0,0-4,4V40A12,12,0,0,0,24,52H40A12,12,0,0,0,52,40V36h0a8,8,0,0,0,0-16ZM48,32V24a4,4,0,0,1,0,8Z"/>
-        </svg>
-    `;
-
-    const trail = document.createElement('div');
-    trail.className = 'cursor-trail';
-
-    document.body.appendChild(cursor);
-    document.body.appendChild(trail);
-
-    let mouseX = 0, mouseY = 0;
-    let cursorX = 0, cursorY = 0;
-    let trailPoints = [];
-
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-
-        // Add trail point
-        trailPoints.push({ x: mouseX, y: mouseY, time: Date.now() });
-
-        // Keep only recent points
-        trailPoints = trailPoints.filter(p => Date.now() - p.time < 500);
-        updateTrail();
-    });
-
-    function updateTrail() {
-        trail.innerHTML = trailPoints.map((point, i) => {
-            const opacity = (i / trailPoints.length) * 0.5;
-            const size = 5 + (i / trailPoints.length) * 10;
-            return `<div class="trail-particle" style="
-                left: ${point.x}px;
-                top: ${point.y}px;
-                width: ${size}px;
-                height: ${size}px;
-                opacity: ${opacity};
-            "></div>`;
-        }).join('');
-    }
-
-    function animateCursor() {
-        cursorX += (mouseX - cursorX) * 0.15;
-        cursorY += (mouseY - cursorY) * 0.15;
-
-        cursor.style.left = `${cursorX}px`;
-        cursor.style.top = `${cursorY}px`;
-
-        requestAnimationFrame(animateCursor);
-    }
-    animateCursor();
-
-    // Hover effects
-    const interactiveElements = document.querySelectorAll('a, button, .btn, .product-card, input, select, textarea');
-    interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
-        el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
-    });
-
-    // Add cursor styles
-    document.body.classList.add('custom-cursor-active');
 }
 
 /**
@@ -101,32 +35,6 @@ function initCoffeeCursor() {
 function initCoffeeLoader() {
     // Disabled by user request to speed up website
     return;
-    <div class="coffee-loader-content">
-        <div class="coffee-cup-loader">
-            <div class="cup-body">
-                <div class="coffee-fill"></div>
-                <div class="coffee-bubbles">
-                    <span></span><span></span><span></span><span></span><span></span>
-                </div>
-            </div>
-            <div class="cup-handle"></div>
-            <div class="cup-steam">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-        <div class="loader-text">جاري التحميل...</div>
-        <div class="loader-progress">
-            <div class="loader-progress-bar"></div>
-        </div>
-    </div>
-    `;
-    document.body.appendChild(loader);
-
-    // Show loader initially
-    setTimeout(() => {
-        loader.classList.add('loaded');
-        setTimeout(() => loader.remove(), 500);
-    }, 1500);
 }
 
 /**
@@ -136,50 +44,6 @@ function initCoffeeLoader() {
 function initCoffeeScrollProgress() {
     // Disabled - keeping original top progress bar from enhancements.js
     return;
-
-    const progress = document.createElement('div');
-    progress.className = 'coffee-scroll-progress';
-    progress.innerHTML = `
-        < div class="progress-cup" >
-            <svg viewBox="0 0 40 50" width="40" height="50">
-                <defs>
-                    <clipPath id="cupClip">
-                        <path d="M5,10 L5,40 Q5,48 15,48 L25,48 Q35,48 35,40 L35,10 Z"/>
-                    </clipPath>
-                </defs>
-                <rect class="coffee-level" x="5" y="10" width="30" height="38" fill="#8B5A2B" clip-path="url(#cupClip)"/>
-                <path class="cup-outline" fill="none" stroke="#C9A227" stroke-width="2" d="M5,10 L5,40 Q5,48 15,48 L25,48 Q35,48 35,40 L35,10 M35,15 Q45,15 45,25 Q45,35 35,35"/>
-            </svg>
-            <span class="progress-percent">0%</span>
-        </div >
-        `;
-    document.body.appendChild(progress);
-
-    const coffeeLevel = progress.querySelector('.coffee-level');
-    const percentText = progress.querySelector('.progress-percent');
-
-    function updateProgress() {
-        const scrollTop = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = Math.min(scrollTop / docHeight, 1);
-
-        // Update coffee level (invert because we fill from bottom)
-        const yOffset = 48 - (scrollPercent * 38);
-        coffeeLevel.setAttribute('y', yOffset);
-        coffeeLevel.setAttribute('height', scrollPercent * 38);
-
-        percentText.textContent = Math.round(scrollPercent * 100) + '%';
-
-        // Show/hide based on scroll
-        if (scrollTop > 200) {
-            progress.classList.add('visible');
-        } else {
-            progress.classList.remove('visible');
-        }
-    }
-
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    updateProgress();
 }
 
 /**
@@ -196,8 +60,8 @@ function initSteamEffect() {
         for (let i = 0; i < 5; i++) {
             const steam = document.createElement('div');
             steam.className = 'steam-particle';
-            steam.style.animationDelay = `${ i * 0.3 } s`;
-            steam.style.left = `${ 20 + Math.random() * 60 }% `;
+            steam.style.animationDelay = `${i * 0.3} s`;
+            steam.style.left = `${20 + Math.random() * 60}% `;
             steamContainer.appendChild(steam);
         }
 
@@ -265,6 +129,7 @@ function typeText(element, text, speed, callback) {
 
 /**
  * 6. Interactive Coffee Particles
+ * OPTIMIZED: Uses IntersectionObserver to pause when not visible
  */
 function initInteractiveParticles() {
     const hero = document.querySelector('.hero-section');
@@ -273,16 +138,18 @@ function initInteractiveParticles() {
     const canvas = document.createElement('canvas');
     canvas.className = 'particles-canvas';
     canvas.style.cssText = `
-    position: absolute;
-    inset: 0;
-    z - index: 5;
-    pointer - events: none;
+        position: absolute;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
     `;
     hero.appendChild(canvas);
 
     const ctx = canvas.getContext('2d');
     let particles = [];
     let mouseX = 0, mouseY = 0;
+    let animationId = null;
+    let isVisible = false;
 
     function resize() {
         canvas.width = hero.offsetWidth;
@@ -354,8 +221,8 @@ function initInteractiveParticles() {
         }
     }
 
-    // Create particles
-    for (let i = 0; i < 30; i++) {
+    // Create particles (reduced from 30 to 20)
+    for (let i = 0; i < 20; i++) {
         particles.push(new Particle());
     }
 
@@ -366,8 +233,13 @@ function initInteractiveParticles() {
         mouseY = e.clientY - rect.top;
     });
 
-    // Animation loop
+    // Animation loop with visibility check
     function animate() {
+        if (!isVisible) {
+            animationId = null;
+            return;
+        }
+
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         particles.forEach(particle => {
@@ -375,9 +247,20 @@ function initInteractiveParticles() {
             particle.draw();
         });
 
-        requestAnimationFrame(animate);
+        animationId = requestAnimationFrame(animate);
     }
-    animate();
+
+    // Use IntersectionObserver to pause when not visible
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            isVisible = entry.isIntersecting;
+            if (isVisible && !animationId) {
+                animate();
+            }
+        });
+    }, { threshold: 0.1 });
+
+    observer.observe(hero);
 }
 
 /**
@@ -428,7 +311,7 @@ function initAdvanced3DCards() {
             const x = ((e.clientX - rect.left) / rect.width) * 100;
             const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-            shine.style.background = `radial - gradient(circle at ${ x } % ${ y } %, rgba(255, 255, 255, 0.3) 0 %, transparent 50 %)`;
+            shine.style.background = `radial - gradient(circle at ${x} % ${y} %, rgba(255, 255, 255, 0.3) 0 %, transparent 50 %)`;
         });
 
         card.addEventListener('mouseleave', () => {
@@ -445,7 +328,7 @@ function initMagneticButtonsAdvanced() {
 
     document.querySelectorAll('.btn-golden, .btn-outline-golden, .hero-badge').forEach(btn => {
         const inner = btn.innerHTML;
-        btn.innerHTML = `< span class="btn-inner" > ${ inner }</span > `;
+        btn.innerHTML = `<span class="btn-inner">${inner}</span>`;
         const span = btn.querySelector('.btn-inner');
 
         btn.addEventListener('mousemove', function (e) {
@@ -453,8 +336,8 @@ function initMagneticButtonsAdvanced() {
             const x = e.clientX - rect.left - rect.width / 2;
             const y = e.clientY - rect.top - rect.height / 2;
 
-            this.style.transform = `translate(${ x * 0.3}px, ${ y * 0.3}px)`;
-            span.style.transform = `translate(${ x * 0.1}px, ${ y * 0.1}px)`;
+            this.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
+            span.style.transform = `translate(${x * 0.1}px, ${y * 0.1}px)`;
         });
 
         btn.addEventListener('mouseleave', function () {
@@ -498,7 +381,7 @@ function initSmoothReveal() {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('revealed');
-                entry.target.style.transitionDelay = `${ Math.random() * 0.3 } s`;
+                entry.target.style.transitionDelay = `${Math.random() * 0.3} s`;
             }
         });
     }, { threshold: 0.1, rootMargin: '50px' });
@@ -525,7 +408,6 @@ const SoundManager = {
 
     enable() {
         this.enabled = true;
-        console.log('☕ Sound effects enabled');
     },
 
     disable() {
@@ -577,11 +459,11 @@ function activateEasterEgg() {
         bean.innerHTML = '☕';
         bean.style.cssText = `
     position: absolute;
-    font - size: ${ 20 + Math.random() * 30 } px;
-    left: ${ Math.random() * 100 }%;
+    font - size: ${20 + Math.random() * 30} px;
+    left: ${Math.random() * 100}%;
     top: -50px;
-    animation: rainFall ${ 2 + Math.random() * 3 }s linear forwards;
-    animation - delay: ${ Math.random() * 2 } s;
+    animation: rainFall ${2 + Math.random() * 3}s linear forwards;
+    animation - delay: ${Math.random() * 2} s;
     `;
         container.appendChild(bean);
     }
@@ -686,7 +568,7 @@ function initImageLens() {
 
         container.addEventListener('mouseenter', () => {
             lens.style.display = 'block';
-            lens.style.backgroundImage = `url(${ img.src })`;
+            lens.style.backgroundImage = `url(${img.src})`;
         });
 
         container.addEventListener('mouseleave', () => {
@@ -701,13 +583,13 @@ function initImageLens() {
             const lensX = x - 50;
             const lensY = y - 50;
 
-            lens.style.left = `${ lensX } px`;
-            lens.style.top = `${ lensY } px`;
+            lens.style.left = `${lensX} px`;
+            lens.style.top = `${lensY} px`;
 
             // Calculate background position
             const bgX = (x / rect.width) * 100;
             const bgY = (y / rect.height) * 100;
-            lens.style.backgroundPosition = `${ bgX }% ${ bgY }% `;
+            lens.style.backgroundPosition = `${bgX}% ${bgY}% `;
         });
     });
 }
