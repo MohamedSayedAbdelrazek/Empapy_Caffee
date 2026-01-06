@@ -25,9 +25,7 @@ class ProductController extends Controller
                     'id' => $value->id,
                     'type' => $option->type,
                     'option_name' => $option->name,
-                    'option_name_ar' => $option->name_ar,
                     'value' => $value->value,
-                    'value_ar' => $value->value_ar,
                     'price_modifier' => floatval($value->price_modifier),
                     'is_default' => $value->is_default,
                 ];
@@ -37,9 +35,7 @@ class ProductController extends Controller
         return response()->json([
             'id' => $product->id,
             'name' => $product->name,
-            'name_ar' => $product->name_ar,
             'description' => $product->description,
-            'description_ar' => $product->description_ar,
             'price' => floatval($product->price),
             'sale_price' => $product->sale_price ? floatval($product->sale_price) : null,
             'current_price' => floatval($product->current_price),
@@ -49,7 +45,6 @@ class ProductController extends Controller
             'category' => $product->category ? [
                 'id' => $product->category->id,
                 'name' => $product->category->name,
-                'name_ar' => $product->category->name_ar,
             ] : null,
             'options' => $formattedOptions,
         ]);

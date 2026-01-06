@@ -40,9 +40,9 @@ class ShopController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('name_ar', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%")
                     ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('description_ar', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -55,7 +55,7 @@ class ShopController extends Controller
                 $query->orderBy('price', 'desc');
                 break;
             case 'name':
-                $query->orderBy('name_ar', 'asc');
+                $query->orderBy('name', 'asc');
                 break;
             default:
                 $query->latest();

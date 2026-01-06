@@ -4,7 +4,7 @@
  * Advanced micro-interactions and visual feedback
  */
 
-(function() {
+(function () {
     'use strict';
 
     // ========================================
@@ -47,7 +47,7 @@
             // Create toast element
             const toast = document.createElement('div');
             toast.className = `toast-notification ${type}`;
-            
+
             // Default icons based on type
             const defaultIcons = {
                 success: 'bi-check-lg',
@@ -115,10 +115,10 @@
 
         hide(toast) {
             if (!toast || !toast.parentNode) return;
-            
+
             toast.classList.remove('show');
             toast.classList.add('hiding');
-            
+
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
@@ -149,19 +149,12 @@
         }
 
         cart(title, message, options = {}) {
-            return this.show({ 
-                type: 'cart', 
-                title, 
-                message, 
-                action: {
-                    text: 'عرض السلة',
-                    onClick: () => {
-                        if (typeof openCartDrawer === 'function') {
-                            openCartDrawer();
-                        }
-                    }
-                },
-                ...options 
+            return this.show({
+                type: 'cart',
+                title,
+                message,
+                duration: 3000, // مدة أقصر بدون زر إضافي
+                ...options
             });
         }
 
@@ -259,10 +252,10 @@
          * @param {number} count - Number of skeletons to show
          */
         show(container, type = 'productCard', count = 4) {
-            const el = typeof container === 'string' 
-                ? document.querySelector(container) 
+            const el = typeof container === 'string'
+                ? document.querySelector(container)
                 : container;
-            
+
             if (!el || !this.templates[type]) return;
 
             // Store original content
@@ -271,7 +264,7 @@
 
             const wrapper = document.createElement('div');
             wrapper.className = 'skeleton-wrapper row g-4';
-            
+
             for (let i = 0; i < count; i++) {
                 const col = document.createElement('div');
                 col.className = type === 'categoryCard' ? 'col-6 col-lg-3' : 'col-6 col-md-4 col-lg-3';
@@ -287,10 +280,10 @@
          * @param {HTMLElement|string} container - Container element or selector
          */
         hide(container) {
-            const el = typeof container === 'string' 
-                ? document.querySelector(container) 
+            const el = typeof container === 'string'
+                ? document.querySelector(container)
                 : container;
-            
+
             if (!el) return;
 
             const wrapper = el.querySelector('.skeleton-wrapper');
@@ -312,10 +305,10 @@
 
     class ImageGallery {
         constructor(container, options = {}) {
-            this.container = typeof container === 'string' 
-                ? document.querySelector(container) 
+            this.container = typeof container === 'string'
+                ? document.querySelector(container)
                 : container;
-            
+
             if (!this.container) return;
 
             this.options = {
@@ -339,7 +332,7 @@
         init() {
             this.createGallery();
             this.bindEvents();
-            
+
             if (this.options.autoplay) {
                 this.startAutoplay();
             }
@@ -387,7 +380,7 @@
             if (document.querySelector('.lightbox')) return;
 
             const images = this.options.images;
-            
+
             this.lightbox = document.createElement('div');
             this.lightbox.className = 'lightbox';
             this.lightbox.innerHTML = `
@@ -489,8 +482,8 @@
                 // Keyboard navigation
                 document.addEventListener('keydown', (e) => {
                     if (!this.lightbox.classList.contains('active')) return;
-                    
-                    switch(e.key) {
+
+                    switch (e.key) {
                         case 'Escape': this.closeLightbox(); break;
                         case 'ArrowRight': this.prev(); break;
                         case 'ArrowLeft': this.next(); break;
@@ -592,7 +585,7 @@
             if (this.lightbox && this.lightbox.classList.contains('active')) {
                 const lightboxImg = this.lightbox.querySelector('.lightbox-image');
                 if (lightboxImg) lightboxImg.src = images[index];
-                
+
                 this.lightbox.querySelectorAll('.lightbox-thumb').forEach((thumb, i) => {
                     thumb.classList.toggle('active', i === index);
                 });
@@ -613,10 +606,10 @@
 
         openLightbox() {
             if (!this.lightbox) return;
-            
+
             this.lightbox.classList.add('active');
             document.body.style.overflow = 'hidden';
-            
+
             // Update lightbox image to current
             const lightboxImg = this.lightbox.querySelector('.lightbox-image');
             if (lightboxImg) {
@@ -626,7 +619,7 @@
 
         closeLightbox() {
             if (!this.lightbox) return;
-            
+
             this.lightbox.classList.remove('active');
             document.body.style.overflow = '';
             this.zoomReset();
@@ -742,7 +735,7 @@
             const scrollTop = window.scrollY;
             const docHeight = document.documentElement.scrollHeight - window.innerHeight;
             const progress = (scrollTop / docHeight) * 100;
-            
+
             const bar = this.scrollIndicator.querySelector('.scroll-indicator-bar');
             if (bar) {
                 bar.style.width = `${progress}%`;
@@ -763,7 +756,7 @@
     // ========================================
 
     function initRippleEffect() {
-        document.addEventListener('click', function(e) {
+        document.addEventListener('click', function (e) {
             const target = e.target.closest('.ripple, .btn-golden, .btn-action, .btn');
             if (!target) return;
 
@@ -775,7 +768,7 @@
             const rect = target.getBoundingClientRect();
             const ripple = document.createElement('span');
             ripple.className = 'ripple-effect';
-            
+
             const size = Math.max(rect.width, rect.height);
             ripple.style.width = ripple.style.height = `${size}px`;
             ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
@@ -783,7 +776,7 @@
 
             // Store original overflow value
             const originalOverflow = target.style.overflow;
-            
+
             target.style.position = 'relative';
             target.style.overflow = 'hidden';
             target.appendChild(ripple);
@@ -806,7 +799,7 @@
         document.body.appendChild(container);
 
         const colors = ['#C9A227', '#E8C547', '#22C55E', '#3B82F6', '#F59E0B'];
-        
+
         for (let i = 0; i < 50; i++) {
             const confetti = document.createElement('div');
             confetti.className = 'confetti-piece';
@@ -843,7 +836,7 @@
     // Initialize counters when they come into view
     function initCounters() {
         const counters = document.querySelectorAll('.count-up');
-        
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting && !entry.target.classList.contains('counted')) {
@@ -876,10 +869,10 @@
 
     function validateField(field) {
         const isValid = field.checkValidity();
-        
+
         field.classList.remove('is-valid', 'is-invalid');
         field.classList.add(isValid ? 'is-valid' : 'is-invalid');
-        
+
         if (!isValid) {
             field.classList.add('shake');
             setTimeout(() => field.classList.remove('shake'), 500);
@@ -897,7 +890,7 @@
     window.ScrollEnhancements = new ScrollEnhancements();
 
     // Initialize components
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         initRippleEffect();
         initCounters();
         initFormValidation();
@@ -910,9 +903,9 @@
     function overrideCartMessages() {
         // Store original addToCart function if exists
         const originalAddToCart = window.addToCart;
-        
+
         if (typeof originalAddToCart === 'function') {
-            window.addToCart = function(productId, quantity = 1) {
+            window.addToCart = function (productId, quantity = 1) {
                 fetch('/cart/add', {
                     method: 'POST',
                     headers: {
@@ -921,30 +914,30 @@
                     },
                     body: JSON.stringify({ product_id: productId, quantity: quantity })
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        window.Toast.cart('تمت الإضافة! 🎉', `تمت إضافة المنتج إلى سلة التسوق بنجاح`);
-                        createConfetti();
-                        
-                        // Update cart count
-                        if (typeof updateCartCount === 'function') {
-                            updateCartCount();
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            window.Toast.cart('تمت الإضافة! 🎉', `تمت إضافة المنتج إلى سلة التسوق بنجاح`);
+                            createConfetti();
+
+                            // Update cart count
+                            if (typeof updateCartCount === 'function') {
+                                updateCartCount();
+                            }
+
+                            // Bounce cart badge
+                            const cartBadge = document.querySelector('.cart-badge');
+                            if (cartBadge) {
+                                cartBadge.classList.add('bounce');
+                                setTimeout(() => cartBadge.classList.remove('bounce'), 500);
+                            }
+                        } else {
+                            window.Toast.error('خطأ', data.message || 'حدث خطأ أثناء إضافة المنتج');
                         }
-                        
-                        // Bounce cart badge
-                        const cartBadge = document.querySelector('.cart-badge');
-                        if (cartBadge) {
-                            cartBadge.classList.add('bounce');
-                            setTimeout(() => cartBadge.classList.remove('bounce'), 500);
-                        }
-                    } else {
-                        window.Toast.error('خطأ', data.message || 'حدث خطأ أثناء إضافة المنتج');
-                    }
-                })
-                .catch(() => {
-                    window.Toast.error('خطأ في الاتصال', 'يرجى التحقق من اتصالك بالإنترنت');
-                });
+                    })
+                    .catch(() => {
+                        window.Toast.error('خطأ في الاتصال', 'يرجى التحقق من اتصالك بالإنترنت');
+                    });
             };
         }
     }

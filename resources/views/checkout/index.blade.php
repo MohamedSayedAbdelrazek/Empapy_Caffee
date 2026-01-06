@@ -123,10 +123,10 @@
                             <div class="order-items mb-4">
                                 @foreach ($cartItems as $item)
                                     <div class="d-flex gap-3 mb-3 pb-3 border-bottom">
-                                        <img src="{{ $item['product']->image }}" alt="{{ $item['product']->name_ar }}"
+                                        <img src="{{ $item['product']->image }}" alt="{{ $item['product']->name }}"
                                             class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                         <div class="flex-grow-1">
-                                            <h6 class="mb-1 small">{{ $item['product']->name_ar }}</h6>
+                                            <h6 class="mb-1 small">{{ $item['product']->name }}</h6>
                                             <small class="text-muted">الكمية: {{ $item['quantity'] }}</small>
                                         </div>
                                         <span class="fw-bold">{{ number_format($item['subtotal']) }} ج.م</span>

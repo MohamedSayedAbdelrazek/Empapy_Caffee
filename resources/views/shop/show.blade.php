@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', $product->name_ar . ' - إمبابي كافيه')
+@section('title', $product->name . ' - إمبابي كافيه')
 
-@section('meta_description', Str::limit($product->description_ar, 160))
+@section('meta_description', Str::limit($product->description, 160))
 
 @section('content')
     <!-- Page Header -->
@@ -14,9 +14,9 @@
                     <li class="breadcrumb-item"><a href="{{ route('shop.index') }}" class="animated-link">المتجر</a></li>
                     <li class="breadcrumb-item"><a
                             href="{{ route('shop.index', ['category' => $product->category?->slug]) }}"
-                            class="animated-link">{{ $product->category?->name_ar }}</a>
+                            class="animated-link">{{ $product->category?->name }}</a>
                     </li>
-                    <li class="breadcrumb-item active">{{ $product->name_ar }}</li>
+                    <li class="breadcrumb-item active">{{ $product->name }}</li>
                 </ol>
             </nav>
         </div>
@@ -43,7 +43,7 @@
                                         مميز
                                     </span>
                                 @endif
-                                <img src="{{ $product->image }}" alt="{{ $product->name_ar }}" id="gallery-main-image"
+                                <img src="{{ $product->image }}" alt="{{ $product->name }}" id="gallery-main-image"
                                     class="main-product-image">
 
                                 @php
@@ -92,11 +92,11 @@
                         <!-- Category Badge -->
                         <span class="badge bg-warning text-dark mb-3 px-3 py-2">
                             <i class="bi bi-tag-fill me-1"></i>
-                            {{ $product->category?->name_ar }}
+                            {{ $product->category?->name }}
                         </span>
 
                         <!-- Product Title -->
-                        <h1 class="mb-3" style="font-size: 2.5rem; font-weight: 800;">{{ $product->name_ar }}</h1>
+                        <h1 class="mb-3" style="font-size: 2.5rem; font-weight: 800;">{{ $product->name }}</h1>
                         <h2 class="text-muted mb-4" style="font-size: 1.2rem; font-weight: 400;">{{ $product->name }}</h2>
 
                         <!-- Rating Stars (if reviews exist) -->
@@ -223,8 +223,8 @@
                                                     class="option-pill {{ $value->is_default ? 'active' : '' }}"
                                                     data-option-type="weight" data-option-id="{{ $value->id }}"
                                                     data-price-modifier="{{ $value->price_modifier }}"
-                                                    data-value="{{ $value->value_ar }}">
-                                                    <span class="option-value">{{ $value->value_ar }}</span>
+                                                    data-value="{{ $value->value }}">
+                                                    <span class="option-value">{{ $value->value }}</span>
                                                     {{-- Weight shows full price (not modifier) --}}
                                                     <span class="option-price-tag">
                                                         {{ number_format($value->price_modifier) }} ج.م
@@ -250,8 +250,8 @@
                                                     class="option-pill roast {{ $value->is_default ? 'active' : '' }}"
                                                     data-option-type="roast" data-option-id="{{ $value->id }}"
                                                     data-price-modifier="{{ $value->price_modifier }}"
-                                                    data-value="{{ $value->value_ar }}">
-                                                    <span class="option-value">{{ $value->value_ar }}</span>
+                                                    data-value="{{ $value->value }}">
+                                                    <span class="option-value">{{ $value->value }}</span>
                                                     @if ($value->price_modifier != 0)
                                                         <span
                                                             class="option-price-mod {{ $value->price_modifier > 0 ? 'positive' : 'negative' }}">
@@ -279,8 +279,8 @@
                                                     class="option-pill additive {{ $value->is_default ? 'active' : '' }}"
                                                     data-option-type="additive" data-option-id="{{ $value->id }}"
                                                     data-price-modifier="{{ $value->price_modifier }}"
-                                                    data-value="{{ $value->value_ar }}">
-                                                    <span class="option-value">{{ $value->value_ar }}</span>
+                                                    data-value="{{ $value->value }}">
+                                                    <span class="option-value">{{ $value->value }}</span>
                                                     @if ($value->price_modifier != 0)
                                                         <span
                                                             class="option-price-mod {{ $value->price_modifier > 0 ? 'positive' : 'negative' }}">
@@ -316,7 +316,7 @@
                                 <i class="bi bi-file-text text-gold"></i>
                                 الوصف
                             </h5>
-                            <p class="text-muted lead">{{ $product->description_ar }}</p>
+                            <p class="text-muted lead">{{ $product->description }}</p>
                         </div>
 
                         <!-- Add to Cart Section -->
@@ -406,11 +406,11 @@
                             target="_blank" class="share-btn facebook">
                             <i class="bi bi-facebook"></i>
                         </a>
-                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($product->name_ar) }}"
+                        <a href="https://twitter.com/intent/tweet?url={{ urlencode(request()->url()) }}&text={{ urlencode($product->name) }}"
                             target="_blank" class="share-btn twitter">
                             <i class="bi bi-twitter-x"></i>
                         </a>
-                        <a href="https://wa.me/?text={{ urlencode($product->name_ar . ' - ' . request()->url()) }}"
+                        <a href="https://wa.me/?text={{ urlencode($product->name . ' - ' . request()->url()) }}"
                             target="_blank" class="share-btn whatsapp">
                             <i class="bi bi-whatsapp"></i>
                         </a>
@@ -443,7 +443,7 @@
         </div>
         <div class="lightbox-content">
             <div class="zoom-container" id="zoomContainer">
-                <img src="{{ $product->image }}" alt="{{ $product->name_ar }}" class="lightbox-image"
+                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="lightbox-image"
                     id="lightbox-image">
             </div>
             @if ($allImages->count() > 1)
@@ -1383,6 +1383,51 @@
                         this.dataset.selectedOptions = JSON.stringify(selectedOptions);
                     });
                 }
+            }
+            // ====== Wishlist Button Handler ======
+            const wishlistBtn = document.querySelector('.wishlist-btn');
+            if (wishlistBtn) {
+                wishlistBtn.addEventListener('click', function() {
+                    const productId = this.dataset.productId;
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                    const icon = this.querySelector('i');
+
+                    fetch('/wishlist/toggle', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Accept': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                product_id: productId
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                if (data.added) {
+                                    icon.classList.remove('bi-heart');
+                                    icon.classList.add('bi-heart-fill', 'text-danger');
+                                    this.innerHTML =
+                                        `<i class="bi bi-heart-fill text-danger me-2"></i>في المفضلة`;
+                                    if (window.Toast) window.Toast.success('تمت الإضافة!',
+                                        'تمت إضافة المنتج للمفضلة');
+                                } else {
+                                    icon.classList.remove('bi-heart-fill', 'text-danger');
+                                    icon.classList.add('bi-heart');
+                                    this.innerHTML = `<i class="bi bi-heart me-2"></i>أضف للمفضلة`;
+                                    if (window.Toast) window.Toast.success('تم الحذف!',
+                                        'تم حذف المنتج من المفضلة');
+                                }
+                                // Update wishlist badge
+                                if (typeof updateWishlistCount === 'function') updateWishlistCount();
+                            }
+                        })
+                        .catch(() => {
+                            if (window.Toast) window.Toast.error('خطأ', 'حدث خطأ أثناء العملية');
+                        });
+                });
             }
         });
     </script>

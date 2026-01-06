@@ -41,7 +41,7 @@
                                 <tr>
                                     <td>
                                         <div>
-                                            <strong>{{ $rule->name_ar }}</strong>
+                                            <strong>{{ $rule->name }}</strong>
                                             <br>
                                             <small class="text-muted">{{ $rule->slug }}</small>
                                         </div>

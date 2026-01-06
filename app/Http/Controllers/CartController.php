@@ -75,7 +75,18 @@ class CartController extends Controller
             return response()->json($result, 400);
         }
 
-        return response()->json($result);
+        // Get updated cart data
+        $cartData = $this->cartService->getCartWithProducts();
+
+        return response()->json([
+            'success' => true,
+            'message' => $result['message'] ?? 'تم تحديث السلة بنجاح',
+            'cart' => [
+                'items' => $cartData['items'],
+                'total' => $cartData['total'],
+                'count' => $cartData['count']
+            ]
+        ]);
     }
 
     /**

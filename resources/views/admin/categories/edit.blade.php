@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="page-header-admin">
             <h1 class="page-title-admin">تعديل الصنف</h1>
-            <p class="page-subtitle-admin">{{ $category->name_ar }}</p>
+            <p class="page-subtitle-admin">{{ $category->name }}</p>
         </div>
         <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-light">
             <i class="bi bi-arrow-right me-2"></i>العودة للأصناف
@@ -23,30 +23,21 @@
                     <h5 class="mb-4">معلومات الصنف</h5>
 
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">الاسم (English) *</label>
+                        <div class="col-12">
+                            <label class="form-label">اسم الصنف *</label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                 value="{{ old('name', $category->name) }}" required>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">الاسم (عربي) *</label>
-                            <input type="text" name="name_ar" class="form-control @error('name_ar') is-invalid @enderror"
-                                value="{{ old('name_ar', $category->name_ar) }}" required>
-                        </div>
                         <div class="col-12">
-                            <label class="form-label">الوصف (English)</label>
+                            <label class="form-label">وصف الصنف</label>
                             <textarea name="description" class="form-control" rows="3">{{ old('description', $category->description) }}</textarea>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">الوصف (عربي)</label>
-                            <textarea name="description_ar" class="form-control" rows="3">{{ old('description_ar', $category->description_ar) }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">صورة الصنف</label>
                             @if ($category->image)
                                 <div class="mb-3">
                                     <p class="text-muted small mb-2">الصورة الحالية:</p>
-                                    <img src="{{ $category->image }}" alt="{{ $category->name_ar }}" class="img-thumbnail"
+                                    <img src="{{ $category->image }}" alt="{{ $category->name }}" class="img-thumbnail"
                                         style="max-height: 150px;">
                                 </div>
                             @endif

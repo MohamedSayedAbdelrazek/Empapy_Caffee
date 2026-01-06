@@ -106,11 +106,11 @@
                             @foreach ($order->items as $item)
                                 <div class="d-flex align-items-center gap-3 mb-3">
                                     @if ($item->product)
-                                        <img src="{{ $item->product->image }}" alt="{{ $item->product_name_ar }}"
+                                        <img src="{{ $item->product->image }}" alt="{{ $item->product_name }}"
                                             class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                     @endif
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-0">{{ $item->product_name_ar }}</h6>
+                                        <h6 class="mb-0">{{ $item->product_name }}</h6>
                                         <small class="text-muted">الكمية: {{ $item->quantity }} ×
                                             {{ number_format($item->price) }} ج.م</small>
                                     </div>

@@ -25,7 +25,7 @@
                     <option value="">كل الأصناف</option>
                     @foreach ($categories as $cat)
                         <option value="{{ $cat->id }}" {{ request('category') == $cat->id ? 'selected' : '' }}>
-                            {{ $cat->name_ar }}
+                            {{ $cat->name }}
                         </option>
                     @endforeach
                 </select>
@@ -64,14 +64,14 @@
                     @forelse($products as $product)
                         <tr>
                             <td>
-                                <img src="{{ $product->image }}" alt="{{ $product->name_ar }}" class="rounded"
+                                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="rounded"
                                     style="width: 45px; height: 45px; object-fit: cover;">
                             </td>
                             <td>
-                                <strong>{{ $product->name_ar }}</strong>
+                                <strong>{{ $product->name }}</strong>
                                 <br><small class="text-muted">{{ $product->name }}</small>
                             </td>
-                            <td>{{ $product->category?->name_ar }}</td>
+                            <td>{{ $product->category?->name }}</td>
                             <td>
                                 @if ($product->sale_price)
                                     <span

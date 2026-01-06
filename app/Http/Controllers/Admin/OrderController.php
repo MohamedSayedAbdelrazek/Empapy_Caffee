@@ -177,9 +177,14 @@ class OrderController extends Controller
             'status' => $newStatus
         ]);
 
-        // If delivered, mark as paid
+        // If delivered, mark as paid (for cash on delivery)
         if ($newStatus === 'delivered' && $order->payment_method === 'cash_on_delivery') {
             $order->update(['payment_status' => 'paid']);
+        }
+
+        // If moved FROM delivered to another status, revert payment status (for cash on delivery)
+        if ($oldStatus === 'delivered' && $newStatus !== 'delivered' && $order->payment_method === 'cash_on_delivery') {
+            $order->update(['payment_status' => 'pending']);
         }
 
         // Status labels for response
@@ -205,7 +210,7 @@ class OrderController extends Controller
      */
     public function getOrderDetails(Order $order)
     {
-        $order->load('items.product');
+        $order->load('items.product', 'items.selectedOptions');
 
         $statusLabels = [
             'pending' => 'طلب جديد',
@@ -239,12 +244,17 @@ class OrderController extends Controller
                 'created_at' => $order->created_at->format('Y/m/d H:i'),
                 'created_at_human' => $order->created_at->diffForHumans(),
                 'items' => $order->items->map(fn($item) => [
-                    'name' => $item->product_name_ar,
-                    'name_en' => $item->product_name,
+                    'name' => $item->product_name,
                     'quantity' => $item->quantity,
                     'price' => number_format($item->price),
                     'total' => number_format($item->total),
                     'image' => $item->product?->image,
+                    'options' => $item->selectedOptions->map(fn($opt) => [
+                        'label' => $opt->option_name ?? $opt->option_type,
+                        'value' => $opt->value_name ?? '',
+                        'price' => $opt->price_modifier > 0 ? '+' . number_format($opt->price_modifier) : null,
+                    ]),
+                    'options_text' => $item->options_display_text,
                 ])
             ]
         ]);

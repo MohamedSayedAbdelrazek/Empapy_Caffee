@@ -46,7 +46,7 @@
                                 class="bi {{ $transaction->is_positive ? 'bi-plus-lg text-success' : 'bi-dash-lg text-danger' }} fs-4"></i>
                         </div>
                         <div>
-                            <h6 class="mb-1">{{ $transaction->description_ar }}</h6>
+                            <h6 class="mb-1">{{ $transaction->description }}</h6>
                             <small class="text-muted">
                                 <i class="bi bi-clock me-1"></i>
                                 {{ $transaction->created_at->format('Y/m/d - h:i A') }}

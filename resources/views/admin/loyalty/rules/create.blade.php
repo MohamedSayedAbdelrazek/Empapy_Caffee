@@ -62,24 +62,13 @@
                                     @enderror
                                 </div>
 
-                                <!-- Name EN -->
-                                <div class="col-md-6">
-                                    <label class="form-label">الاسم (إنجليزي) <span class="text-danger">*</span></label>
+                                <!-- Name -->
+                                <div class="col-md-12">
+                                    <label class="form-label">الاسم <span class="text-danger">*</span></label>
                                     <input type="text" name="name"
                                         class="form-control @error('name') is-invalid @enderror"
-                                        value="{{ old('name') }}" placeholder="Order Points" required>
+                                        value="{{ old('name') }}" placeholder="نقاط الطلب" required>
                                     @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <!-- Name AR -->
-                                <div class="col-md-6">
-                                    <label class="form-label">الاسم (عربي) <span class="text-danger">*</span></label>
-                                    <input type="text" name="name_ar"
-                                        class="form-control @error('name_ar') is-invalid @enderror"
-                                        value="{{ old('name_ar') }}" placeholder="نقاط الطلب" required>
-                                    @error('name_ar')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -167,9 +156,9 @@
 
                                 <!-- Description -->
                                 <div class="col-12">
-                                    <label class="form-label">الوصف (عربي)</label>
-                                    <textarea name="description_ar" rows="2" class="form-control @error('description_ar') is-invalid @enderror"
-                                        placeholder="وصف اختياري للقاعدة">{{ old('description_ar') }}</textarea>
+                                    <label class="form-label">الوصف</label>
+                                    <textarea name="description" rows="2" class="form-control @error('description') is-invalid @enderror"
+                                        placeholder="وصف اختياري للقاعدة">{{ old('description') }}</textarea>
                                 </div>
 
                                 <!-- Is Active -->

@@ -88,9 +88,7 @@ class LoyaltyController extends Controller
         $validated = $request->validate([
             'slug' => 'required|string|max:50|unique:point_rules',
             'name' => 'required|string|max:100',
-            'name_ar' => 'required|string|max:100',
             'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
             'type' => 'required|in:fixed,per_currency,percentage',
             'value' => 'required|numeric|min:0',
             'trigger' => 'required|string|max:50',
@@ -125,9 +123,7 @@ class LoyaltyController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:100',
-            'name_ar' => 'required|string|max:100',
             'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
             'type' => 'required|in:fixed,per_currency,percentage',
             'value' => 'required|numeric|min:0',
             'trigger' => 'required|string|max:50',
@@ -187,9 +183,7 @@ class LoyaltyController extends Controller
         $validated = $request->validate([
             'slug' => 'required|string|max:50|unique:loyalty_tiers',
             'name' => 'required|string|max:100',
-            'name_ar' => 'required|string|max:100',
             'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
             'min_points' => 'required|integer|min:0',
             'max_points' => 'nullable|integer|min:0',
             'discount_percent' => 'integer|min:0|max:100',
@@ -228,9 +222,7 @@ class LoyaltyController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:100',
-            'name_ar' => 'required|string|max:100',
             'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
             'min_points' => 'required|integer|min:0',
             'max_points' => 'nullable|integer|min:0',
             'discount_percent' => 'integer|min:0|max:100',
@@ -304,9 +296,7 @@ class LoyaltyController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:150',
-            'name_ar' => 'required|string|max:150',
             'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
             'points_required' => 'required|integer|min:1',
             'reward_type' => 'required|in:discount_fixed,discount_percent,free_shipping,free_product',
             'reward_value' => 'nullable|numeric|min:0',
@@ -355,9 +345,7 @@ class LoyaltyController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:150',
-            'name_ar' => 'required|string|max:150',
             'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
             'points_required' => 'required|integer|min:1',
             'reward_type' => 'required|in:discount_fixed,discount_percent,free_shipping,free_product',
             'reward_value' => 'nullable|numeric|min:0',
@@ -472,14 +460,13 @@ class LoyaltyController extends Controller
         $validated = $request->validate([
             'points' => 'required|integer|not_in:0',
             'reason' => 'required|string|max:255',
-            'reason_ar' => 'required|string|max:255',
         ]);
 
         $transaction = $this->loyaltyService->adjustPoints(
             $user,
             $validated['points'],
             $validated['reason'],
-            $validated['reason_ar'],
+            $validated['reason'],
             auth()->user()
         );
 

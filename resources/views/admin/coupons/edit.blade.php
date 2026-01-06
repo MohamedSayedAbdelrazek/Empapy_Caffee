@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="page-header-admin">
             <h1 class="page-title-admin">تعديل الكوبون</h1>
-            <p class="page-subtitle-admin">{{ $coupon->name_ar }}</p>
+            <p class="page-subtitle-admin">{{ $coupon->name }}</p>
         </div>
         <a href="{{ route('admin.coupons.index') }}" class="btn btn-outline-light">
             <i class="bi bi-arrow-right me-2"></i>العودة
@@ -31,10 +31,10 @@
 
                 <!-- Name -->
                 <div class="col-md-6">
-                    <label class="form-label">اسم الكوبون (عربي) *</label>
-                    <input type="text" name="name_ar" class="form-control @error('name_ar') is-invalid @enderror"
-                        value="{{ old('name_ar', $coupon->name_ar) }}" required>
-                    @error('name_ar')
+                    <label class="form-label">اسم الكوبون *</label>
+                    <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
+                        value="{{ old('name', $coupon->name) }}" required>
+                    @error('name')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
                 </div>
@@ -42,7 +42,7 @@
                 <!-- Description -->
                 <div class="col-12">
                     <label class="form-label">الوصف</label>
-                    <textarea name="description_ar" class="form-control" rows="2">{{ old('description_ar', $coupon->description_ar) }}</textarea>
+                    <textarea name="description" class="form-control" rows="2">{{ old('description', $coupon->description) }}</textarea>
                 </div>
 
                 <!-- Type -->

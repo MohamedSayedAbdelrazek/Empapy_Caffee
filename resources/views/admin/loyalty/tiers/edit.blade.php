@@ -9,10 +9,10 @@
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.loyalty.dashboard') }}">نظام الولاء</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('admin.loyalty.tiers') }}">المستويات</a></li>
-                    <li class="breadcrumb-item active">تعديل {{ $tier->name_ar }}</li>
+                    <li class="breadcrumb-item active">تعديل {{ $tier->name }}</li>
                 </ol>
             </nav>
-            <h1 class="h3 mb-0 mt-2">✏️ تعديل {{ $tier->name_ar }}</h1>
+            <h1 class="h3 mb-0 mt-2">✏️ تعديل {{ $tier->name }}</h1>
         </div>
 
         <div class="card border-0 shadow-sm">

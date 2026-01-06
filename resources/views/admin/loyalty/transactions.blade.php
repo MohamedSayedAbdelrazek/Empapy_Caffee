@@ -102,7 +102,7 @@
                                         {{ $t->formatted_points }}
                                     </td>
                                     <td>{{ number_format($t->balance_after) }}</td>
-                                    <td><small>{{ Str::limit($t->description_ar, 30) }}</small></td>
+                                    <td><small>{{ Str::limit($t->description, 30) }}</small></td>
                                     <td><small class="text-muted">{{ $t->created_at->format('Y/m/d H:i') }}</small></td>
                                 </tr>
                             @empty

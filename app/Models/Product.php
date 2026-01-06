@@ -16,10 +16,8 @@ class Product extends Model
     protected $fillable = [
         'category_id',
         'name',
-        'name_ar',
         'slug',
         'description',
-        'description_ar',
         'price',
         'sale_price',
         'image',
@@ -28,7 +26,6 @@ class Product extends Model
         'weight',
         'roast_level',
         'origin',
-        'origin_ar',
         'is_featured',
         'is_active',
         'has_weight_options',

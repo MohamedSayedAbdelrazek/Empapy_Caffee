@@ -15,9 +15,7 @@ class OrderItemOption extends Model
         'product_option_value_id',
         'option_type',
         'option_name',
-        'option_name_ar',
         'value_name',
-        'value_name_ar',
         'price_modifier',
     ];
 
@@ -59,7 +57,7 @@ class OrderItemOption extends Model
      */
     public function getDisplayTextAttribute(): string
     {
-        $text = $this->option_name_ar . ': ' . $this->value_name_ar;
+        $text = $this->option_name . ': ' . $this->value_name;
 
         if ($this->price_modifier != 0) {
             $text .= ' (' . $this->formatted_price_modifier . ')';
@@ -78,9 +76,7 @@ class OrderItemOption extends Model
             'product_option_value_id' => $value->id,
             'option_type' => $value->option->type,
             'option_name' => $value->option->name ?? $value->option->type_name,
-            'option_name_ar' => $value->option->name_ar ?? $value->option->type_name,
             'value_name' => $value->value,
-            'value_name_ar' => $value->value_ar,
             'price_modifier' => $value->price_modifier,
         ]);
     }

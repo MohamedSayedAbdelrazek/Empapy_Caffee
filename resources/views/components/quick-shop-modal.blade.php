@@ -32,7 +32,7 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        animation: fadeIn 0.3s ease;
+        animation: fadeIn 0.15s ease;
     }
 
     .modal-overlay {
@@ -54,7 +54,7 @@
         max-height: 90vh;
         overflow-y: auto;
         box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(201, 162, 39, 0.2);
-        animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: slideUp 0.15s cubic-bezier(0.4, 0, 0.2, 1);
         scrollbar-width: thin;
         scrollbar-color: var(--gold) #2c1810;
     }
@@ -93,6 +93,7 @@
     .modal-close:hover {
         background: rgba(201, 162, 39, 0.2);
         transform: rotate(90deg);
+        transition: all 0.2s ease;
     }
 
     .modal-content {
@@ -194,14 +195,14 @@
         margin: 25px 0;
     }
 
-    .quantity-controls {
+    .modal-quantity-controls {
         display: flex;
         align-items: center;
         gap: 15px;
         justify-content: center;
     }
 
-    .quantity-btn {
+    .modal-quantity-btn {
         width: 40px;
         height: 40px;
         border-radius: 50%;
@@ -213,15 +214,17 @@
         justify-content: center;
         cursor: pointer;
         transition: all 0.3s ease;
+        font-size: 1.1rem;
     }
 
-    .quantity-btn:hover {
+    .modal-quantity-btn:hover {
         background: var(--gradient-gold);
         border-color: var(--gold);
         color: var(--espresso);
+        transform: scale(1.1);
     }
 
-    .quantity-input {
+    .modal-quantity-input {
         width: 60px;
         height: 40px;
         text-align: center;
@@ -236,8 +239,8 @@
     }
 
     /* Hide spinner arrows in Chrome, Safari, Edge, Opera */
-    .quantity-input::-webkit-outer-spin-button,
-    .quantity-input::-webkit-inner-spin-button {
+    .modal-quantity-input::-webkit-outer-spin-button,
+    .modal-quantity-input::-webkit-inner-spin-button {
         -webkit-appearance: none;
         margin: 0;
     }
@@ -377,9 +380,9 @@
         const content = document.getElementById('modalProductContent');
 
         let html = `
-            <img src="${product.image}" alt="${product.name_ar}" class="modal-product-image">
-            <h2 class="modal-product-title">${product.name_ar}</h2>
-            ${product.category ? `<span class="modal-product-category"><i class="bi bi-tag me-1"></i>${product.category.name_ar}</span>` : ''}
+            <img src="${product.image}" alt="${product.name}" class="modal-product-image">
+            <h2 class="modal-product-title">${product.name}</h2>
+            ${product.category ? `<span class="modal-product-category"><i class="bi bi-tag me-1"></i>${product.category.name}</span>` : ''}
             <div class="modal-price-display" id="modalCurrentPrice">${formatPrice(product.current_price)} ج.م</div>
         `;
 
@@ -407,12 +410,12 @@
         html += `
             <div class="modal-quantity-selector">
                 <label class="modal-option-label">الكمية</label>
-                <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="changeModalQuantity(-1)">
+                <div class="modal-quantity-controls">
+                    <button class="modal-quantity-btn" onclick="changeModalQuantity(-1)">
                         <i class="bi bi-dash"></i>
                     </button>
-                    <input type="number" class="quantity-input" id="modalQuantity" value="1"min="1" max="10" readonly>
-                    <button class="quantity-btn" onclick="changeModalQuantity(1)">
+                    <input type="number" class="modal-quantity-input" id="modalQuantity" value="1" min="1" max="10" readonly>
+                    <button class="modal-quantity-btn" onclick="changeModalQuantity(1)">
                         <i class="bi bi-plus"></i>
                     </button>
                 </div>
@@ -469,7 +472,7 @@
                     data-type="${type}" 
                     data-value-id="${option.id}"
                     onclick="selectModalOption('${type}', ${option.id})">
-                    <span>${option.value_ar}</span>
+                    <span>${option.value}</span>
                     ${option.price_modifier != 0 || isWeight ? `<span class="modal-option-price">${priceText}</span>` : ''}
                 </button>
             `;
@@ -552,12 +555,28 @@
         }
     }
 
-    // Add to Cart from Modal
+    // Add to Cart from Modal - OPTIMISTIC UI
     function addToCartFromModal() {
         const productId = currentProductData.id;
         const quantity = currentQuantity;
         const options = selectedOptions;
 
+        // INSTANT: إغلاق فوري + تنبيه فوري
+        closeQuickShopModal();
+        if (window.Toast) window.Toast.cart('تمت الإضافة! 🎉', 'تمت إضافة المنتج للسلة');
+        else showToast('تم إضافة المنتج للسلة بنجاح!', 'success');
+        if (window.createConfetti) window.createConfetti();
+
+        // تحديث Badge فوري
+        const badge = document.getElementById('cartBadge');
+        const oldCount = badge ? parseInt(badge.textContent) || 0 : 0;
+        if (badge) {
+            badge.textContent = oldCount + quantity;
+            badge.classList.add('bounce');
+            setTimeout(() => badge.classList.remove('bounce'), 500);
+        }
+
+        // Server request في الخلفية
         fetch('/cart/add', {
                 method: 'POST',
                 headers: {
@@ -573,16 +592,20 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showToast('تم إضافة المنتج للسلة بنجاح!', 'success');
-                    updateCartBadge();
-                    closeQuickShopModal();
+                    if (badge) badge.textContent = data.cartCount;
+                    if (window.updateCartCount) window.updateCartCount();
                 } else {
-                    showToast(data.message || 'حدث خطأ', 'error');
+                    // ROLLBACK
+                    if (badge) badge.textContent = oldCount;
+                    if (window.Toast) window.Toast.error('خطأ', data.message || 'حدث خطأ');
+                    else showToast(data.message || 'حدث خطأ', 'error');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                showToast('حدث خطأ أثناء الإضافة للسلة', 'error');
+                // ROLLBACK
+                if (badge) badge.textContent = oldCount;
+                if (window.Toast) window.Toast.error('خطأ', 'حدث خطأ في الاتصال');
+                else showToast('حدث خطأ أثناء الإضافة للسلة', 'error');
             });
     }
 

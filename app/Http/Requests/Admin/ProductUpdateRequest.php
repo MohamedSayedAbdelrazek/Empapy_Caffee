@@ -21,19 +21,13 @@ class ProductUpdateRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'name_ar' => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
-            'description_ar' => 'nullable|string',
             'price' => 'required|numeric|min:0',
             'sale_price' => 'nullable|numeric|min:0|lt:price',
             // 'stock' => 'required|integer|min:0', // Removed as per request (always available)
             'weight' => 'nullable|string|max:50',
             'roast_level' => 'nullable|in:light,medium,dark',
-            'weight' => 'nullable|string|max:50',
-            'roast_level' => 'nullable|in:light,medium,dark',
-            // 'origin' => 'nullable|string|max:100', // Removed
-            // 'origin_ar' => 'nullable|string|max:100', // Removed
             'is_featured' => 'nullable',
             'is_active' => 'nullable',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
@@ -57,18 +51,14 @@ class ProductUpdateRequest extends FormRequest
     public function attributes(): array
     {
         return [
-            'name' => 'الاسم (English)',
-            'name_ar' => 'الاسم (عربي)',
+            'name' => 'اسم المنتج',
             'category_id' => 'الصنف',
-            'description' => 'الوصف (English)',
-            'description_ar' => 'الوصف (عربي)',
+            'description' => 'الوصف',
             'price' => 'السعر',
             'sale_price' => 'سعر التخفيض',
             'stock' => 'المخزون',
             'weight' => 'الوزن',
             'roast_level' => 'درجة التحميص',
-            'origin' => 'المصدر',
-            'origin_ar' => 'المصدر (عربي)',
             'image' => 'صورة المنتج',
             'gallery' => 'الصور الإضافية',
         ];
@@ -80,8 +70,7 @@ class ProductUpdateRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'اسم المنتج بالإنجليزية مطلوب',
-            'name_ar.required' => 'اسم المنتج بالعربية مطلوب',
+            'name.required' => 'اسم المنتج مطلوب',
             'category_id.required' => 'يجب اختيار صنف المنتج',
             'category_id.exists' => 'الصنف المختار غير موجود',
             'price.required' => 'سعر المنتج مطلوب',

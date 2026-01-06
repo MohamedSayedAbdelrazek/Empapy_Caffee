@@ -17,7 +17,6 @@ class CartResource extends JsonResource
                 return [
                     'id' => $item['id'],
                     'name' => $item['name'] ?? null,
-                    'name_ar' => $item['name_ar'],
                     'image' => $item['image'],
                     'price' => (float) $item['price'],
                     'quantity' => (int) $item['quantity'],

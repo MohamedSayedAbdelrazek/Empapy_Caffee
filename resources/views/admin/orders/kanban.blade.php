@@ -5,9 +5,9 @@
 @push('styles')
     <style>
         /* ==========================================
-                       🎨 PREMIUM KANBAN BOARD STYLES
-                       WOW-Factor Design with Glassmorphism
-                       ========================================== */
+                                                               🎨 PREMIUM KANBAN BOARD STYLES
+                                                               WOW-Factor Design with Glassmorphism
+                                                               ========================================== */
 
         /* Main Container */
         .kanban-container {
@@ -516,8 +516,8 @@
         }
 
         /* ==========================================
-                       🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
-                       ========================================== */
+                                                               🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
+                                                               ========================================== */
 
         .order-modal-overlay {
             position: fixed;
@@ -785,6 +785,27 @@
             color: #fff;
         }
 
+        /* Options/Additions Badges */
+        .modal-item-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .option-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 6px;
+            background: rgba(201, 162, 39, 0.15);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            color: var(--admin-primary);
+        }
+
+        .option-badge small {
+            font-size: 0.65rem;
+        }
+
         /* Customer Info Grid */
         .customer-grid {
             display: grid;
@@ -1027,7 +1048,8 @@
         @php
             $totalOrders = collect($ordersByStatus)->flatten()->count();
             $pendingCount = count($ordersByStatus['pending']);
-            $todayTotal = collect($ordersByStatus)->flatten()->where('created_at', '>=', today())->sum('total');
+            // مبيعات اليوم = فقط الطلبات التي تم تسليمها اليوم
+            $todayTotal = collect($ordersByStatus['delivered'])->where('updated_at', '>=', today())->sum('total');
         @endphp
 
         <div class="kanban-stat">
@@ -1055,8 +1077,8 @@
                 <i class="bi bi-cash-coin"></i>
             </div>
             <div>
-                <div class="kanban-stat-value">{{ number_format($todayTotal) }}</div>
-                <div class="kanban-stat-label">مبيعات اليوم (ج.م)</div>
+                <div class="kanban-stat-value" id="todayTotalStat">{{ number_format($todayTotal) }}</div>
+                <div class="kanban-stat-label">إيرادات اليوم (مسلم)</div>
             </div>
         </div>
     </div>
@@ -1085,7 +1107,8 @@
                 <div class="kanban-column-body" id="column-{{ $status }}">
                     @forelse($ordersByStatus[$status] as $order)
                         <div class="order-card" draggable="true" data-order-id="{{ $order->id }}"
-                            ondragstart="handleDragStart(event, {{ $order->id }})" ondragend="handleDragEnd(event)">
+                            data-total="{{ $order->total }}" ondragstart="handleDragStart(event, {{ $order->id }})"
+                            ondragend="handleDragEnd(event)">
 
                             @if ($order->created_at >= now()->subMinutes(30))
                                 <span class="new-order-indicator" title="طلب جديد"></span>
@@ -1385,6 +1408,15 @@
             if (newStatus === 'delivered') {
                 playSound('success');
                 createConfetti();
+                // تحديث إيرادات اليوم فورياً
+                updateTodayTotal(orderCard, 'add');
+                // تحديث badge حالة الدفع لـ مدفوع
+                updatePaymentBadge(orderCard, 'paid');
+            } else if (currentStatus === 'delivered') {
+                // إذا تم نقل الطلب من التوصيل لحالة أخرى - طرح المبلغ
+                updateTodayTotal(orderCard, 'subtract');
+                // تحديث badge حالة الدفع لـ غير مدفوع
+                updatePaymentBadge(orderCard, 'pending');
             } else if (newStatus === 'cancelled') {
                 playSound('cancel');
             } else {
@@ -1447,6 +1479,49 @@
                 </div>
             `;
             }
+        }
+
+        // تحديث إيرادات اليوم فورياً
+        function updateTodayTotal(orderCard, action) {
+            const todayTotalEl = document.getElementById('todayTotalStat');
+            if (!todayTotalEl) return;
+
+            const orderTotal = parseFloat(orderCard.dataset.total) || 0;
+            const currentTotal = parseFloat(todayTotalEl.textContent.replace(/,/g, '')) || 0;
+
+            let newTotal;
+            if (action === 'add') {
+                newTotal = currentTotal + orderTotal;
+            } else {
+                newTotal = Math.max(0, currentTotal - orderTotal);
+            }
+
+            // تحديث القيمة مع animation
+            todayTotalEl.style.transform = 'scale(1.3)';
+            todayTotalEl.style.color = action === 'add' ? '#10b981' : '#ef4444';
+            todayTotalEl.textContent = newTotal.toLocaleString();
+
+            setTimeout(() => {
+                todayTotalEl.style.transform = 'scale(1)';
+                todayTotalEl.style.color = '';
+            }, 300);
+        }
+
+        // تحديث badge حالة الدفع فورياً
+        function updatePaymentBadge(orderCard, status) {
+            const badge = orderCard.querySelector('.payment-badge');
+            if (!badge) return;
+
+            // تحديث الـ class والنص
+            badge.className = 'order-detail-item payment-badge ' + status;
+            badge.innerHTML = `<i class="bi bi-credit-card"></i> ${status === 'paid' ? 'مدفوع' : 'غير مدفوع'}`;
+
+            // Animation
+            badge.style.transform = 'scale(1.2)';
+            badge.style.transition = 'transform 0.3s ease';
+            setTimeout(() => {
+                badge.style.transform = 'scale(1)';
+            }, 300);
         }
 
         // ==========================================
@@ -1631,7 +1706,16 @@
                     }
                     <div class="modal-item-info">
                         <div class="modal-item-name">${item.name}</div>
-                        <div class="modal-item-name-en">${item.name_en || ''}</div>
+                        ${item.options && item.options.length > 0 ? `
+                                        <div class="modal-item-options">
+                                            ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
+                                    <span class="option-badge">
+                                        ${opt.label}: ${opt.value}
+                                        ${opt.price ? ` <small class="text-success">(${opt.price})</small>` : ''}
+                                    </span>
+                                `).join('')}
+                                        </div>
+                                    ` : ''}
                     </div>
                     <div class="modal-item-quantity">×${item.quantity}</div>
                     <div class="modal-item-price">

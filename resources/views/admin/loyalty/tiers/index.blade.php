@@ -45,7 +45,7 @@
                             <div class="fs-1 mb-3">{{ $tier->icon }}</div>
 
                             <!-- Name -->
-                            <h5 class="fw-bold mb-1" style="color: {{ $tier->color }};">{{ $tier->name_ar }}</h5>
+                            <h5 class="fw-bold mb-1" style="color: {{ $tier->color }};">{{ $tier->name }}</h5>
                             <p class="text-muted small mb-3">{{ $tier->slug }}</p>
 
                             <!-- Points Range -->

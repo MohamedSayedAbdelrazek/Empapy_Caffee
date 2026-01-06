@@ -40,12 +40,12 @@
                                                 <td>
                                                     <div class="d-flex align-items-center gap-3">
                                                         <img src="{{ $item['product']->image }}"
-                                                            alt="{{ $item['product']->name_ar }}" class="rounded"
+                                                            alt="{{ $item['product']->name }}" class="rounded"
                                                             style="width: 80px; height: 80px; object-fit: cover;">
                                                         <div>
-                                                            <h6 class="mb-1">{{ $item['product']->name_ar }}</h6>
+                                                            <h6 class="mb-1">{{ $item['product']->name }}</h6>
                                                             <small
-                                                                class="text-muted d-block mb-1">{{ $item['product']->category?->name_ar }}</small>
+                                                                class="text-muted d-block mb-1">{{ $item['product']->category?->name }}</small>
 
                                                             @if (!empty($item['options']))
                                                                 <div class="d-flex flex-wrap gap-1">
@@ -64,19 +64,19 @@
                                                         ج.م</span>
                                                 </td>
                                                 <td>
-                                                    <div class="quantity-input d-flex align-items-center">
-                                                        <button type="button" class="btn btn-sm border qty-btn"
+                                                    <div class="quantity-controls" data-key="{{ $item['key'] }}">
+                                                        <button type="button" class="qty-btn-modern"
                                                             data-action="decrease">
                                                             <i class="bi bi-dash"></i>
                                                         </button>
-                                                        <input type="number" value="{{ $item['quantity'] }}" min="1"
-                                                            max="10"
-                                                            class="form-control form-control-sm text-center border-0 qty-input"
-                                                            style="width: 50px;">
-                                                        <button type="button" class="btn btn-sm border qty-btn"
+                                                        <div class="qty-display">{{ $item['quantity'] }}</div>
+                                                        <button type="button" class="qty-btn-modern"
                                                             data-action="increase">
                                                             <i class="bi bi-plus"></i>
                                                         </button>
+                                                        <div class="qty-loading">
+                                                            <div class="qty-spinner"></div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -187,21 +187,24 @@
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
             // Quantity buttons
-            document.querySelectorAll('.qty-btn').forEach(btn => {
+            document.querySelectorAll('.qty-btn-modern').forEach(btn => {
                 btn.addEventListener('click', function() {
-                    const row = this.closest('.cart-item');
-                    const input = row.querySelector('.qty-input');
-                    const key = row.dataset.key;
-                    let quantity = parseInt(input.value);
+                    const controls = this.closest('.quantity-controls');
+                    const display = controls.querySelector('.qty-display');
+                    const key = controls.dataset.key;
+                    let quantity = parseInt(display.textContent);
 
                     if (this.dataset.action === 'increase' && quantity < 10) {
                         quantity++;
                     } else if (this.dataset.action === 'decrease' && quantity > 1) {
                         quantity--;
+                    } else {
+                        return; // Don't update if at limits
                     }
 
-                    input.value = quantity;
-                    updateCartItem(key, quantity);
+                    // Update display immediately for better UX
+                    display.textContent = quantity;
+                    updateCartItem(key, quantity, controls);
                 });
             });
 
@@ -233,7 +236,12 @@
                 }
             });
 
-            function updateCartItem(key, quantity) {
+            function updateCartItem(key, quantity, controls) {
+                // Add loading state
+                controls.classList.add('loading');
+                const buttons = controls.querySelectorAll('.qty-btn-modern');
+                buttons.forEach(btn => btn.disabled = true);
+
                 fetch('/cart/update', {
                         method: 'POST',
                         headers: {
@@ -249,9 +257,105 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            location.reload(); // Simple reload to update totals
+                            // Remove loading state
+                            controls.classList.remove('loading');
+                            controls.classList.add('success');
+                            setTimeout(() => controls.classList.remove('success'), 400);
+                            buttons.forEach(btn => btn.disabled = false);
+
+                            // Update cart data dynamically without reload
+                            updateCartDisplay(data.cart);
+                        } else {
+                            // Show error state
+                            controls.classList.remove('loading');
+                            controls.classList.add('error');
+                            setTimeout(() => controls.classList.remove('error'), 400);
+                            buttons.forEach(btn => btn.disabled = false);
+
+                            // Revert quantity display
+                            const display = controls.querySelector('.qty-display');
+                            const row = controls.closest('.cart-item');
+                            const currentQty = row.dataset.quantity || quantity;
+                            display.textContent = currentQty;
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error updating cart:', error);
+                        controls.classList.remove('loading');
+                        controls.classList.add('error');
+                        setTimeout(() => controls.classList.remove('error'), 400);
+                        buttons.forEach(btn => btn.disabled = false);
                     });
+            }
+
+            function updateCartDisplay(cartData) {
+                // Update each item's subtotal
+                cartData.items.forEach(item => {
+                    const row = document.querySelector(`[data-key="${item.key}"]`);
+                    if (row) {
+                        const subtotal = row.querySelector('.item-subtotal');
+                        if (subtotal) {
+                            subtotal.classList.add('cart-total-updating');
+                            subtotal.textContent = formatNumber(item.subtotal) + ' ج.م';
+                            setTimeout(() => subtotal.classList.remove('cart-total-updating'), 300);
+                        }
+                    }
+                });
+
+                // Update cart subtotal
+                const subtotalEl = document.getElementById('cartSubtotal');
+                if (subtotalEl) {
+                    subtotalEl.classList.add('cart-total-updating');
+                    subtotalEl.textContent = formatNumber(cartData.total) + ' ج.م';
+                    setTimeout(() => subtotalEl.classList.remove('cart-total-updating'), 300);
+                }
+
+                // Update delivery fee and total
+                const deliveryFee = cartData.total >= 500 ? 0 : 50;
+                const totalWithDelivery = cartData.total + deliveryFee;
+
+                // Update delivery text
+                const deliveryTextElements = document.querySelectorAll('.d-flex.justify-content-between.mb-3');
+                deliveryTextElements.forEach(el => {
+                    const spans = el.querySelectorAll('span');
+                    if (spans[0] && spans[0].textContent.includes('التوصيل')) {
+                        const deliverySpan = spans[1];
+                        if (deliverySpan) {
+                            deliverySpan.classList.add('cart-total-updating');
+                            deliverySpan.innerHTML = deliveryFee === 0 ?
+                                'مجاني' :
+                                deliveryFee + ' ج.م';
+                            deliverySpan.className = deliveryFee === 0 ? 'fw-bold text-success' : 'fw-bold';
+                            setTimeout(() => deliverySpan.classList.remove('cart-total-updating'), 300);
+                        }
+                    }
+                });
+
+                // Update or remove free shipping alert
+                const existingAlert = document.querySelector('.alert.alert-info');
+                if (cartData.total < 500) {
+                    const remaining = 500 - cartData.total;
+                    if (existingAlert) {
+                        existingAlert.innerHTML = `
+                            <i class="bi bi-info-circle me-2"></i>
+                            أضف ${formatNumber(remaining)} ج.م للحصول على توصيل مجاني
+                        `;
+                    }
+                } else if (existingAlert) {
+                    existingAlert.style.display = 'none';
+                }
+
+                // Update final total
+                const totalEl = document.getElementById('cartTotal');
+                if (totalEl) {
+                    totalEl.classList.add('cart-total-updating');
+                    totalEl.textContent = formatNumber(totalWithDelivery) + ' ج.م';
+                    setTimeout(() => totalEl.classList.remove('cart-total-updating'), 300);
+                }
+            }
+
+            function formatNumber(num) {
+                return new Intl.NumberFormat('ar-EG').format(num);
             }
 
             function removeCartItem(key, row) {

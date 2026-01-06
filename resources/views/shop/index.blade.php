@@ -36,7 +36,7 @@
                                     @foreach ($categories as $category)
                                         <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
                                             class="list-group-item list-group-item-action d-flex justify-content-between {{ request('category') === $category->slug ? 'active' : '' }}">
-                                            {{ $category->name_ar }}
+                                            {{ $category->name }}
                                             <span
                                                 class="badge bg-secondary rounded-pill">{{ $category->products_count }}</span>
                                         </a>

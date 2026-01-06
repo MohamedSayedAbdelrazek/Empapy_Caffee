@@ -16,9 +16,7 @@ class ProductResource extends JsonResource
             'id' => $this->id,
             'slug' => $this->slug,
             'name' => $this->name,
-            'name_ar' => $this->name_ar,
             'description' => $this->description,
-            'description_ar' => $this->description_ar,
             'price' => (float) $this->price,
             'sale_price' => $this->sale_price ? (float) $this->sale_price : null,
             'current_price' => (float) $this->current_price,
@@ -30,16 +28,14 @@ class ProductResource extends JsonResource
             'gallery' => $this->gallery,
             'weight' => $this->weight,
             'roast_level' => $this->roast_level,
-            'roast_level_ar' => $this->getRoastLevelAr(),
+            'roast_level_label' => $this->getRoastLevelAr(),
             'origin' => $this->origin,
-            'origin_ar' => $this->origin_ar,
             'is_featured' => (bool) $this->is_featured,
             'is_active' => (bool) $this->is_active,
             'category' => $this->whenLoaded('category', function () {
                 return [
                     'id' => $this->category->id,
                     'name' => $this->category->name,
-                    'name_ar' => $this->category->name_ar,
                 ];
             }),
             'created_at' => $this->created_at?->toISOString(),

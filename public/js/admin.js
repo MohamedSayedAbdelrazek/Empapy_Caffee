@@ -137,7 +137,7 @@ function initCharts(data) {
         new Chart(categoryCtx, {
             type: 'doughnut',
             data: {
-                labels: data.revenueByCategory.map(d => d.name_ar),
+                labels: data.revenueByCategory.map(d => d.name),
                 datasets: [{
                     data: data.revenueByCategory.map(d => d.revenue),
                     backgroundColor: [

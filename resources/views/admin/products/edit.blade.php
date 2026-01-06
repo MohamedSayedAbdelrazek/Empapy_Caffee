@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div class="page-header-admin">
             <h1 class="page-title-admin">تعديل المنتج</h1>
-            <p class="page-subtitle-admin">{{ $product->name_ar }}</p>
+            <p class="page-subtitle-admin">{{ $product->name }}</p>
         </div>
         <a href="{{ route('admin.products.index') }}" class="btn btn-outline-light">
             <i class="bi bi-arrow-right me-2"></i>العودة للمنتجات
@@ -23,29 +23,17 @@
                     <h5 class="mb-4">معلومات المنتج</h5>
 
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">الاسم (English)</label>
+                        <div class="col-12">
+                            <label class="form-label">اسم المنتج</label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                 value="{{ old('name', $product->name) }}" required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">الاسم (عربي) *</label>
-                            <input type="text" name="name_ar" class="form-control @error('name_ar') is-invalid @enderror"
-                                value="{{ old('name_ar', $product->name_ar) }}" required>
-                            @error('name_ar')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
                         <div class="col-12">
-                            <label class="form-label">الوصف (English)</label>
+                            <label class="form-label">وصف المنتج</label>
                             <textarea name="description" class="form-control" rows="3">{{ old('description', $product->description) }}</textarea>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">الوصف (عربي)</label>
-                            <textarea name="description_ar" class="form-control" rows="3">{{ old('description_ar', $product->description_ar) }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -124,27 +112,23 @@
                             <table class="table table-dark table-hover mb-2">
                                 <thead>
                                     <tr>
-                                        <th style="width: 35%">الوزن (عربي) *</th>
-                                        <th style="width: 25%">الوزن (English)</th>
-                                        <th style="width: 20%">السعر (ج.م) *</th>
+                                        <th style="width: 50%">الوزن</th>
+                                        <th style="width: 30%">السعر (ج.م) *</th>
                                         <th style="width: 10%">افتراضي</th>
                                         <th style="width: 10%"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="weight_values_body">
-                                    @php $weightVals = old('weight_values') ?: ($weightValues ?? collect())->map(fn($v) => ['id' => $v->id, 'value_ar' => $v->value_ar, 'value' => $v->value, 'price_modifier' => $v->price_modifier, 'is_default' => $v->is_default])->toArray(); @endphp
+                                    @php $weightVals = old('weight_values') ?: ($weightValues ?? collect())->map(fn($v) => ['id' => $v->id, 'value' => $v->value, 'price_modifier' => $v->price_modifier, 'is_default' => $v->is_default])->toArray(); @endphp
                                     @foreach ($weightVals as $index => $value)
                                         <tr>
                                             <td>
                                                 <input type="hidden" name="weight_values[{{ $index }}][id]"
                                                     value="{{ $value['id'] ?? '' }}">
-                                                <input type="text" name="weight_values[{{ $index }}][value_ar]"
+                                                <input type="text" name="weight_values[{{ $index }}][value]"
                                                     class="form-control form-control-sm"
-                                                    value="{{ $value['value_ar'] ?? '' }}" placeholder="مثال: 125 جم">
+                                                    value="{{ $value['value'] ?? '' }}" placeholder="مثال: 125 جم">
                                             </td>
-                                            <td><input type="text" name="weight_values[{{ $index }}][value]"
-                                                    class="form-control form-control-sm"
-                                                    value="{{ $value['value'] ?? '' }}" placeholder="e.g. 125g"></td>
                                             <td><input type="number"
                                                     name="weight_values[{{ $index }}][price_modifier]"
                                                     class="form-control form-control-sm"
@@ -192,27 +176,23 @@
                             <table class="table table-dark table-hover mb-2">
                                 <thead>
                                     <tr>
-                                        <th style="width: 35%">درجة التحميص (عربي) *</th>
-                                        <th style="width: 25%">Roast Level (English)</th>
-                                        <th style="width: 20%">السعر الإضافي (ج.م)</th>
+                                        <th style="width: 50%">درجة التحميص</th>
+                                        <th style="width: 30%">السعر الإضافي (ج.م)</th>
                                         <th style="width: 10%">افتراضي</th>
                                         <th style="width: 10%"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="roast_values_body">
-                                    @php $roastVals = old('roast_values') ?: ($roastValues ?? collect())->map(fn($v) => ['id' => $v->id, 'value_ar' => $v->value_ar, 'value' => $v->value, 'price_modifier' => $v->price_modifier, 'is_default' => $v->is_default])->toArray(); @endphp
+                                    @php $roastVals = old('roast_values') ?: ($roastValues ?? collect())->map(fn($v) => ['id' => $v->id, 'value' => $v->value, 'price_modifier' => $v->price_modifier, 'is_default' => $v->is_default])->toArray(); @endphp
                                     @foreach ($roastVals as $index => $value)
                                         <tr>
                                             <td>
                                                 <input type="hidden" name="roast_values[{{ $index }}][id]"
                                                     value="{{ $value['id'] ?? '' }}">
-                                                <input type="text" name="roast_values[{{ $index }}][value_ar]"
+                                                <input type="text" name="roast_values[{{ $index }}][value]"
                                                     class="form-control form-control-sm"
-                                                    value="{{ $value['value_ar'] ?? '' }}" placeholder="مثال: فاتح">
+                                                    value="{{ $value['value'] ?? '' }}" placeholder="مثال: فاتح">
                                             </td>
-                                            <td><input type="text" name="roast_values[{{ $index }}][value]"
-                                                    class="form-control form-control-sm"
-                                                    value="{{ $value['value'] ?? '' }}" placeholder="e.g. Light"></td>
                                             <td><input type="number"
                                                     name="roast_values[{{ $index }}][price_modifier]"
                                                     class="form-control form-control-sm"
@@ -259,28 +239,22 @@
                             <table class="table table-dark table-hover mb-2">
                                 <thead>
                                     <tr>
-                                        <th style="width: 35%">الإضافة (عربي) *</th>
-                                        <th style="width: 25%">Additive (English)</th>
-                                        <th style="width: 20%">السعر الإضافي (ج.م)</th>
+                                        <th style="width: 50%">الإضافة</th>
+                                        <th style="width: 30%">السعر الإضافي (ج.م)</th>
                                         <th style="width: 10%">افتراضي</th>
                                         <th style="width: 10%"></th>
                                     </tr>
                                 </thead>
                                 <tbody id="additive_values_body">
-                                    @php $additiveVals = old('additive_values') ?: ($additiveValues ?? collect())->map(fn($v) => ['id' => $v->id, 'value_ar' => $v->value_ar, 'value' => $v->value, 'price_modifier' => $v->price_modifier, 'is_default' => $v->is_default])->toArray(); @endphp
+                                    @php $additiveVals = old('additive_values') ?: ($additiveValues ?? collect())->map(fn($v) => ['id' => $v->id, 'value' => $v->value, 'price_modifier' => $v->price_modifier, 'is_default' => $v->is_default])->toArray(); @endphp
                                     @foreach ($additiveVals as $index => $value)
                                         <tr>
                                             <td>
                                                 <input type="hidden" name="additive_values[{{ $index }}][id]"
                                                     value="{{ $value['id'] ?? '' }}">
-                                                <input type="text"
-                                                    name="additive_values[{{ $index }}][value_ar]"
+                                                <input type="text" name="additive_values[{{ $index }}][value]"
                                                     class="form-control form-control-sm"
-                                                    value="{{ $value['value_ar'] ?? '' }}" placeholder="مثال: بالهيل">
-                                            </td>
-                                            <td><input type="text" name="additive_values[{{ $index }}][value]"
-                                                    class="form-control form-control-sm"
-                                                    value="{{ $value['value'] ?? '' }}" placeholder="e.g. With Cardamom">
+                                                    value="{{ $value['value'] ?? '' }}" placeholder="مثال: بالهيل">
                                             </td>
                                             <td><input type="number"
                                                     name="additive_values[{{ $index }}][price_modifier]"
@@ -320,7 +294,7 @@
                         @foreach ($categories as $category)
                             <option value="{{ $category->id }}"
                                 {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                {{ $category->name_ar }}
+                                {{ $category->name }}
                             </option>
                         @endforeach
                     </select>
@@ -333,7 +307,7 @@
                         <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
                         @if ($product->image)
                             <div id="mainImagePreview" class="image-preview">
-                                <img src="{{ $product->image }}" alt="{{ $product->name_ar }}" id="previewImg">
+                                <img src="{{ $product->image }}" alt="{{ $product->name }}" id="previewImg">
                                 <button type="button" class="btn btn-sm btn-danger remove-image"
                                     onclick="removeMainImage()">
                                     <i class="bi bi-x"></i>
@@ -572,9 +546,8 @@
             row.innerHTML = `
                 <td>
                     <input type="hidden" name="${type}_values[${index}][id]" value="">
-                    <input type="text" name="${type}_values[${index}][value_ar]" class="form-control form-control-sm" placeholder="${placeholders[type].ar}" required>
+                    <input type="text" name="${type}_values[${index}][value]" class="form-control form-control-sm" placeholder="${placeholders[type].ar}" required>
                 </td>
-                <td><input type="text" name="${type}_values[${index}][value]" class="form-control form-control-sm" placeholder="${placeholders[type].en}"></td>
                 <td><input type="number" name="${type}_values[${index}][price_modifier]" class="form-control form-control-sm" value="${priceLabel}" step="0.01" placeholder="${pricePlaceholder}" ${type === 'weight' ? 'required' : ''}></td>
                 <td class="text-center">
                     <input type="radio" name="${type}_default" value="${index}" class="form-check-input" onchange="setDefaultValue('${type}', ${index})">

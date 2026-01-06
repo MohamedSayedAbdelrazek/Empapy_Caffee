@@ -13,7 +13,6 @@ class ProductOptionValue extends Model
     protected $fillable = [
         'product_option_id',
         'value',
-        'value_ar',
         'price_modifier',
         'is_default',
         'sort_order',
@@ -62,7 +61,7 @@ class ProductOptionValue extends Model
      */
     public function getDisplayLabelAttribute(): string
     {
-        $label = $this->value_ar;
+        $label = $this->value;
 
         // Check if this is a weight option (show full price) or modifier
         if ($this->option && $this->option->type === ProductOption::TYPE_WEIGHT) {

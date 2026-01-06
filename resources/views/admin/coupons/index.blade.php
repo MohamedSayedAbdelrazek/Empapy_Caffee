@@ -33,7 +33,7 @@
                     @forelse($coupons as $coupon)
                         <tr>
                             <td><code class="bg-dark p-2 rounded">{{ $coupon->code }}</code></td>
-                            <td>{{ $coupon->name_ar }}</td>
+                            <td>{{ $coupon->name }}</td>
                             <td>
                                 @if ($coupon->type === 'percentage')
                                     <span class="badge bg-info">نسبة مئوية</span>

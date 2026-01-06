@@ -50,13 +50,13 @@
                                         <div class="d-flex align-items-center gap-2">
                                             <span class="fs-4">{{ $reward->icon }}</span>
                                             <div>
-                                                <strong>{{ $reward->name_ar }}</strong>
+                                                <strong>{{ $reward->name }}</strong>
                                                 @if ($reward->is_featured)
                                                     <span class="badge bg-warning ms-1">مميز</span>
                                                 @endif
                                                 <br>
                                                 <small
-                                                    class="text-muted">{{ Str::limit($reward->description_ar, 40) }}</small>
+                                                    class="text-muted">{{ Str::limit($reward->description, 40) }}</small>
                                             </div>
                                         </div>
                                     </td>

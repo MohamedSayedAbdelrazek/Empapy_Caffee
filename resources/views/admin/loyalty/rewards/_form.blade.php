@@ -1,20 +1,11 @@
 @php $reward = $reward ?? null; @endphp
 
 <div class="row g-4">
-    <div class="col-md-6">
-        <label class="form-label">الاسم (إنجليزي) <span class="text-danger">*</span></label>
+    <div class="col-md-12">
+        <label class="form-label">الاسم <span class="text-danger">*</span></label>
         <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-            value="{{ old('name', $reward?->name) }}" placeholder="10% Discount" required>
+            value="{{ old('name', $reward?->name) }}" placeholder="خصم 10%" required>
         @error('name')
-            <div class="invalid-feedback">{{ $message }}</div>
-        @enderror
-    </div>
-
-    <div class="col-md-6">
-        <label class="form-label">الاسم (عربي) <span class="text-danger">*</span></label>
-        <input type="text" name="name_ar" class="form-control @error('name_ar') is-invalid @enderror"
-            value="{{ old('name_ar', $reward?->name_ar) }}" placeholder="خصم 10%" required>
-        @error('name_ar')
             <div class="invalid-feedback">{{ $message }}</div>
         @enderror
     </div>
@@ -102,7 +93,7 @@
                 @foreach ($tiers as $tier)
                     <option value="{{ $tier->slug }}"
                         {{ old('tier_required', $reward?->tier_required) === $tier->slug ? 'selected' : '' }}>
-                        {{ $tier->icon }} {{ $tier->name_ar }}
+                        {{ $tier->icon }} {{ $tier->name }}
                     </option>
                 @endforeach
             </select>
@@ -113,9 +104,9 @@
     @endif
 
     <div class="col-12">
-        <label class="form-label">الوصف (عربي)</label>
-        <textarea name="description_ar" rows="2" class="form-control @error('description_ar') is-invalid @enderror"
-            placeholder="وصف اختياري للمكافأة">{{ old('description_ar', $reward?->description_ar) }}</textarea>
+        <label class="form-label">الوصف</label>
+        <textarea name="description" rows="2" class="form-control @error('description') is-invalid @enderror"
+            placeholder="وصف اختياري للمكافأة">{{ old('description', $reward?->description) }}</textarea>
     </div>
 
     <div class="col-md-4">

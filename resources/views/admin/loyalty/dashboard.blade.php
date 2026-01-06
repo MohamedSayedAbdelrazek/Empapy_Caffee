@@ -138,7 +138,7 @@
                                 <div class="col-md-3">
                                     <div class="p-3 rounded-3 text-center" style="background: {{ $tier->color }}20;">
                                         <div class="fs-2 mb-2">{{ $tier->icon }}</div>
-                                        <h6 class="mb-1">{{ $tier->name_ar }}</h6>
+                                        <h6 class="mb-1">{{ $tier->name }}</h6>
                                         <h3 class="mb-0 fw-bold" style="color: {{ $tier->color }};">
                                             {{ number_format($stats['tier_distribution'][$tier->slug] ?? 0) }}
                                         </h3>

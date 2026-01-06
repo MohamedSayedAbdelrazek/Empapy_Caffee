@@ -27,8 +27,8 @@
                         <div class="d-flex gap-3">
                             <div class="fs-1">{{ $redemption->reward->icon ?? '🎁' }}</div>
                             <div class="flex-grow-1">
-                                <h5 class="mb-1">{{ $redemption->reward->name_ar ?? 'مكافأة محذوفة' }}</h5>
-                                <p class="text-muted small mb-2">{{ $redemption->reward->description_ar ?? '' }}</p>
+                                <h5 class="mb-1">{{ $redemption->reward->name ?? 'مكافأة محذوفة' }}</h5>
+                                <p class="text-muted small mb-2">{{ $redemption->reward->description ?? '' }}</p>
 
                                 <div class="d-flex gap-3 text-muted small">
                                     <span>

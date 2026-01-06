@@ -36,7 +36,7 @@
                     </div>
                     <h6 class="text-muted mb-2">مستواك الحالي</h6>
                     <div class="tier-badge tier-badge-{{ $currentTier->slug ?? 'bronze' }} mx-auto mb-2">
-                        {{ $currentTier->name_ar ?? 'برونزي' }}
+                        {{ $currentTier->name ?? 'برونزي' }}
                     </div>
                     @if ($currentTier && $currentTier->discount_percent > 0)
                         <p class="mb-0 small text-success">
@@ -71,7 +71,7 @@
                         التقدم نحو المستوى التالي
                     </h5>
                     <span class="badge tier-badge tier-badge-{{ $nextTier->slug }}">
-                        {{ $nextTier->icon }} {{ $nextTier->name_ar }}
+                        {{ $nextTier->icon }} {{ $nextTier->name }}
                     </span>
                 </div>
 
@@ -83,7 +83,7 @@
                                 style="border-color: {{ $tier->color }}; color: {{ $tier->color }};">
                                 {{ $tier->icon }}
                             </div>
-                            <span>{{ $tier->name_ar }}</span>
+                            <span>{{ $tier->name }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -113,7 +113,7 @@
             <div class="glass-card p-4 mb-5" data-aos="fade-up">
                 <h5 class="mb-4">
                     <i class="bi bi-star me-2 text-warning"></i>
-                    مزايا مستوى {{ $currentTier->name_ar }}
+                    مزايا مستوى {{ $currentTier->name }}
                 </h5>
                 <div class="row g-3">
                     @foreach ($currentTier->all_benefits as $benefit)
@@ -147,15 +147,15 @@
                                 class="reward-card {{ $reward->is_featured ? 'featured' : '' }} {{ $loyalty->available_points < $reward->points_required ? 'locked' : '' }}">
                                 <div class="reward-card-image">
                                     @if ($reward->image)
-                                        <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name_ar }}"
+                                        <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name }}"
                                             class="img-fluid">
                                     @else
                                         <span>{{ $reward->icon }}</span>
                                     @endif
                                 </div>
                                 <div class="reward-card-body">
-                                    <h6 class="reward-card-title">{{ $reward->name_ar }}</h6>
-                                    <p class="reward-card-description">{{ $reward->description_ar }}</p>
+                                    <h6 class="reward-card-title">{{ $reward->name }}</h6>
+                                    <p class="reward-card-description">{{ $reward->description }}</p>
                                     <div class="reward-card-points">
                                         <i class="bi bi-coin"></i>
                                         <span>{{ number_format($reward->points_required) }} نقطة</span>
@@ -202,7 +202,7 @@
                                 <div class="d-flex align-items-center">
                                     <span class="fs-4 me-3">{{ $redemption->reward->icon ?? '🎁' }}</span>
                                     <div>
-                                        <h6 class="mb-0">{{ $redemption->reward->name_ar }}</h6>
+                                        <h6 class="mb-0">{{ $redemption->reward->name }}</h6>
                                         <small class="text-muted">كود: {{ $redemption->redemption_code }}</small>
                                     </div>
                                 </div>
@@ -238,7 +238,7 @@
                                                 class="transaction-points {{ $transaction->is_positive ? 'positive' : 'negative' }}">
                                                 {{ $transaction->formatted_points }}
                                             </span>
-                                            <p class="mb-0">{{ $transaction->description_ar }}</p>
+                                            <p class="mb-0">{{ $transaction->description }}</p>
                                         </div>
                                         <small
                                             class="transaction-meta">{{ $transaction->created_at->diffForHumans() }}</small>

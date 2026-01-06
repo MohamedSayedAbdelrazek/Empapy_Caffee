@@ -530,6 +530,20 @@
     color: var(--admin-text-muted);
 }
 
+/* Select Options - Dark Theme */
+.form-select option {
+    background: var(--admin-card);
+    color: var(--admin-text);
+    padding: 12px;
+}
+
+.form-select option:hover,
+.form-select option:focus,
+.form-select option:checked {
+    background: var(--admin-primary);
+    color: #1a1a2e;
+}
+
 .form-label {
     color: var(--admin-text);
     font-weight: 500;

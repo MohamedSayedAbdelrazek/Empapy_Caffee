@@ -92,7 +92,6 @@ class CheckoutController extends Controller
                     $orderItems[] = [
                         'product_id' => $product->id,
                         'product_name' => $product->name,
-                        'product_name_ar' => $product->name_ar,
                         'price' => $unitPrice,
                         'quantity' => $item['quantity'],
                         'total' => $itemTotal,
@@ -125,7 +124,7 @@ class CheckoutController extends Controller
 
             // Create order
             $order = Order::create([
-                'user_id' => auth()->id(),
+                'user_id' => \Illuminate\Support\Facades\Auth::id(),
                 'subtotal' => $subtotal,
                 'shipping' => $shipping,
                 'discount' => $discount,
@@ -160,10 +159,8 @@ class CheckoutController extends Controller
                                 'order_item_id' => $orderItem->id,
                                 'product_option_value_id' => $optionValue->id,
                                 'option_type' => $optionValue->option->type,
-                                'option_name' => $optionValue->option->name ?? $optionValue->option->name_ar, // Fallback
-                                'option_name_ar' => $optionValue->option->name_ar ?? $optionValue->option->name,
+                                'option_name' => $optionValue->option->name ?? $optionValue->option->type_name,
                                 'value_name' => $optionValue->value,
-                                'value_name_ar' => $optionValue->value_ar,
                                 'price_modifier' => $optionValue->price_modifier
                             ]);
                         }

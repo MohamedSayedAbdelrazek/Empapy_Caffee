@@ -9,10 +9,10 @@
                 <ol class="breadcrumb mb-0">
                     <li class="breadcrumb-item"><a href="{{ route('admin.loyalty.dashboard') }}">نظام الولاء</a></li>
                     <li class="breadcrumb-item"><a href="{{ route('admin.loyalty.rules') }}">قواعد النقاط</a></li>
-                    <li class="breadcrumb-item active">تعديل {{ $rule->name_ar }}</li>
+                    <li class="breadcrumb-item active">تعديل {{ $rule->name }}</li>
                 </ol>
             </nav>
-            <h1 class="h3 mb-0 mt-2">✏️ تعديل قاعدة: {{ $rule->name_ar }}</h1>
+            <h1 class="h3 mb-0 mt-2">✏️ تعديل قاعدة: {{ $rule->name }}</h1>
         </div>
 
         <div class="row">
@@ -57,22 +57,12 @@
                                     @enderror
                                 </div>
 
-                                <div class="col-md-6">
-                                    <label class="form-label">الاسم (إنجليزي) <span class="text-danger">*</span></label>
+                                <div class="col-md-12">
+                                    <label class="form-label">الاسم <span class="text-danger">*</span></label>
                                     <input type="text" name="name"
                                         class="form-control @error('name') is-invalid @enderror"
                                         value="{{ old('name', $rule->name) }}" required>
                                     @error('name')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label class="form-label">الاسم (عربي) <span class="text-danger">*</span></label>
-                                    <input type="text" name="name_ar"
-                                        class="form-control @error('name_ar') is-invalid @enderror"
-                                        value="{{ old('name_ar', $rule->name_ar) }}" required>
-                                    @error('name_ar')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -140,8 +130,8 @@
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label">الوصف (عربي)</label>
-                                    <textarea name="description_ar" rows="2" class="form-control">{{ old('description_ar', $rule->description_ar) }}</textarea>
+                                    <label class="form-label">الوصف</label>
+                                    <textarea name="description" rows="2" class="form-control">{{ old('description', $rule->description) }}</textarea>
                                 </div>
 
                                 <div class="col-12">

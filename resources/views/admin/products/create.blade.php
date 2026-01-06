@@ -21,29 +21,17 @@
                     <h5 class="mb-4">معلومات المنتج</h5>
 
                     <div class="row g-3">
-                        <div class="col-md-6">
-                            <label class="form-label">الاسم (English)</label>
+                        <div class="col-12">
+                            <label class="form-label">اسم المنتج</label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
                                 value="{{ old('name') }}" required>
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label">الاسم (عربي) *</label>
-                            <input type="text" name="name_ar" class="form-control @error('name_ar') is-invalid @enderror"
-                                value="{{ old('name_ar') }}" required>
-                            @error('name_ar')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
                         <div class="col-12">
-                            <label class="form-label">الوصف (English)</label>
+                            <label class="form-label">وصف المنتج</label>
                             <textarea name="description" class="form-control" rows="3">{{ old('description') }}</textarea>
-                        </div>
-                        <div class="col-12">
-                            <label class="form-label">الوصف (عربي)</label>
-                            <textarea name="description_ar" class="form-control" rows="3">{{ old('description_ar') }}</textarea>
                         </div>
                     </div>
                 </div>
@@ -71,126 +59,116 @@
                 <div class="admin-card mb-4">
                     <h5 class="mb-4">تفاصيل القهوة</h5>
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <label class="form-label">الوزن الافتراضي</label>
-                                <input type="text" name="weight" class="form-control" value="{{ old('weight') }}"
-                                    placeholder="250g">
-                                <small class="text-muted">سيظهر إذا لم يكن للمنتج خيارات أوزان</small>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">درجة التحميص الافتراضية</label>
-                                <select name="roast_level" class="form-select">
-                                    <option value="">اختر...</option>
-                                    <option value="light" {{ old('roast_level') === 'light' ? 'selected' : '' }}>تحميص
-                                        فاتح
-                                    </option>
-                                    <option value="medium" {{ old('roast_level') === 'medium' ? 'selected' : '' }}>تحميص
-                                        متوسط
-                                    </option>
-                                    <option value="dark" {{ old('roast_level') === 'dark' ? 'selected' : '' }}>تحميص داكن
-                                    </option>
-                                </select>
-                            </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">الوزن الافتراضي</label>
+                            <input type="text" name="weight" class="form-control" value="{{ old('weight') }}"
+                                placeholder="250g">
+                            <small class="text-muted">سيظهر إذا لم يكن للمنتج خيارات أوزان</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">درجة التحميص الافتراضية</label>
+                            <select name="roast_level" class="form-select">
+                                <option value="">اختر...</option>
+                                <option value="light" {{ old('roast_level') === 'light' ? 'selected' : '' }}>تحميص
+                                    فاتح
+                                </option>
+                                <option value="medium" {{ old('roast_level') === 'medium' ? 'selected' : '' }}>تحميص
+                                    متوسط
+                                </option>
+                                <option value="dark" {{ old('roast_level') === 'dark' ? 'selected' : '' }}>تحميص داكن
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
 
                 {{-- Product Options Section --}}
                 <div class="admin-card mt-4">
-                        <h5 class="mb-4">
-                            <i class="bi bi-sliders me-2"></i>
-                            خيارات المنتج (متعددة الأسعار)
-                        </h5>
-                        <p class="text-muted mb-4">فعّل الخيارات التي تريدها لهذا المنتج. <strong>الأوزان</strong> لها سعر
-                            كامل لكل وزن، بينما <strong>التحميص والإضافات</strong> هي فروقات على السعر.</p>
+                    <h5 class="mb-4">
+                        <i class="bi bi-sliders me-2"></i>
+                        خيارات المنتج (متعددة الأسعار)
+                    </h5>
+                    <p class="text-muted mb-4">فعّل الخيارات التي تريدها لهذا المنتج. <strong>الأوزان</strong> لها سعر
+                        كامل لكل وزن، بينما <strong>التحميص والإضافات</strong> هي فروقات على السعر.</p>
 
-                        {{-- Weight Options --}}
-                        <div class="option-section mb-4 p-3 rounded"
-                            style="background: rgba(201, 162, 39, 0.05); border: 1px solid rgba(201, 162, 39, 0.2);">
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="has_weight_options"
-                                    name="has_weight_options" value="1"
-                                    {{ old('has_weight_options') ? 'checked' : '' }}
-                                    onchange="toggleOptionSection('weight')">
-                                <label class="form-check-label fw-bold" for="has_weight_options">
-                                    <i class="bi bi-box-seam me-1"></i>
-                                    هذا المنتج له أوزان متعددة
-                                </label>
-                            </div>
-
-                            <div id="weight_options_container" class="option-values-container"
-                                style="{{ old('has_weight_options') ? '' : 'display: none;' }}">
-                                <table class="table table-dark table-hover mb-2">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 35%">الوزن (عربي) *</th>
-                                            <th style="width: 25%">الوزن (English)</th>
-                                            <th style="width: 20%">السعر (ج.م) *</th>
-                                            <th style="width: 10%">افتراضي</th>
-                                            <th style="width: 10%"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="weight_values_body">
-                                        @if (old('weight_values'))
-                                            @foreach (old('weight_values') as $index => $value)
-                                                <tr>
-                                                    <td><input type="text"
-                                                            name="weight_values[{{ $index }}][value_ar]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['value_ar'] ?? '' }}"
-                                                            placeholder="مثال: 125 جم"></td>
-                                                    <td><input type="text"
-                                                            name="weight_values[{{ $index }}][value]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['value'] ?? '' }}" placeholder="e.g. 125g">
-                                                    </td>
-                                                    <td><input type="number"
-                                                            name="weight_values[{{ $index }}][price_modifier]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
-                                                    </td>
-                                                    <td class="text-center"><input type="radio" name="weight_default"
-                                                            value="{{ $index }}" class="form-check-input"
-                                                            {{ $value['is_default'] ?? false ? 'checked' : '' }}
-                                                            onchange="setDefaultValue('weight', {{ $index }})">
-                                                    </td>
-                                                    <td><button type="button" class="btn btn-sm btn-outline-danger"
-                                                            onclick="removeOptionRow(this)"><i
-                                                                class="bi bi-trash"></i></button></td>
-                                                </tr>
-                                            @endforeach
-                                        @endif
-                                    </tbody>
-                                </table>
-                                <button type="button" class="btn btn-sm btn-outline-warning"
-                                    onclick="addOptionRow('weight')">
-                                    <i class="bi bi-plus-lg me-1"></i>إضافة وزن
-                                </button>
-                            </div>
+                    {{-- Weight Options --}}
+                    <div class="option-section mb-4 p-3 rounded"
+                        style="background: rgba(201, 162, 39, 0.05); border: 1px solid rgba(201, 162, 39, 0.2);">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="has_weight_options"
+                                name="has_weight_options" value="1" {{ old('has_weight_options') ? 'checked' : '' }}
+                                onchange="toggleOptionSection('weight')">
+                            <label class="form-check-label fw-bold" for="has_weight_options">
+                                <i class="bi bi-box-seam me-1"></i>
+                                هذا المنتج له أوزان متعددة
+                            </label>
                         </div>
 
-                        {{-- Roast Options --}}
-                        <div class="option-section mb-4 p-3 rounded"
-                            style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="has_roast_options"
-                                    name="has_roast_options" value="1"
-                                    {{ old('has_roast_options') ? 'checked' : '' }}
-                                    onchange="toggleOptionSection('roast')">
-                                <label class="form-check-label fw-bold" for="has_roast_options">
-                                    <i class="bi bi-fire me-1"></i>
-                                    هذا المنتج له درجات تحميص متعددة
-                                </label>
-                            </div>
+                        <div id="weight_options_container" class="option-values-container"
+                            style="{{ old('has_weight_options') ? '' : 'display: none;' }}">
+                            <table class="table table-dark table-hover mb-2">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50%">الوزن</th>
+                                        <th style="width: 30%">السعر (ج.م) *</th>
+                                        <th style="width: 10%">افتراضي</th>
+                                        <th style="width: 10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weight_values_body">
+                                    @if (old('weight_values'))
+                                        @foreach (old('weight_values') as $index => $value)
+                                            <tr>
+                                                <td><input type="text" name="weight_values[{{ $index }}][value]"
+                                                        class="form-control form-control-sm"
+                                                        value="{{ $value['value'] ?? '' }}" placeholder="مثال: 125 جم">
+                                                </td>
+                                                <td><input type="number"
+                                                        name="weight_values[{{ $index }}][price_modifier]"
+                                                        class="form-control form-control-sm"
+                                                        value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
+                                                </td>
+                                                <td class="text-center"><input type="radio" name="weight_default"
+                                                        value="{{ $index }}" class="form-check-input"
+                                                        {{ $value['is_default'] ?? false ? 'checked' : '' }}
+                                                        onchange="setDefaultValue('weight', {{ $index }})">
+                                                </td>
+                                                <td><button type="button" class="btn btn-sm btn-outline-danger"
+                                                        onclick="removeOptionRow(this)"><i
+                                                            class="bi bi-trash"></i></button></td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                </tbody>
+                            </table>
+                            <button type="button" class="btn btn-sm btn-outline-warning"
+                                onclick="addOptionRow('weight')">
+                                <i class="bi bi-plus-lg me-1"></i>إضافة وزن
+                            </button>
+                        </div>
+                    </div>
 
-                            <div id="roast_options_container" class="option-values-container"
-                                style="{{ old('has_roast_options') ? '' : 'display: none;' }}">
-                                <table class="table table-dark table-hover mb-2">
+                    {{-- Roast Options --}}
+                    <div class="option-section mb-4 p-3 rounded"
+                        style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="has_roast_options"
+                                name="has_roast_options" value="1" {{ old('has_roast_options') ? 'checked' : '' }}
+                                onchange="toggleOptionSection('roast')">
+                            <label class="form-check-label fw-bold" for="has_roast_options">
+                                <i class="bi bi-fire me-1"></i>
+                                هذا المنتج له درجات تحميص متعددة
+                            </label>
+                        </div>
+
+                        <div id="roast_options_container" class="option-values-container"
+                            style="{{ old('has_roast_options') ? '' : 'display: none;' }}">
+                            <table class="table table-dark table-hover mb-2">
                                     <thead>
                                         <tr>
-                                            <th style="width: 35%">درجة التحميص (عربي) *</th>
-                                            <th style="width: 25%">Roast Level (English)</th>
-                                            <th style="width: 20%">السعر الإضافي (ج.م)</th>
+                                            <th style="width: 50%">درجة التحميص</th>
+                                            <th style="width: 30%">السعر الإضافي (ج.م)</th>
                                             <th style="width: 10%">افتراضي</th>
                                             <th style="width: 10%"></th>
                                         </tr>
@@ -200,14 +178,9 @@
                                             @foreach (old('roast_values') as $index => $value)
                                                 <tr>
                                                     <td><input type="text"
-                                                            name="roast_values[{{ $index }}][value_ar]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['value_ar'] ?? '' }}"
-                                                            placeholder="مثال: فاتح"></td>
-                                                    <td><input type="text"
                                                             name="roast_values[{{ $index }}][value]"
                                                             class="form-control form-control-sm"
-                                                            value="{{ $value['value'] ?? '' }}" placeholder="e.g. Light">
+                                                            value="{{ $value['value'] ?? '' }}" placeholder="مثال: فاتح">
                                                     </td>
                                                     <td><input type="number"
                                                             name="roast_values[{{ $index }}][price_modifier]"
@@ -225,36 +198,34 @@
                                             @endforeach
                                         @endif
                                     </tbody>
-                                </table>
-                                <button type="button" class="btn btn-sm btn-outline-danger"
-                                    onclick="addOptionRow('roast')">
-                                    <i class="bi bi-plus-lg me-1"></i>إضافة درجة تحميص
-                                </button>
-                            </div>
+                            </table>
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="addOptionRow('roast')">
+                                <i class="bi bi-plus-lg me-1"></i>إضافة درجة تحميص
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Additive Options --}}
+                    <div class="option-section p-3 rounded"
+                        style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2);">
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="has_additive_options"
+                                name="has_additive_options" value="1"
+                                {{ old('has_additive_options') ? 'checked' : '' }}
+                                onchange="toggleOptionSection('additive')">
+                            <label class="form-check-label fw-bold" for="has_additive_options">
+                                <i class="bi bi-plus-circle me-1"></i>
+                                هذا المنتج له إضافات
+                            </label>
                         </div>
 
-                        {{-- Additive Options --}}
-                        <div class="option-section p-3 rounded"
-                            style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2);">
-                            <div class="form-check form-switch mb-3">
-                                <input class="form-check-input" type="checkbox" id="has_additive_options"
-                                    name="has_additive_options" value="1"
-                                    {{ old('has_additive_options') ? 'checked' : '' }}
-                                    onchange="toggleOptionSection('additive')">
-                                <label class="form-check-label fw-bold" for="has_additive_options">
-                                    <i class="bi bi-plus-circle me-1"></i>
-                                    هذا المنتج له إضافات
-                                </label>
-                            </div>
-
-                            <div id="additive_options_container" class="option-values-container"
-                                style="{{ old('has_additive_options') ? '' : 'display: none;' }}">
-                                <table class="table table-dark table-hover mb-2">
+                        <div id="additive_options_container" class="option-values-container"
+                            style="{{ old('has_additive_options') ? '' : 'display: none;' }}">
+                            <table class="table table-dark table-hover mb-2">
                                     <thead>
                                         <tr>
-                                            <th style="width: 35%">الإضافة (عربي) *</th>
-                                            <th style="width: 25%">Additive (English)</th>
-                                            <th style="width: 20%">السعر الإضافي (ج.م)</th>
+                                            <th style="width: 50%">الإضافة</th>
+                                            <th style="width: 30%">السعر الإضافي (ج.م)</th>
                                             <th style="width: 10%">افتراضي</th>
                                             <th style="width: 10%"></th>
                                         </tr>
@@ -264,15 +235,10 @@
                                             @foreach (old('additive_values') as $index => $value)
                                                 <tr>
                                                     <td><input type="text"
-                                                            name="additive_values[{{ $index }}][value_ar]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['value_ar'] ?? '' }}"
-                                                            placeholder="مثال: بالهيل"></td>
-                                                    <td><input type="text"
                                                             name="additive_values[{{ $index }}][value]"
                                                             class="form-control form-control-sm"
                                                             value="{{ $value['value'] ?? '' }}"
-                                                            placeholder="e.g. With Cardamom"></td>
+                                                            placeholder="مثال: بالهيل"></td>
                                                     <td><input type="number"
                                                             name="additive_values[{{ $index }}][price_modifier]"
                                                             class="form-control form-control-sm"
@@ -290,96 +256,92 @@
                                             @endforeach
                                         @endif
                                     </tbody>
-                                </table>
-                                <button type="button" class="btn btn-sm btn-outline-success"
-                                    onclick="addOptionRow('additive')">
-                                    <i class="bi bi-plus-lg me-1"></i>إضافة إضافة جديدة
-                                </button>
-                            </div>
+                            </table>
+                            <button type="button" class="btn btn-sm btn-outline-success"
+                                onclick="addOptionRow('additive')">
+                                <i class="bi bi-plus-lg me-1"></i>إضافة إضافة جديدة
+                            </button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-lg-4">
-                <div class="admin-card mb-4">
-                        <h5 class="mb-4">التصنيف</h5>
+        <div class="col-lg-4">
+            <div class="admin-card mb-4">
+                <h5 class="mb-4">التصنيف</h5>
 
-                        <label class="form-label">الصنف *</label>
-                        <select name="category_id" class="form-select @error('category_id') is-invalid @enderror"
-                            required>
-                            <option value="">اختر الصنف...</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}"
-                                    {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                                    {{ $category->name_ar }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('category_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
+                <label class="form-label">الصنف *</label>
+                <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
+                    <option value="">اختر الصنف...</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                            {{ $category->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_id')
+                    <div class="invalid-feedback">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="admin-card mb-4">
+                <h5 class="mb-4">صورة المنتج الرئيسية</h5>
+
+                <div class="image-upload-area mb-3" id="mainImageUpload">
+                    <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
+                    <label for="imageInput" class="upload-label">
+                        <i class="bi bi-cloud-arrow-up display-4"></i>
+                        <p class="mb-1">اسحب الصورة هنا أو انقر للاختيار</p>
+                        <small class="text-light opacity-75">PNG, JPG حتى 2MB</small>
+                    </label>
+                    <div id="mainImagePreview" class="image-preview d-none">
+                        <img src="" alt="Preview" id="previewImg">
+                        <button type="button" class="btn btn-sm btn-danger remove-image" onclick="removeMainImage()">
+                            <i class="bi bi-x"></i>
+                        </button>
                     </div>
+                </div>
+                @error('image')
+                    <div class="text-danger small">{{ $message }}</div>
+                @enderror
+            </div>
 
-                    <div class="admin-card mb-4">
-                        <h5 class="mb-4">صورة المنتج الرئيسية</h5>
+            <div class="admin-card mb-4">
+                <h5 class="mb-4">صور إضافية (اختياري)</h5>
 
-                        <div class="image-upload-area mb-3" id="mainImageUpload">
-                            <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
-                            <label for="imageInput" class="upload-label">
-                                <i class="bi bi-cloud-arrow-up display-4"></i>
-                                <p class="mb-1">اسحب الصورة هنا أو انقر للاختيار</p>
-                                <small class="text-light opacity-75">PNG, JPG حتى 2MB</small>
-                            </label>
-                            <div id="mainImagePreview" class="image-preview d-none">
-                                <img src="" alt="Preview" id="previewImg">
-                                <button type="button" class="btn btn-sm btn-danger remove-image"
-                                    onclick="removeMainImage()">
-                                    <i class="bi bi-x"></i>
-                                </button>
-                            </div>
-                        </div>
-                        @error('image')
-                            <div class="text-danger small">{{ $message }}</div>
-                        @enderror
-                    </div>
+                <div class="image-upload-area mb-3" id="galleryUpload">
+                    <input type="file" name="gallery[]" id="galleryInput" accept="image/*" class="d-none" multiple>
+                    <label for="galleryInput" class="upload-label">
+                        <i class="bi bi-images display-4"></i>
+                        <p class="mb-1">اختر صور متعددة</p>
+                        <small class="text-light opacity-75">PNG, JPG حتى 2MB لكل صورة</small>
+                    </label>
+                </div>
+                <div id="galleryPreview" class="d-flex flex-wrap gap-2"></div>
+            </div>
 
-                    <div class="admin-card mb-4">
-                        <h5 class="mb-4">صور إضافية (اختياري)</h5>
+            <div class="admin-card mb-4">
+                <h5 class="mb-4">الحالة</h5>
 
-                        <div class="image-upload-area mb-3" id="galleryUpload">
-                            <input type="file" name="gallery[]" id="galleryInput" accept="image/*" class="d-none"
-                                multiple>
-                            <label for="galleryInput" class="upload-label">
-                                <i class="bi bi-images display-4"></i>
-                                <p class="mb-1">اختر صور متعددة</p>
-                                <small class="text-light opacity-75">PNG, JPG حتى 2MB لكل صورة</small>
-                            </label>
-                        </div>
-                        <div id="galleryPreview" class="d-flex flex-wrap gap-2"></div>
-                    </div>
+                <div class="form-check mb-3">
+                    <input type="checkbox" name="is_active" class="form-check-input" id="is_active" value="1"
+                        {{ old('is_active', true) ? 'checked' : '' }}>
+                    <label class="form-check-label" for="is_active">منتج نشط</label>
+                </div>
 
-                    <div class="admin-card mb-4">
-                        <h5 class="mb-4">الحالة</h5>
-
-                        <div class="form-check mb-3">
-                            <input type="checkbox" name="is_active" class="form-check-input" id="is_active"
-                                value="1" {{ old('is_active', true) ? 'checked' : '' }}>
-                            <label class="form-check-label" for="is_active">منتج نشط</label>
-                        </div>
-
-                        <div class="form-check">
-                            <input type="checkbox" name="is_featured" class="form-check-input" id="is_featured"
-                                value="1" {{ old('is_featured') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="is_featured">منتج مميز</label>
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-admin-primary w-100 btn-lg">
-                        <i class="bi bi-check-lg me-2"></i>حفظ المنتج
-                    </button>
+                <div class="form-check">
+                    <input type="checkbox" name="is_featured" class="form-check-input" id="is_featured" value="1"
+                        {{ old('is_featured') ? 'checked' : '' }}>
+                    <label class="form-check-label" for="is_featured">منتج مميز</label>
                 </div>
             </div>
+
+            <button type="submit" class="btn btn-admin-primary w-100 btn-lg">
+                <i class="bi bi-check-lg me-2"></i>حفظ المنتج
+            </button>
+        </div>
+        </div>
     </form>
 @endsection
 
@@ -572,16 +534,13 @@
 
             const placeholders = {
                 weight: {
-                    ar: 'مثال: 125 جم',
-                    en: 'e.g. 125g'
+                    ar: 'مثال: 125 جم'
                 },
                 roast: {
-                    ar: 'مثال: فاتح',
-                    en: 'e.g. Light'
+                    ar: 'مثال: فاتح'
                 },
                 additive: {
-                    ar: 'مثال: بالهيل',
-                    en: 'e.g. With Cardamom'
+                    ar: 'مثال: بالهيل'
                 }
             };
 
@@ -591,8 +550,7 @@
 
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td><input type="text" name="${type}_values[${index}][value_ar]" class="form-control form-control-sm" placeholder="${placeholders[type].ar}" required></td>
-                <td><input type="text" name="${type}_values[${index}][value]" class="form-control form-control-sm" placeholder="${placeholders[type].en}"></td>
+                <td><input type="text" name="${type}_values[${index}][value]" class="form-control form-control-sm" placeholder="${placeholders[type].ar}" required></td>
                 <td><input type="number" name="${type}_values[${index}][price_modifier]" class="form-control form-control-sm" value="${priceLabel}" step="0.01" placeholder="${pricePlaceholder}" ${type === 'weight' ? 'required' : ''}></td>
                 <td class="text-center">
                     <input type="radio" name="${type}_default" value="${index}" class="form-check-input" onchange="setDefaultValue('${type}', ${index})">

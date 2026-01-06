@@ -109,7 +109,7 @@ function loadCartItems() {
                                     </div>`
                             : ''
                         }
-                            <small class="text-muted">الكمية: ${item.quantity}</small>
+                            <small class="text-white-50">الكمية: ${item.quantity}</small>
                             <div class="text-warning fw-bold">${item.subtotal.toLocaleString()} ج.م</div>
                         </div>
                         <button class="btn btn-sm btn-outline-danger" onclick="removeFromCartDrawer('${item.key}')">
@@ -139,30 +139,35 @@ function loadCartItems() {
 }
 
 /**
- * Remove item from cart drawer
+ * Remove item from cart drawer - OPTIMISTIC UI
  */
 function removeFromCartDrawer(key) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const cartItems = document.querySelectorAll('.cart-item');
+    let itemToRemove = null;
+    cartItems.forEach(item => { if (item.querySelector(`button[onclick*="${key}"]`)) itemToRemove = item; });
+    if (!itemToRemove) return;
 
-    fetch('/cart/remove', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({ key: key })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                loadCartItems();
-                updateCartBadge();
-                if (window.Toast) {
-                    window.Toast.success('تم الحذف', 'تم حذف المنتج من السلة');
-                }
-            }
-        });
+    // INSTANT: Fade out immediately
+    itemToRemove.style.transition = 'opacity 0.2s, transform 0.2s';
+    itemToRemove.style.opacity = '0';
+    itemToRemove.style.transform = 'translateX(-20px)';
+    if (window.Toast) window.Toast.success('تم الحذف', 'تم حذف المنتج من السلة');
+
+    const badge = document.getElementById('cartBadge');
+    const oldCount = badge ? parseInt(badge.textContent) || 0 : 0;
+    if (badge) { badge.textContent = Math.max(0, oldCount - 1); badge.classList.add('bounce'); setTimeout(() => badge.classList.remove('bounce'), 500); }
+
+    setTimeout(() => {
+        const oldHTML = itemToRemove.outerHTML;
+        const parent = itemToRemove.parentElement;
+        itemToRemove.remove();
+
+        // Background server request
+        fetch('/cart/remove', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ key }) })
+            .then(r => r.json()).then(d => { if (d.success) { loadCartItems(); updateCartBadge(true); } else { if (parent) parent.insertAdjacentHTML('beforeend', oldHTML); if (badge) badge.textContent = oldCount; } })
+            .catch(() => { if (parent) parent.insertAdjacentHTML('beforeend', oldHTML); if (badge) badge.textContent = oldCount; });
+    }, 200);
 }
 
 /**
@@ -202,60 +207,36 @@ function updateBadgeUI(count) {
 }
 
 /**
- * Add to cart function - Enhanced with new UX
+ * Add to cart function - OPTIMISTIC UI
  */
 function addToCart(productId, quantity = 1) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const badge = document.getElementById('cartBadge');
+    const oldCount = badge ? parseInt(badge.textContent) || 0 : 0;
 
-    fetch('/cart/add', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'X-CSRF-TOKEN': csrfToken
-        },
-        body: JSON.stringify({
-            product_id: productId,
-            quantity: quantity
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Use new Toast system if available
-                if (window.Toast) {
-                    window.Toast.cart('تمت الإضافة! 🎉', data.message || 'تمت إضافة المنتج للسلة');
-                } else {
-                    showToast(data.message, 'success');
-                }
+    //INSTANT: Update UI immediately
+    if (window.Toast) window.Toast.cart('تمت الإضافة! 🎉', 'تمت إضافة المنتج للسلة');
+    if (window.createConfetti) window.createConfetti();
+    if (badge) { badge.textContent = oldCount + quantity; badge.classList.add('bounce'); setTimeout(() => badge.classList.remove('bounce'), 500); }
 
-                // Create confetti effect
-                if (window.createConfetti) {
-                    window.createConfetti();
-                }
-
-                updateCartBadge(true); // Force refresh
-
-                const badge = document.getElementById('cartBadge');
-                if (badge) {
-                    badge.textContent = data.cartCount;
-                    badge.classList.add('bounce');
-                    setTimeout(() => badge.classList.remove('bounce'), 500);
-                }
+    // Background server request
+    fetch('/cart/add', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ product_id: productId, quantity }) })
+        .then(r => r.json())
+        .then(d => {
+            if (d.success) {
+                // Update with real count from server
+                if (badge) badge.textContent = d.cartCount;
+                updateCartBadge(true);
             } else {
-                if (window.Toast) {
-                    window.Toast.error('خطأ', data.message || 'حدث خطأ');
-                } else {
-                    showToast('حدث خطأ', 'error');
-                }
+                // ROLLBACK on error
+                if (badge) badge.textContent = oldCount;
+                if (window.Toast) window.Toast.error('خطأ', d.message || 'حدث خطأ');
             }
         })
-        .catch(error => {
-            if (window.Toast) {
-                window.Toast.error('خطأ في الاتصال', 'يرجى التحقق من اتصالك بالإنترنت');
-            } else {
-                showToast('حدث خطأ في الاتصال', 'error');
-            }
+        .catch(() => {
+            // ROLLBACK on network error
+            if (badge) badge.textContent = oldCount;
+            if (window.Toast) window.Toast.error('خطأ', 'حدث خطأ في الاتصال');
         });
 }
 

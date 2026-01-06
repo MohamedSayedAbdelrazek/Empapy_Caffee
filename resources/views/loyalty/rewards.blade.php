@@ -74,7 +74,7 @@
                         <!-- Image -->
                         <div class="reward-card-image">
                             @if ($reward->image)
-                                <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name_ar }}"
+                                <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name }}"
                                     class="img-fluid">
                             @else
                                 <span>{{ $reward->icon }}</span>
@@ -84,14 +84,14 @@
                         <!-- Body -->
                         <div class="reward-card-body">
                             <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="reward-card-title mb-0">{{ $reward->name_ar }}</h6>
+                                <h6 class="reward-card-title mb-0">{{ $reward->name }}</h6>
                                 <span
                                     class="badge bg-{{ $reward->reward_type === 'discount_fixed' ? 'success' : ($reward->reward_type === 'discount_percent' ? 'info' : 'warning') }}">
                                     {{ $reward->reward_type_label }}
                                 </span>
                             </div>
 
-                            <p class="reward-card-description">{{ $reward->description_ar }}</p>
+                            <p class="reward-card-description">{{ $reward->description }}</p>
 
                             <!-- Value Display -->
                             <div class="h5 fw-bold text-primary mb-3">
@@ -109,7 +109,7 @@
                                 <div class="mt-2">
                                     <small class="text-muted">
                                         <i class="bi bi-trophy me-1"></i>
-                                        يتطلب مستوى {{ $reward->requiredTier?->name_ar ?? $reward->tier_required }}
+                                        يتطلب مستوى {{ $reward->requiredTier?->name ?? $reward->tier_required }}
                                     </small>
                                 </div>
                             @endif

@@ -26,7 +26,7 @@
         <!-- Product Image with Skeleton Loading -->
         <div class="product-image-wrapper">
             <div class="skeleton-placeholder skeleton" style="position: absolute; inset: 0; z-index: 1;"></div>
-            <img src="{{ $product->image }}" alt="{{ $product->name_ar }}" loading="lazy"
+            <img src="{{ $product->image }}" alt="{{ $product->name }}" loading="lazy"
                 onload="this.previousElementSibling.style.display='none'; this.classList.add('loaded');">
         </div>
 
@@ -41,14 +41,14 @@
         <div class="product-category-wrapper">
             <span class="product-category">
                 <i class="bi bi-tag me-1"></i>
-                {{ $product->category?->name_ar }}
+                {{ $product->category?->name }}
             </span>
         </div>
 
         <div class="d-flex justify-content-between align-items-center mb-2">
             <h3 class="product-title m-0">
                 <a href="{{ route('shop.show', $product) }}" class="animated-link">
-                    {{ $product->name_ar }}
+                    {{ $product->name }}
                 </a>
             </h3>
             <button class="wishlist-btn-inline {{ $inWishlist ? 'active' : '' }}"

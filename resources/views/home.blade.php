@@ -71,13 +71,13 @@
                     <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                         <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="category-card-vertical">
                             <div class="card-image">
-                                <img src="{{ $category->image }}" alt="{{ $category->name_ar }}" loading="lazy"
+                                <img src="{{ $category->image }}" alt="{{ $category->name }}" loading="lazy"
                                     decoding="async">
                                 <div class="card-overlay"></div>
                                 <div class="card-shine"></div>
                             </div>
                             <div class="card-content">
-                                <h3>{{ $category->name_ar }}</h3>
+                                <h3>{{ $category->name }}</h3>
                                 <p class="products-count">
                                     <i class="bi bi-cup-hot-fill"></i>
                                     {{ $category->products_count }} منتج

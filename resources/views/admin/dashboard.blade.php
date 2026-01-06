@@ -160,10 +160,10 @@
                 </div>
                 @forelse($bestSellers as $product)
                     <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom border-secondary">
-                        <img src="{{ $product->image }}" alt="{{ $product->name_ar }}" class="rounded"
+                        <img src="{{ $product->image }}" alt="{{ $product->name }}" class="rounded"
                             style="width: 50px; height: 50px; object-fit: cover;">
                         <div class="flex-grow-1">
-                            <h6 class="mb-1 small">{{ $product->name_ar }}</h6>
+                            <h6 class="mb-1 small">{{ $product->name }}</h6>
                             <small class="text-muted">{{ number_format($product->price) }} ج.م</small>
                         </div>
                         <span class="badge bg-success">{{ $product->total_sold }} مبيعات</span>
@@ -215,7 +215,7 @@
             new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: bestSellers.map(p => p.name_ar),
+                    labels: bestSellers.map(p => p.name),
                     datasets: [{
                         label: 'عدد المبيعات',
                         data: bestSellers.map(p => p.total_sold),

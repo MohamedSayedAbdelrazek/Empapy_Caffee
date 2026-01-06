@@ -57,7 +57,7 @@ class DashboardController extends Controller
             ->get();
 
         // Revenue by category
-        $revenueByCategory = Category::select('categories.name_ar')
+        $revenueByCategory = Category::select('categories.name')
             ->join('products', 'categories.id', '=', 'products.category_id')
             ->join('order_items', 'products.id', '=', 'order_items.product_id')
             ->selectRaw('SUM(order_items.total) as revenue')

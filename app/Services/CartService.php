@@ -66,13 +66,20 @@ class CartService
                 if (!empty($optionValueIds)) {
                     // This N+1 is small (cart usually has few items), but we could optimize.
                     // For now, let's use the helper relation on product or model
+                    $optionLabels = [
+                        'weight' => 'الوزن',
+                        'roast' => 'التحميص',
+                        'additive' => 'الإضافات',
+                        'size' => 'الحجم',
+                    ];
+
                     foreach ($options as $type => $valueId) {
                         $val = \App\Models\ProductOptionValue::find($valueId);
                         if ($val) {
                             $optionDetails[] = [
                                 'type' => $type,
-                                'label' => $val->option->name_ar,
-                                'value' => $val->value_ar,
+                                'label' => $optionLabels[$type] ?? $val->option->name,
+                                'value' => $val->value,
                                 'price' => $val->price_modifier
                             ];
                         }
@@ -85,7 +92,7 @@ class CartService
                     'product_id' => $product->id,
                     'product' => $product,
                     'name' => $product->name,
-                    'name_ar' => $product->name_ar,
+                    'name_ar' => $product->name,
                     'image' => $product->image,
                     'price' => $unitPrice,
                     'quantity' => $item['quantity'],
@@ -271,7 +278,7 @@ class CartService
 
             $product = $products->get($productId);
             if (!$product->is_active) {
-                $errors[] = "المنتج '{$product->name_ar}' غير متوفر حالياً";
+                $errors[] = "المنتج '{$product->name}' غير متوفر حالياً";
                 continue;
             }
 
