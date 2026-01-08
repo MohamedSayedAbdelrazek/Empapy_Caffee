@@ -12,6 +12,7 @@ use App\Models\Referral;
 use App\Services\LoyaltyService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class LoyaltyController extends Controller
 {
@@ -86,12 +87,12 @@ class LoyaltyController extends Controller
     public function storeRule(Request $request)
     {
         $validated = $request->validate([
-            'slug' => 'required|string|max:50|unique:point_rules',
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
             'type' => 'required|in:fixed,per_currency,percentage',
             'value' => 'required|numeric|min:0',
             'trigger' => 'required|string|max:50',
+            'is_first_order_only' => 'boolean',
             'min_order_amount' => 'nullable|numeric|min:0',
             'max_points_per_order' => 'nullable|integer|min:1',
             'is_active' => 'boolean',
@@ -100,7 +101,10 @@ class LoyaltyController extends Controller
             'priority' => 'integer|min:0',
         ]);
 
+        // Auto-generate slug
+        $validated['slug'] = Str::slug($request->trigger . '_' . now()->timestamp);
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['is_first_order_only'] = $request->boolean('is_first_order_only');
 
         PointRule::create($validated);
 
@@ -127,6 +131,7 @@ class LoyaltyController extends Controller
             'type' => 'required|in:fixed,per_currency,percentage',
             'value' => 'required|numeric|min:0',
             'trigger' => 'required|string|max:50',
+            'is_first_order_only' => 'boolean',
             'min_order_amount' => 'nullable|numeric|min:0',
             'max_points_per_order' => 'nullable|integer|min:1',
             'is_active' => 'boolean',
@@ -136,6 +141,7 @@ class LoyaltyController extends Controller
         ]);
 
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['is_first_order_only'] = $request->boolean('is_first_order_only');
 
         $rule->update($validated);
 
@@ -181,7 +187,6 @@ class LoyaltyController extends Controller
     public function storeTier(Request $request)
     {
         $validated = $request->validate([
-            'slug' => 'required|string|max:50|unique:loyalty_tiers',
             'name' => 'required|string|max:100',
             'description' => 'nullable|string',
             'min_points' => 'required|integer|min:0',
@@ -198,6 +203,8 @@ class LoyaltyController extends Controller
             'is_active' => 'boolean',
         ]);
 
+        // Auto-generate slug from name
+        $validated['slug'] = Str::slug($request->name) ?: 'tier_' . now()->timestamp;
         $validated['free_shipping'] = $request->boolean('free_shipping');
         $validated['is_active'] = $request->boolean('is_active');
 
@@ -461,7 +468,6 @@ class LoyaltyController extends Controller
             'points' => 'required|integer|not_in:0',
             'reason' => 'required|string|max:255',
         ]);
-
         $transaction = $this->loyaltyService->adjustPoints(
             $user,
             $validated['points'],

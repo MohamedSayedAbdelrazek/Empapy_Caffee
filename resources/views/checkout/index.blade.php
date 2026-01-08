@@ -84,9 +84,10 @@
                                     <label class="form-label">المحافظة</label>
                                     <select name="governorate" class="form-select">
                                         <option value="">اختر المحافظة</option>
+                                        @php $userGov = old('governorate', auth()->user()?->governorate); @endphp
                                         @foreach (['القاهرة', 'الجيزة', 'الإسكندرية', 'الدقهلية', 'الشرقية', 'المنوفية', 'القليوبية', 'البحيرة', 'الغربية', 'كفر الشيخ', 'دمياط', 'بورسعيد', 'الإسماعيلية', 'السويس', 'الفيوم', 'بني سويف', 'المنيا', 'أسيوط', 'سوهاج', 'قنا', 'الأقصر', 'أسوان', 'البحر الأحمر', 'شمال سيناء', 'جنوب سيناء', 'مطروح', 'الوادي الجديد'] as $gov)
-                                            <option value="{{ $gov }}"
-                                                {{ old('governorate') === $gov ? 'selected' : '' }}>{{ $gov }}
+                                            <option value="{{ $gov }}" {{ $userGov === $gov ? 'selected' : '' }}>
+                                                {{ $gov }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -145,13 +146,13 @@
                                 </span>
                             </div>
 
-                            <!-- Coupon Section -->
+                            <!-- Coupon/Reward Code Section -->
                             <div class="coupon-section my-3 p-3 rounded" style="background: var(--cream-dark);">
-                                <label class="form-label mb-2"><i class="bi bi-ticket-perforated me-2"></i>كود
-                                    الخصم</label>
+                                <label class="form-label mb-2"><i class="bi bi-ticket-perforated me-2"></i>كود الخصم أو
+                                    المكافأة</label>
                                 <div class="input-group">
                                     <input type="text" id="couponCode" class="form-control"
-                                        placeholder="أدخل كود الخصم">
+                                        placeholder="كود الخصم أو كود المكافأة (RWD-XXXXXX)">
                                     <button type="button" class="btn btn-outline-secondary" id="applyCouponBtn"
                                         onclick="applyCoupon()">
                                         تطبيق
@@ -159,6 +160,8 @@
                                 </div>
                                 <input type="hidden" name="coupon_code" id="appliedCouponCode" value="">
                                 <div id="couponMessage" class="mt-2 small"></div>
+                                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>يمكنك استخدام
+                                    كود الخصم العادي أو كود مكافأة من نقاطك</small>
                             </div>
 
                             <!-- Discount Row (hidden initially) -->
@@ -233,7 +236,7 @@
                         // Update UI
                         document.getElementById('discountRow').style.display = 'flex';
                         document.getElementById('discountAmount').textContent = '- ' + currentDiscount
-                        .toLocaleString() + ' ج.م';
+                            .toLocaleString() + ' ج.م';
                         document.getElementById('totalAmount').textContent = newTotal.toLocaleString() + ' ج.م';
                         document.getElementById('appliedCouponCode').value = code;
 

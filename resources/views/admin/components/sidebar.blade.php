@@ -101,8 +101,33 @@
     </nav>
 
     <div class="sidebar-footer">
-        <a href="{{ route('home') }}" target="_blank" class="btn btn-outline-light btn-sm w-100">
-            <i class="bi bi-globe me-2"></i>زيارة الموقع
+        <!-- Admin Profile Section -->
+        <a href="{{ route('admin.profile.index') }}"
+            class="admin-profile-link {{ request()->routeIs('admin.profile.*') ? 'active' : '' }}">
+            <div class="admin-avatar">
+                @if (auth()->user()->avatar)
+                    <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="{{ auth()->user()->name }}">
+                @else
+                    <i class="bi bi-person-fill"></i>
+                @endif
+            </div>
+            <div class="admin-info">
+                <span class="admin-name">{{ auth()->user()->name }}</span>
+                <span class="admin-role">مدير النظام</span>
+            </div>
+            <i class="bi bi-gear profile-settings-icon"></i>
         </a>
+
+        <div class="footer-actions">
+            <a href="{{ route('home') }}" target="_blank" class="btn btn-outline-light btn-sm flex-grow-1">
+                <i class="bi bi-globe me-1"></i>الموقع
+            </a>
+            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                @csrf
+                <button type="submit" class="btn btn-outline-danger btn-sm">
+                    <i class="bi bi-box-arrow-left"></i>
+                </button>
+            </form>
+        </div>
     </div>
 </aside>

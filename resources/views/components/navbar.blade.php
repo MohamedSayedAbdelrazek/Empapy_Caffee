@@ -122,6 +122,25 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
+                                <a class="dropdown-item premium-item" href="{{ route('account.index') }}">
+                                    <div class="item-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+                                        <i class="bi bi-person-badge"></i>
+                                    </div>
+                                    <span>حسابي</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item premium-item" href="{{ route('account.profile') }}">
+                                    <div class="item-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                                        <i class="bi bi-gear"></i>
+                                    </div>
+                                    <span>تعديل الملف الشخصي</span>
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
                                 <form action="{{ route('logout') }}" method="POST">
                                     @csrf
                                     <button type="submit" class="dropdown-item premium-item logout-item">

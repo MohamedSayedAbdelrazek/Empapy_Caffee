@@ -7,13 +7,24 @@
 @endpush
 
 @section('content')
+    <!-- Page Header for proper navbar visibility -->
+    <div class="page-header" style="padding: 120px 0 40px; background: linear-gradient(135deg, #2C1810 0%, #3D2317 100%);">
+        <div class="container">
+            <h1 class="page-title text-white" data-aos="fade-up">🎁 مكافآتي المستبدلة</h1>
+            <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="100">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ route('home') }}">الرئيسية</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('loyalty.index') }}">نقاطي</a></li>
+                    <li class="breadcrumb-item active text-white-50">مكافآتي</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
     <div class="container py-5">
-        <!-- Header -->
+        <!-- Actions -->
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h1 class="h3 mb-1">🎁 مكافآتي المستبدلة</h1>
-                <p class="text-muted mb-0">جميع المكافآت التي استبدلتها بنقاطك</p>
-            </div>
+            <p class="text-muted mb-0">جميع المكافآت التي استبدلتها بنقاطك</p>
             <a href="{{ route('loyalty.rewards') }}" class="btn btn-primary">
                 <i class="bi bi-gift me-1"></i> استبدل المزيد
             </a>

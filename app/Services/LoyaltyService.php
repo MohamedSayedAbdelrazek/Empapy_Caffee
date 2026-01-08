@@ -46,8 +46,8 @@ class LoyaltyService
                 continue;
             }
 
-            // Check if first order and this is first-order rule
-            if ($rule->slug === 'first_order_bonus' && $user->orders()->where('status', 'delivered')->count() > 1) {
+            // Check if this rule is for first order only
+            if ($rule->is_first_order_only && $user->orders()->where('status', 'delivered')->count() > 1) {
                 continue;
             }
 

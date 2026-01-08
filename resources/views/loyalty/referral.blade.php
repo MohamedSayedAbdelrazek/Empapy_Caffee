@@ -7,12 +7,15 @@
 @endpush
 
 @section('content')
-    <div class="container py-5">
-        <!-- Header -->
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h1 class="display-5 fw-bold mb-3">👥 برنامج الإحالة</h1>
-            <p class="lead text-muted">ادعُ أصدقاءك واكسبوا النقاط معاً!</p>
+    <!-- Page Header for proper navbar visibility -->
+    <div class="page-header" style="padding: 120px 0 40px; background: linear-gradient(135deg, #2C1810 0%, #3D2317 100%);">
+        <div class="container text-center">
+            <h1 class="page-title text-white" data-aos="fade-up">👥 برنامج الإحالة</h1>
+            <p class="lead text-white-50" data-aos="fade-up" data-aos-delay="100">ادعُ أصدقاءك واكسبوا النقاط معاً!</p>
         </div>
+    </div>
+
+    <div class="container py-5">
 
         <!-- Referral Benefits -->
         <div class="row g-4 mb-5">

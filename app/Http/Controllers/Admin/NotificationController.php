@@ -31,8 +31,9 @@ class NotificationController extends Controller
         $query = AdminNotification::latest();
 
         // On initial page load, get all recent notifications (last 24 hours or last 20)
-        // During polling, only get notifications newer than last check
+        // During polling, only get notifications STRICTLY newer than last check
         if (!$isInitialLoad && $lastCheck) {
+            // Use >= to catch edge cases, but exclude exact time matches by using microseconds
             $query->where('created_at', '>', $lastCheck);
         }
 
@@ -41,6 +42,12 @@ class NotificationController extends Controller
 
         // Only mark as "has_new" during polling (not initial load)
         $hasNew = !$isInitialLoad && $notifications->isNotEmpty();
+
+        // Use the latest notification's created_at as the reference point for the next poll
+        // This ensures we don't re-fetch the same notification
+        $serverTime = $notifications->isNotEmpty()
+            ? $notifications->first()->created_at->addSecond()->toISOString()  // Add 1 second buffer
+            : now()->toISOString();
 
         return response()->json([
             'success' => true,
@@ -60,7 +67,7 @@ class NotificationController extends Controller
             }),
             'unread_count' => $unreadCount,
             'has_new' => $hasNew,
-            'server_time' => now()->toISOString(),
+            'server_time' => $serverTime,
         ]);
     }
 

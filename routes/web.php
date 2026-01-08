@@ -121,6 +121,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::delete('/{notification}', [\App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('destroy');
         Route::post('/clear-all', [\App\Http\Controllers\Admin\NotificationController::class, 'clearAll'])->name('clear-all');
     });
+
+    // Profile
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('index');
+        Route::put('/', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('update');
+        Route::put('/password', [\App\Http\Controllers\Admin\ProfileController::class, 'updatePassword'])->name('password');
+        Route::post('/avatar', [\App\Http\Controllers\Admin\ProfileController::class, 'updateAvatar'])->name('avatar');
+        Route::delete('/avatar', [\App\Http\Controllers\Admin\ProfileController::class, 'removeAvatar'])->name('avatar.remove');
+    });
 });
 
 /*
@@ -137,6 +146,21 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+/*
+|--------------------------------------------------------------------------
+| Account Routes (User Profile)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth')->prefix('account')->name('account.')->group(function () {
+    Route::get('/', [App\Http\Controllers\AccountController::class, 'index'])->name('index');
+    Route::get('/profile', [App\Http\Controllers\AccountController::class, 'profile'])->name('profile');
+    Route::put('/profile', [App\Http\Controllers\AccountController::class, 'updateProfile'])->name('profile.update');
+    Route::put('/password', [App\Http\Controllers\AccountController::class, 'updatePassword'])->name('password');
+    Route::post('/avatar', [App\Http\Controllers\AccountController::class, 'updateAvatar'])->name('avatar');
+    Route::delete('/avatar', [App\Http\Controllers\AccountController::class, 'removeAvatar'])->name('avatar.remove');
+});
 
 /*
 |--------------------------------------------------------------------------

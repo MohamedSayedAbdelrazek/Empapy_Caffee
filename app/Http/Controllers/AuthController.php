@@ -31,11 +31,33 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            if (Auth::user()->isAdmin()) {
-                return redirect()->intended(route('admin.dashboard'));
+            // Create fancy time-based welcome message
+            $user = Auth::user();
+            $hour = now()->format('H');
+
+            if ($hour >= 5 && $hour < 12) {
+                $greeting = 'صباح الخير';
+                $emoji = '☀️';
+            } elseif ($hour >= 12 && $hour < 17) {
+                $greeting = 'مساء النور';
+                $emoji = '🌤️';
+            } elseif ($hour >= 17 && $hour < 21) {
+                $greeting = 'مساء الخير';
+                $emoji = '🌅';
+            } else {
+                $greeting = 'أهلاً بك';
+                $emoji = '🌙';
             }
 
-            return redirect()->intended(route('home'));
+            $welcomeMessage = "{$emoji} {$greeting}، {$user->name}! مرحباً بعودتك";
+
+            if ($user->isAdmin()) {
+                return redirect()->intended(route('admin.dashboard'))
+                    ->with('welcome', $welcomeMessage);
+            }
+
+            return redirect()->intended(route('home'))
+                ->with('welcome', $welcomeMessage);
         }
 
         return back()->withErrors([

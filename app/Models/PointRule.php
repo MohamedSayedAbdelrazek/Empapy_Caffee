@@ -18,6 +18,7 @@ class PointRule extends Model
         'type',
         'value',
         'trigger',
+        'is_first_order_only',
         'min_order_amount',
         'max_points_per_order',
         'is_active',
@@ -28,6 +29,7 @@ class PointRule extends Model
 
     protected $casts = [
         'is_active' => 'boolean',
+        'is_first_order_only' => 'boolean',
         'starts_at' => 'date',
         'ends_at' => 'date',
         'value' => 'decimal:2',

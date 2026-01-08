@@ -7,20 +7,24 @@
 @endpush
 
 @section('content')
-    <div class="container py-5">
-        <!-- Header -->
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h1 class="display-5 fw-bold mb-3">🎁 كتالوج المكافآت</h1>
-            <p class="lead text-muted">استبدل نقاطك بمكافآت حصرية!</p>
+    <!-- Page Header for proper navbar visibility -->
+    <div class="page-header" style="padding: 120px 0 40px; background: linear-gradient(135deg, #2C1810 0%, #3D2317 100%);">
+        <div class="container text-center">
+            <h1 class="page-title text-white" data-aos="fade-up">🎁 كتالوج المكافآت</h1>
+            <p class="lead text-white-50" data-aos="fade-up" data-aos-delay="100">استبدل نقاطك بمكافآت حصرية!</p>
 
             <!-- Points Balance -->
-            <div class="d-inline-flex align-items-center gap-3 px-4 py-3 bg-warning bg-opacity-10 rounded-pill mt-3">
+            <div class="d-inline-flex align-items-center gap-3 px-4 py-3 bg-warning bg-opacity-25 rounded-pill mt-3"
+                data-aos="fade-up" data-aos-delay="200">
                 <i class="bi bi-coin text-warning fs-4"></i>
-                <span class="fs-5">رصيدك:</span>
-                <span class="points-counter fs-3">{{ number_format($userPoints) }}</span>
-                <span class="fs-5">نقطة</span>
+                <span class="fs-5 text-white">رصيدك:</span>
+                <span class="points-counter fs-3 text-warning">{{ number_format($userPoints) }}</span>
+                <span class="fs-5 text-white">نقطة</span>
             </div>
         </div>
+    </div>
+
+    <div class="container py-5">
 
         <!-- Filters -->
         <div class="glass-card p-3 mb-4" data-aos="fade-up">

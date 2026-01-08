@@ -103,17 +103,57 @@ class CheckoutController extends Controller
             $shipping = $subtotal >= 500 ? 0 : 50;
             $discount = 0;
             $couponCode = null;
+            $redemption = null;
 
-            // Apply coupon if provided
+            // Apply coupon or redemption code if provided
             if ($request->filled('coupon_code')) {
-                $coupon = \App\Models\Coupon::where('code', strtoupper($request->coupon_code))->first();
+                $code = strtoupper(trim($request->coupon_code));
 
-                if ($coupon && $coupon->isValid()) {
-                    $discount = $coupon->calculateDiscount($subtotal);
-                    $couponCode = $coupon->code;
+                // Check if it's a redemption code (starts with RWD-)
+                if (str_starts_with($code, 'RWD-')) {
+                    $redemption = \App\Models\RewardRedemption::with('reward')
+                        ->where('redemption_code', $code)
+                        ->where('status', 'pending')
+                        ->where('user_id', \Illuminate\Support\Facades\Auth::id())
+                        ->where(function ($q) {
+                            $q->whereNull('expires_at')
+                                ->orWhere('expires_at', '>', now());
+                        })
+                        ->first();
 
-                    // Increment usage count
-                    $coupon->incrementUsage();
+                    if ($redemption && $redemption->reward) {
+                        $reward = $redemption->reward;
+
+                        // Calculate discount based on reward type
+                        switch ($reward->reward_type) {
+                            case 'discount_fixed':
+                                $discount = min($reward->reward_value, $subtotal);
+                                break;
+                            case 'discount_percent':
+                                $discount = ($subtotal * $reward->reward_value) / 100;
+                                // Apply max discount cap if set
+                                if ($reward->max_discount && $discount > $reward->max_discount) {
+                                    $discount = $reward->max_discount;
+                                }
+                                break;
+                            case 'free_shipping':
+                                $shipping = 0;
+                                break;
+                        }
+
+                        $couponCode = $code; // Store the redemption code
+                    }
+                } else {
+                    // Regular coupon code
+                    $coupon = \App\Models\Coupon::where('code', $code)->first();
+
+                    if ($coupon && $coupon->isValid()) {
+                        $discount = $coupon->calculateDiscount($subtotal);
+                        $couponCode = $coupon->code;
+
+                        // Increment usage count
+                        $coupon->incrementUsage();
+                    }
                 }
             }
 
@@ -170,6 +210,11 @@ class CheckoutController extends Controller
 
             // Fire OrderCreated event
             event(new \App\Events\OrderCreated($order));
+
+            // Mark reward redemption as applied
+            if ($redemption) {
+                $redemption->applyToOrder($order);
+            }
 
             DB::commit();
 

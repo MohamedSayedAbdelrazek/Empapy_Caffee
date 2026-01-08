@@ -32,7 +32,7 @@
             <div class="card-body p-0">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0">
-                        <thead class="table-light">
+                        <thead>
                             <tr>
                                 <th>المكافأة</th>
                                 <th>النوع</th>
@@ -55,8 +55,7 @@
                                                     <span class="badge bg-warning ms-1">مميز</span>
                                                 @endif
                                                 <br>
-                                                <small
-                                                    class="text-muted">{{ Str::limit($reward->description, 40) }}</small>
+                                                <small class="text-muted">{{ Str::limit($reward->description, 40) }}</small>
                                             </div>
                                         </div>
                                     </td>

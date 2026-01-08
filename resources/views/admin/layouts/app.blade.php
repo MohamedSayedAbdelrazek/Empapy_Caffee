@@ -440,6 +440,141 @@
 
             <!-- Page Content -->
             <div class="admin-content">
+                {{-- Fancy Welcome Overlay --}}
+                @if (session('welcome'))
+                    <div class="welcome-overlay" id="welcomeOverlay">
+                        <div class="welcome-content">
+                            <div class="welcome-avatar">
+                                @if (auth()->user()->avatar)
+                                    <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Avatar">
+                                @else
+                                    <i class="bi bi-person-fill"></i>
+                                @endif
+                            </div>
+                            <h1 class="welcome-title">{{ session('welcome') }}</h1>
+                            <p class="welcome-subtitle">نتمنى لك يوماً موفقاً ☕</p>
+                            <div class="welcome-confetti"></div>
+                        </div>
+                    </div>
+                    <style>
+                        .welcome-overlay {
+                            position: fixed;
+                            top: 0;
+                            left: 0;
+                            right: 0;
+                            bottom: 0;
+                            background: linear-gradient(135deg, rgba(26, 26, 46, 0.98) 0%, rgba(15, 52, 96, 0.98) 100%);
+                            z-index: 9999;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            animation: welcomeFadeIn 0.5s ease-out;
+                        }
+
+                        @keyframes welcomeFadeIn {
+                            from {
+                                opacity: 0;
+                            }
+
+                            to {
+                                opacity: 1;
+                            }
+                        }
+
+                        .welcome-content {
+                            text-align: center;
+                            animation: welcomeSlideUp 0.6s ease-out 0.2s both;
+                        }
+
+                        @keyframes welcomeSlideUp {
+                            from {
+                                opacity: 0;
+                                transform: translateY(30px);
+                            }
+
+                            to {
+                                opacity: 1;
+                                transform: translateY(0);
+                            }
+                        }
+
+                        .welcome-avatar {
+                            width: 120px;
+                            height: 120px;
+                            border-radius: 50%;
+                            border: 4px solid #c9a227;
+                            margin: 0 auto 25px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: linear-gradient(135deg, #2d2d44 0%, #1a1a2e 100%);
+                            overflow: hidden;
+                            box-shadow: 0 0 40px rgba(201, 162, 39, 0.3);
+                            animation: avatarPulse 2s ease-in-out infinite;
+                        }
+
+                        @keyframes avatarPulse {
+
+                            0%,
+                            100% {
+                                box-shadow: 0 0 40px rgba(201, 162, 39, 0.3);
+                            }
+
+                            50% {
+                                box-shadow: 0 0 60px rgba(201, 162, 39, 0.5);
+                            }
+                        }
+
+                        .welcome-avatar img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+
+                        .welcome-avatar i {
+                            font-size: 60px;
+                            color: #c9a227;
+                        }
+
+                        .welcome-title {
+                            font-size: 2.5rem;
+                            font-weight: 700;
+                            color: #fff;
+                            margin-bottom: 10px;
+                            text-shadow: 0 0 30px rgba(201, 162, 39, 0.3);
+                        }
+
+                        .welcome-subtitle {
+                            font-size: 1.2rem;
+                            color: rgba(255, 255, 255, 0.7);
+                        }
+
+                        .welcome-overlay.fade-out {
+                            animation: welcomeFadeOut 0.5s ease-out forwards;
+                        }
+
+                        @keyframes welcomeFadeOut {
+                            from {
+                                opacity: 1;
+                            }
+
+                            to {
+                                opacity: 0;
+                                pointer-events: none;
+                            }
+                        }
+                    </style>
+                    <script>
+                        setTimeout(function() {
+                            const overlay = document.getElementById('welcomeOverlay');
+                            if (overlay) {
+                                overlay.classList.add('fade-out');
+                                setTimeout(() => overlay.remove(), 500);
+                            }
+                        }, 2500);
+                    </script>
+                @endif
+
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible fade show">
                         <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
@@ -510,6 +645,8 @@
             lastCheckTime: new Date().toISOString(),
             isInitialLoad: true, // Track if this is the first load
             soundEnabled: localStorage.getItem('notificationSound') !== 'muted',
+            playedSoundIds: new Set(JSON.parse(localStorage.getItem('playedSoundIds') ||
+                '[]')), // Persist played sounds
 
             // Different sounds for different notification types 🔊
             sounds: {
@@ -522,9 +659,26 @@
 
             init() {
                 this.updateSoundButton();
+                // Clean old played IDs (keep only last 100)
+                this.cleanupPlayedIds();
                 this.loadNotifications();
                 this.startPolling();
                 this.bindEvents();
+            },
+
+            // Save played IDs to localStorage
+            savePlayedIds() {
+                const ids = Array.from(this.playedSoundIds).slice(-100); // Keep last 100
+                localStorage.setItem('playedSoundIds', JSON.stringify(ids));
+            },
+
+            // Cleanup old played IDs to prevent memory bloat
+            cleanupPlayedIds() {
+                if (this.playedSoundIds.size > 100) {
+                    const ids = Array.from(this.playedSoundIds).slice(-100);
+                    this.playedSoundIds = new Set(ids);
+                    this.savePlayedIds();
+                }
             },
 
             bindEvents() {
@@ -609,18 +763,26 @@
                         if (data.has_new && data.notifications.length > 0) {
                             // Get the newest notification
                             const newest = data.notifications[0];
-                            
-                            // Play sound based on notification type 🔊
-                            this.playSound(newest.type);
 
-                            // Show toast for the notification
-                            this.showToast({
-                                title: newest.title,
-                                message: newest.message,
-                                type: newest.type === 'new_order' ? 'order' : newest.type === 'low_stock' ?
-                                    'warning' : 'info',
-                                url: newest.action_url
-                            });
+                            // Only play sound if we haven't already played for this notification
+                            if (newest.id && !this.playedSoundIds.has(newest.id)) {
+                                // Mark this notification as having played sound
+                                this.playedSoundIds.add(newest.id);
+                                this.savePlayedIds(); // Persist to localStorage
+
+                                // Play sound based on notification type 🔊
+                                this.playSound(newest.type);
+
+                                // Show toast for the notification
+                                this.showToast({
+                                    title: newest.title,
+                                    message: newest.message,
+                                    type: newest.type === 'new_order' ? 'order' : newest.type ===
+                                        'low_stock' ?
+                                        'warning' : 'info',
+                                    url: newest.action_url
+                                });
+                            }
                         }
 
                         this.lastCheckTime = data.server_time;

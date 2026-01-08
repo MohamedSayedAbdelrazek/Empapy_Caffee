@@ -1,16 +1,6 @@
 @php $tier = $tier ?? null; @endphp
 
 <div class="row g-4">
-    @if (!$tier)
-        <div class="col-md-6">
-            <label class="form-label">المعرف (Slug) <span class="text-danger">*</span></label>
-            <input type="text" name="slug" class="form-control @error('slug') is-invalid @enderror"
-                value="{{ old('slug') }}" placeholder="gold" required>
-            @error('slug')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-    @endif
 
     <div class="col-md-12">
         <label class="form-label">الاسم <span class="text-danger">*</span></label>
