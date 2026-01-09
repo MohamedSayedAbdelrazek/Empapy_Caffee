@@ -1,7 +1,8 @@
 <!-- Futuristic Admin Sidebar -->
 <aside class="admin-sidebar" id="adminSidebar">
     <div class="sidebar-header">
-        <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
+        <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('admin.orders.index') }}"
+            class="sidebar-brand">
             <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه" class="sidebar-logo"
                 style="height: 40px; width: auto; border-radius: 6px;">
             <span class="brand-text">إمبابي كافيه</span>
@@ -10,31 +11,37 @@
 
     <nav class="sidebar-nav">
         <ul class="nav flex-column">
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
-                    href="{{ route('admin.dashboard') }}">
-                    <i class="bi bi-speedometer2"></i>
-                    <span>لوحة التحكم</span>
-                </a>
-            </li>
+            {{-- Dashboard - Admin Only --}}
+            @if (auth()->user()->isAdmin())
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                        href="{{ route('admin.dashboard') }}">
+                        <i class="bi bi-speedometer2"></i>
+                        <span>لوحة التحكم</span>
+                    </a>
+                </li>
 
-            <li class="nav-section">إدارة المتجر</li>
+                <li class="nav-section">إدارة المتجر</li>
 
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
-                    href="{{ route('admin.products.index') }}">
-                    <i class="bi bi-box-seam"></i>
-                    <span>المنتجات</span>
-                </a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.products.*') ? 'active' : '' }}"
+                        href="{{ route('admin.products.index') }}">
+                        <i class="bi bi-box-seam"></i>
+                        <span>المنتجات</span>
+                    </a>
+                </li>
 
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}"
-                    href="{{ route('admin.categories.index') }}">
-                    <i class="bi bi-grid"></i>
-                    <span>الأصناف</span>
-                </a>
-            </li>
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}"
+                        href="{{ route('admin.categories.index') }}">
+                        <i class="bi bi-grid"></i>
+                        <span>الأصناف</span>
+                    </a>
+                </li>
+            @endif
+
+            {{-- Orders Section - All Staff --}}
+            <li class="nav-section">الطلبات</li>
 
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('admin.orders.index') ? 'active' : '' }}"
@@ -57,35 +64,7 @@
                 </a>
             </li>
 
-            <li class="nav-section">التسويق</li>
-
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}"
-                    href="{{ route('admin.coupons.index') }}">
-                    <i class="bi bi-ticket-perforated"></i>
-                    <span>الكوبونات</span>
-                </a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('admin.loyalty.*') ? 'active' : '' }}"
-                    href="{{ route('admin.loyalty.dashboard') }}">
-                    <i class="bi bi-award"></i>
-                    <span>نظام الولاء</span>
-                    <span class="badge bg-success ms-auto" style="font-size: 0.65rem; padding: 3px 6px;">NEW</span>
-                </a>
-            </li>
-
-            <li class="nav-section">إدارة المستخدمين</li>
-
-            <li class="nav-item">
-                <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
-                    href="{{ route('admin.users.index') }}">
-                    <i class="bi bi-people"></i>
-                    <span>العملاء</span>
-                </a>
-            </li>
-
+            {{-- Notifications - All Staff --}}
             <li class="nav-item">
                 <a class="nav-link {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}"
                     href="{{ route('admin.notifications.index') }}">
@@ -97,6 +76,46 @@
                     @endif
                 </a>
             </li>
+
+            {{-- Marketing & Management - Admin Only --}}
+            @if (auth()->user()->isAdmin())
+                <li class="nav-section">التسويق</li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.coupons.*') ? 'active' : '' }}"
+                        href="{{ route('admin.coupons.index') }}">
+                        <i class="bi bi-ticket-perforated"></i>
+                        <span>الكوبونات</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.loyalty.*') ? 'active' : '' }}"
+                        href="{{ route('admin.loyalty.dashboard') }}">
+                        <i class="bi bi-award"></i>
+                        <span>نظام الولاء</span>
+                        <span class="badge bg-success ms-auto" style="font-size: 0.65rem; padding: 3px 6px;">NEW</span>
+                    </a>
+                </li>
+
+                <li class="nav-section">إدارة المستخدمين</li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"
+                        href="{{ route('admin.users.index') }}">
+                        <i class="bi bi-people"></i>
+                        <span>العملاء</span>
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.staff.*') ? 'active' : '' }}"
+                        href="{{ route('admin.staff.index') }}">
+                        <i class="bi bi-person-badge"></i>
+                        <span>إدارة الفريق</span>
+                    </a>
+                </li>
+            @endif
         </ul>
     </nav>
 
@@ -113,7 +132,13 @@
             </div>
             <div class="admin-info">
                 <span class="admin-name">{{ auth()->user()->name }}</span>
-                <span class="admin-role">مدير النظام</span>
+                <span class="admin-role">
+                    @if (auth()->user()->isAdmin())
+                        مدير النظام
+                    @else
+                        كاشير
+                    @endif
+                </span>
             </div>
             <i class="bi bi-gear profile-settings-icon"></i>
         </a>

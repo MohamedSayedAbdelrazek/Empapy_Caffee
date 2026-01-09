@@ -334,7 +334,7 @@ function initFloatingBeans() {
     const container = document.querySelector('.floating-beans');
     if (!container) return;
 
-    const beanIcons = ['☕', '🫘', '☕'];
+    const beanIcons = ['☕', '☕', '☕'];
     let intervalId = null;
     let isVisible = false;
 

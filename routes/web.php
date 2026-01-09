@@ -77,24 +77,12 @@ Route::post('/coupon/validate', [App\Http\Controllers\CouponController::class, '
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes
+| Admin Routes - Staff Access (Admin + Cashier)
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
-    // Dashboard
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
-    // Products
-    Route::resource('products', ProductController::class);
-    Route::get('products-trashed', [ProductController::class, 'trashed'])->name('products.trashed');
-    Route::post('products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
-    Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('products.force-delete');
-
-    // Categories
-    Route::resource('categories', CategoryController::class);
-
-    // Orders
+Route::prefix('admin')->name('admin.')->middleware(['staff'])->group(function () {
+    // Orders (accessible by all staff)
     Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/kanban', [OrderController::class, 'kanban'])->name('orders.kanban');
     Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
@@ -104,14 +92,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
     Route::get('/orders/{order}/details-ajax', [OrderController::class, 'getOrderDetails'])->name('orders.details-ajax');
 
-    // Users
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
-
-    // Coupons
-    Route::resource('coupons', CouponController::class);
-
-    // Notifications
+    // Notifications (accessible by all staff)
     Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('index');
         Route::get('/get', [\App\Http\Controllers\Admin\NotificationController::class, 'getNotifications'])->name('get');
@@ -122,7 +103,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/clear-all', [\App\Http\Controllers\Admin\NotificationController::class, 'clearAll'])->name('clear-all');
     });
 
-    // Profile
+    // Profile (accessible by all staff)
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\ProfileController::class, 'index'])->name('index');
         Route::put('/', [\App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('update');
@@ -130,6 +111,36 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         Route::post('/avatar', [\App\Http\Controllers\Admin\ProfileController::class, 'updateAvatar'])->name('avatar');
         Route::delete('/avatar', [\App\Http\Controllers\Admin\ProfileController::class, 'removeAvatar'])->name('avatar.remove');
     });
+});
+
+/*
+|--------------------------------------------------------------------------
+| Admin Routes - Admin Only (Full Access)
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
+    // Dashboard (admin only)
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Products (admin only)
+    Route::resource('products', ProductController::class);
+    Route::get('products-trashed', [ProductController::class, 'trashed'])->name('products.trashed');
+    Route::post('products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
+    Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('products.force-delete');
+
+    // Categories (admin only)
+    Route::resource('categories', CategoryController::class);
+
+    // Users/Customers (admin only)
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+
+    // Coupons (admin only)
+    Route::resource('coupons', CouponController::class);
+
+    // Staff Management (admin only)
+    Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
 });
 
 /*

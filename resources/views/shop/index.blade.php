@@ -41,38 +41,10 @@
                                                 class="badge bg-secondary rounded-pill">{{ $category->products_count }}</span>
                                         </a>
                                     @endforeach
-                                </div>
+                                    </div>
                             </div>
 
-                            <!-- Roast Level -->
-                            <div class="mb-4">
-                                <h6 class="mb-3">درجة التحميص</h6>
-                                <div class="d-flex flex-column gap-2">
-                                    <label class="form-check">
-                                        <input type="radio" name="roast" value="" class="form-check-input"
-                                            {{ !request('roast') ? 'checked' : '' }} onchange="this.form.submit()">
-                                        <span class="form-check-label">الكل</span>
-                                    </label>
-                                    <label class="form-check">
-                                        <input type="radio" name="roast" value="light" class="form-check-input"
-                                            {{ request('roast') === 'light' ? 'checked' : '' }}
-                                            onchange="this.form.submit()">
-                                        <span class="form-check-label">تحميص فاتح</span>
-                                    </label>
-                                    <label class="form-check">
-                                        <input type="radio" name="roast" value="medium" class="form-check-input"
-                                            {{ request('roast') === 'medium' ? 'checked' : '' }}
-                                            onchange="this.form.submit()">
-                                        <span class="form-check-label">تحميص متوسط</span>
-                                    </label>
-                                    <label class="form-check">
-                                        <input type="radio" name="roast" value="dark" class="form-check-input"
-                                            {{ request('roast') === 'dark' ? 'checked' : '' }}
-                                            onchange="this.form.submit()">
-                                        <span class="form-check-label">تحميص داكن</span>
-                                    </label>
-                                </div>
-                            </div>
+                         
 
                             @if (request('category'))
                                 <input type="hidden" name="category" value="{{ request('category') }}">
@@ -92,9 +64,7 @@
                             @if (request('category'))
                                 <input type="hidden" name="category" value="{{ request('category') }}">
                             @endif
-                            @if (request('roast'))
-                                <input type="hidden" name="roast" value="{{ request('roast') }}">
-                            @endif
+                          
                             <select name="sort" class="form-select" style="width: auto;" onchange="this.form.submit()">
                                 <option value="latest" {{ request('sort') === 'latest' ? 'selected' : '' }}>الأحدث</option>
                                 <option value="price_low" {{ request('sort') === 'price_low' ? 'selected' : '' }}>السعر: من

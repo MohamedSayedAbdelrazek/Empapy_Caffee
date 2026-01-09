@@ -51,8 +51,14 @@ class AuthController extends Controller
 
             $welcomeMessage = "{$emoji} {$greeting}، {$user->name}! مرحباً بعودتك";
 
+            // Redirect based on role
             if ($user->isAdmin()) {
                 return redirect()->intended(route('admin.dashboard'))
+                    ->with('welcome', $welcomeMessage);
+            }
+
+            if ($user->isCashier()) {
+                return redirect()->intended(route('admin.orders.index'))
                     ->with('welcome', $welcomeMessage);
             }
 
