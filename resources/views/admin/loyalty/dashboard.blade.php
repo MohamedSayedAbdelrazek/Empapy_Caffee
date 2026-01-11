@@ -156,60 +156,58 @@
         <div class="row g-4">
             <!-- Recent Transactions -->
             <div class="col-lg-7">
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                <div class="admin-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="mb-0"><i class="bi bi-clock-history me-2"></i>آخر العمليات</h5>
-                        <a href="{{ route('admin.loyalty.transactions') }}" class="btn btn-sm btn-outline-primary">
+                        <a href="{{ route('admin.loyalty.transactions') }}" class="btn btn-sm btn-outline-light">
                             عرض الكل
                         </a>
                     </div>
-                    <div class="card-body p-0">
-                        <div class="table-responsive">
-                            <table class="table table-hover mb-0">
-                                <thead>
+                    <div class="table-responsive">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>المستخدم</th>
+                                    <th>النوع</th>
+                                    <th>النقاط</th>
+                                    <th>المصدر</th>
+                                    <th>التاريخ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($recentTransactions as $transaction)
                                     <tr>
-                                        <th>المستخدم</th>
-                                        <th>النوع</th>
-                                        <th>النقاط</th>
-                                        <th>المصدر</th>
-                                        <th>التاريخ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @forelse($recentTransactions as $transaction)
-                                        <tr>
-                                            <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar-sm bg-primary-subtle text-primary rounded-circle me-2 d-flex align-items-center justify-content-center"
-                                                        style="width: 35px; height: 35px;">
-                                                        {{ mb_substr($transaction->user->name ?? 'U', 0, 1) }}
-                                                    </div>
-                                                    <span>{{ $transaction->user->name ?? 'مستخدم محذوف' }}</span>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="avatar-sm bg-primary text-white rounded-circle me-2 d-flex align-items-center justify-content-center"
+                                                    style="width: 35px; height: 35px; font-size: 0.85rem;">
+                                                    {{ mb_substr($transaction->user->name ?? 'U', 0, 1) }}
                                                 </div>
-                                            </td>
-                                            <td>
-                                                <span
-                                                    class="badge bg-{{ $transaction->type === 'earned' ? 'success' : ($transaction->type === 'redeemed' ? 'warning' : 'secondary') }}">
-                                                    {{ $transaction->type_label }}
-                                                </span>
-                                            </td>
-                                            <td
-                                                class="fw-bold {{ $transaction->is_positive ? 'text-success' : 'text-danger' }}">
-                                                {{ $transaction->formatted_points }}
-                                            </td>
-                                            <td>{{ $transaction->source_label }}</td>
-                                            <td><small
-                                                    class="text-muted">{{ $transaction->created_at->diffForHumans() }}</small>
-                                            </td>
-                                        </tr>
-                                    @empty
-                                        <tr>
-                                            <td colspan="5" class="text-center text-muted py-4">لا توجد عمليات بعد</td>
-                                        </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                                                <span>{{ $transaction->user->name ?? 'مستخدم محذوف' }}</span>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="badge bg-{{ $transaction->type === 'earned' ? 'success' : ($transaction->type === 'redeemed' ? 'warning' : 'secondary') }}">
+                                                {{ $transaction->type_label }}
+                                            </span>
+                                        </td>
+                                        <td
+                                            class="fw-bold {{ $transaction->is_positive ? 'text-success' : 'text-danger' }}">
+                                            {{ $transaction->formatted_points }}
+                                        </td>
+                                        <td>{{ $transaction->source_label }}</td>
+                                        <td><small
+                                                class="text-muted">{{ $transaction->created_at->diffForHumans() }}</small>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="text-center text-muted py-4">لا توجد عمليات بعد</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -217,69 +215,66 @@
             <!-- Top Earners & Recent Referrals -->
             <div class="col-lg-5">
                 <!-- Top Earners -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-transparent border-0 d-flex justify-content-between align-items-center">
+                <div class="admin-card mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="mb-0"><i class="bi bi-trophy me-2 text-warning"></i>أكثر الأعضاء نقاطاً</h5>
-                        <a href="{{ route('admin.loyalty.users') }}" class="btn btn-sm btn-outline-primary">إدارة</a>
+                        <a href="{{ route('admin.loyalty.users') }}" class="btn btn-sm btn-outline-light">إدارة</a>
                     </div>
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush">
-                            @forelse($topEarners as $index => $earner)
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <div class="d-flex align-items-center">
-                                        <span
-                                            class="badge bg-{{ $index < 3 ? 'warning' : 'secondary' }} me-2">{{ $index + 1 }}</span>
-                                        <div>
-                                            <span class="fw-medium">{{ $earner->user->name ?? 'مستخدم محذوف' }}</span>
-                                            <br>
-                                            <small class="text-muted">
-                                                @if ($earner->current_tier === 'bronze')
-                                                    🥉
-                                                @elseif($earner->current_tier === 'silver')
-                                                    🥈
-                                                @elseif($earner->current_tier === 'gold')
-                                                    🥇
-                                                @elseif($earner->current_tier === 'platinum')
-                                                    💎
-                                                @endif
-                                                {{ $earner->current_tier }}
-                                            </small>
-                                        </div>
+                    <div class="list-group list-group-flush" style="background: transparent;">
+                        @forelse($topEarners as $index => $earner)
+                            <div
+                                class="d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
+                                <div class="d-flex align-items-center">
+                                    <span
+                                        class="badge bg-{{ $index < 3 ? 'warning' : 'secondary' }} me-2">{{ $index + 1 }}</span>
+                                    <div>
+                                        <span class="fw-medium">{{ $earner->user->name ?? 'مستخدم محذوف' }}</span>
+                                        <br>
+                                        <small class="text-muted">
+                                            @if ($earner->current_tier === 'bronze')
+                                                🥉
+                                            @elseif($earner->current_tier === 'silver')
+                                                🥈
+                                            @elseif($earner->current_tier === 'gold')
+                                                🥇
+                                            @elseif($earner->current_tier === 'platinum')
+                                                💎
+                                            @endif
+                                            {{ $earner->current_tier }}
+                                        </small>
                                     </div>
-                                    <span class="fw-bold text-warning">{{ number_format($earner->total_earned) }}
-                                        نقطة</span>
-                                </li>
-                            @empty
-                                <li class="list-group-item text-center text-muted py-3">لا يوجد أعضاء بعد</li>
-                            @endforelse
-                        </ul>
+                                </div>
+                                <span class="fw-bold text-warning">{{ number_format($earner->total_earned) }}
+                                    نقطة</span>
+                            </div>
+                        @empty
+                            <div class="text-center text-muted py-3">لا يوجد أعضاء بعد</div>
+                        @endforelse
                     </div>
                 </div>
 
                 <!-- Recent Referrals -->
-                <div class="card border-0 shadow-sm">
-                    <div class="card-header bg-transparent border-0">
+                <div class="admin-card">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="mb-0"><i class="bi bi-people me-2 text-info"></i>آخر الإحالات</h5>
                     </div>
-                    <div class="card-body p-0">
-                        <ul class="list-group list-group-flush">
-                            @forelse($recentReferrals as $referral)
-                                <li class="list-group-item">
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div>
-                                            <strong>{{ $referral->referrer->name ?? 'محذوف' }}</strong>
-                                            <i class="bi bi-arrow-left mx-2"></i>
-                                            <span>{{ $referral->referred->name ?? 'محذوف' }}</span>
-                                        </div>
-                                        <span
-                                            class="badge bg-{{ $referral->status_color }}">{{ $referral->status_label }}</span>
+                    <div class="list-group list-group-flush" style="background: transparent;">
+                        @forelse($recentReferrals as $referral)
+                            <div class="py-3 border-bottom border-secondary">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <strong>{{ $referral->referrer->name ?? 'محذوف' }}</strong>
+                                        <i class="bi bi-arrow-left mx-2"></i>
+                                        <span>{{ $referral->referred->name ?? 'محذوف' }}</span>
                                     </div>
-                                    <small class="text-muted">{{ $referral->created_at->diffForHumans() }}</small>
-                                </li>
-                            @empty
-                                <li class="list-group-item text-center text-muted py-3">لا توجد إحالات بعد</li>
-                            @endforelse
-                        </ul>
+                                    <span
+                                        class="badge bg-{{ $referral->status_color }}">{{ $referral->status_label }}</span>
+                                </div>
+                                <small class="text-muted">{{ $referral->created_at->diffForHumans() }}</small>
+                            </div>
+                        @empty
+                            <div class="text-center text-muted py-3">لا توجد إحالات بعد</div>
+                        @endforelse
                     </div>
                 </div>
             </div>

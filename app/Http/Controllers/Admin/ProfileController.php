@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
-use Intervention\Image\Laravel\Facades\Image;
 
 class ProfileController extends Controller
 {
@@ -91,16 +90,6 @@ class ProfileController extends Controller
 
         // Store new avatar
         $path = $request->file('avatar')->store('avatars', 'public');
-
-        // Try to optimize the image if Intervention Image is available
-        try {
-            $fullPath = Storage::disk('public')->path($path);
-            $image = Image::read($fullPath);
-            $image->cover(200, 200);
-            $image->save($fullPath, quality: 90);
-        } catch (\Exception $e) {
-            // If Intervention fails, continue with original image
-        }
 
         $admin->update(['avatar' => $path]);
 

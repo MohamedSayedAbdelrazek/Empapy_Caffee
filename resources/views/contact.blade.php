@@ -72,23 +72,60 @@
                     <div class="glass-card p-5">
                         <h4 class="mb-4">أرسل لنا رسالة</h4>
 
-                        <form>
+                        @if (session('success'))
+                            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                                <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        @endif
+
+                        @if ($errors->any())
+                            <div class="alert alert-danger mb-4">
+                                <i class="bi bi-exclamation-circle me-2"></i>يرجى تصحيح الأخطاء التالية:
+                                <ul class="mb-0 mt-2">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form action="{{ route('contact.submit') }}" method="POST">
+                            @csrf
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label">الاسم</label>
-                                    <input type="text" class="form-control" required>
+                                    <input type="text" name="name"
+                                        class="form-control @error('name') is-invalid @enderror"
+                                        value="{{ old('name', auth()->user()->name ?? '') }}" required>
+                                    @error('name')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">البريد الإلكتروني</label>
-                                    <input type="email" class="form-control" required>
+                                    <input type="email" name="email"
+                                        class="form-control @error('email') is-invalid @enderror"
+                                        value="{{ old('email', auth()->user()->email ?? '') }}" required>
+                                    @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">الموضوع</label>
-                                    <input type="text" class="form-control" required>
+                                    <input type="text" name="subject"
+                                        class="form-control @error('subject') is-invalid @enderror"
+                                        value="{{ old('subject') }}" required>
+                                    @error('subject')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">الرسالة</label>
-                                    <textarea class="form-control" rows="5" required></textarea>
+                                    <textarea name="message" class="form-control @error('message') is-invalid @enderror" rows="5" required>{{ old('message') }}</textarea>
+                                    @error('message')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-golden btn-lg">

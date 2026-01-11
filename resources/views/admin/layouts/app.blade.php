@@ -571,7 +571,7 @@
                                 overlay.classList.add('fade-out');
                                 setTimeout(() => overlay.remove(), 500);
                             }
-                        }, 2500);
+                        }, 4000);
                     </script>
                 @endif
 

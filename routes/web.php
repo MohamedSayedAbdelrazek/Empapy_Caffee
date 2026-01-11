@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact', [HomeController::class, 'submitContact'])->name('contact.submit');
 
 // Shop
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
@@ -141,6 +142,9 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 
     // Staff Management (admin only)
     Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
+
+    // Contact Messages (admin only)
+    Route::resource('contacts', \App\Http\Controllers\Admin\ContactController::class)->only(['index', 'show', 'update', 'destroy']);
 });
 
 /*

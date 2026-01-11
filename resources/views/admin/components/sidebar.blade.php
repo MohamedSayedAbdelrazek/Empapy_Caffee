@@ -115,6 +115,18 @@
                         <span>إدارة الفريق</span>
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.contacts.*') ? 'active' : '' }}"
+                        href="{{ route('admin.contacts.index') }}">
+                        <i class="bi bi-envelope"></i>
+                        <span>رسائل التواصل</span>
+                        @php $newContactsCount = \App\Models\ContactMessage::new()->count(); @endphp
+                        @if ($newContactsCount > 0)
+                            <span class="badge bg-warning text-dark ms-auto">{{ $newContactsCount }}</span>
+                        @endif
+                    </a>
+                </li>
             @endif
         </ul>
     </nav>

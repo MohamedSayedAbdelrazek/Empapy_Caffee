@@ -284,5 +284,55 @@
             background: rgba(239, 68, 68, 0.15);
             color: #ef4444;
         }
+
+        /* Account Quick Links Dark Mode */
+        [data-theme="dark"] .account-quick-link {
+            background: rgba(255, 255, 255, 0.05);
+            color: #e5e7eb;
+        }
+
+        [data-theme="dark"] .account-quick-link:hover {
+            background: rgba(201, 162, 39, 0.15);
+            color: #fff;
+        }
+
+        /* Table Dark Mode Styles */
+        [data-theme="dark"] .table {
+            --bs-table-bg: transparent;
+            --bs-table-color: #e5e7eb;
+        }
+
+        [data-theme="dark"] .table th {
+            color: #9ca3af;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        [data-theme="dark"] .table td {
+            color: #e5e7eb;
+            border-color: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        [data-theme="dark"] .table td strong {
+            color: #fff;
+        }
+
+        [data-theme="dark"] .table .text-muted {
+            color: #9ca3af !important;
+        }
+
+        [data-theme="dark"] .table thead.border-bottom {
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+
+        [data-theme="dark"] .btn-outline-secondary {
+            color: #9ca3af;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        [data-theme="dark"] .btn-outline-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
     </style>
 @endpush

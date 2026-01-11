@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\ContactMessage;
 use App\Models\Product;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
@@ -67,5 +68,34 @@ class HomeController extends Controller
     public function contact()
     {
         return view('contact');
+    }
+
+    /**
+     * Handle contact form submission
+     */
+    public function submitContact(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:100',
+            'subject' => 'required|string|max:200',
+            'message' => 'required|string|max:2000',
+        ], [
+            'name.required' => 'يرجى إدخال الاسم',
+            'email.required' => 'يرجى إدخال البريد الإلكتروني',
+            'email.email' => 'البريد الإلكتروني غير صالح',
+            'subject.required' => 'يرجى إدخال الموضوع',
+            'message.required' => 'يرجى إدخال الرسالة',
+        ]);
+
+        ContactMessage::create([
+            'user_id' => auth()->id(),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'subject' => $validated['subject'],
+            'message' => $validated['message'],
+        ]);
+
+        return back()->with('success', 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
     }
 }

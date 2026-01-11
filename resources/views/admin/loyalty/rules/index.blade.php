@@ -21,82 +21,80 @@
         </div>
 
         <!-- Rules Table -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead>
+        <div class="admin-card">
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>القاعدة</th>
+                            <th>الحدث</th>
+                            <th>النوع</th>
+                            <th>القيمة</th>
+                            <th>الحالة</th>
+                            <th>الفترة</th>
+                            <th class="text-end">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($rules as $rule)
                             <tr>
-                                <th>القاعدة</th>
-                                <th>الحدث</th>
-                                <th>النوع</th>
-                                <th>القيمة</th>
-                                <th>الحالة</th>
-                                <th>الفترة</th>
-                                <th class="text-end">الإجراءات</th>
+                                <td>
+                                    <div>
+                                        <strong>{{ $rule->name }}</strong>
+                                        <br>
+                                        <small class="text-muted">{{ $rule->slug }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ $rule->trigger_label }}</span>
+                                </td>
+                                <td>{{ $rule->type_label }}</td>
+                                <td class="fw-bold text-warning">{{ $rule->value_display }}</td>
+                                <td>
+                                    @if ($rule->is_valid)
+                                        <span class="badge bg-success">نشط</span>
+                                    @else
+                                        <span class="badge bg-secondary">غير نشط</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if ($rule->starts_at || $rule->ends_at)
+                                        <small class="text-muted">
+                                            {{ $rule->starts_at?->format('Y/m/d') ?? 'بداية' }} -
+                                            {{ $rule->ends_at?->format('Y/m/d') ?? 'مفتوح' }}
+                                        </small>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td class="text-end">
+                                    <a href="{{ route('admin.loyalty.rules.edit', $rule) }}"
+                                        class="btn btn-sm btn-outline-light">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form action="{{ route('admin.loyalty.rules.destroy', $rule) }}" method="POST"
+                                        class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه القاعدة؟')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($rules as $rule)
-                                <tr>
-                                    <td>
-                                        <div>
-                                            <strong>{{ $rule->name }}</strong>
-                                            <br>
-                                            <small class="text-muted">{{ $rule->slug }}</small>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info">{{ $rule->trigger_label }}</span>
-                                    </td>
-                                    <td>{{ $rule->type_label }}</td>
-                                    <td class="fw-bold text-warning">{{ $rule->value_display }}</td>
-                                    <td>
-                                        @if ($rule->is_valid)
-                                            <span class="badge bg-success">نشط</span>
-                                        @else
-                                            <span class="badge bg-secondary">غير نشط</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if ($rule->starts_at || $rule->ends_at)
-                                            <small class="text-muted">
-                                                {{ $rule->starts_at?->format('Y/m/d') ?? 'بداية' }} -
-                                                {{ $rule->ends_at?->format('Y/m/d') ?? 'مفتوح' }}
-                                            </small>
-                                        @else
-                                            <span class="text-muted">-</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-end">
-                                        <a href="{{ route('admin.loyalty.rules.edit', $rule) }}"
-                                            class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form action="{{ route('admin.loyalty.rules.destroy', $rule) }}" method="POST"
-                                            class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذه القاعدة؟')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="7" class="text-center py-5">
-                                        <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
-                                        <p class="text-muted mb-3">لا توجد قواعد نقاط بعد</p>
-                                        <a href="{{ route('admin.loyalty.rules.create') }}" class="btn btn-primary">
-                                            <i class="bi bi-plus-lg me-1"></i> إضافة قاعدة
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-5">
+                                    <i class="bi bi-inbox fs-1 text-muted d-block mb-2"></i>
+                                    <p class="text-muted mb-3">لا توجد قواعد نقاط بعد</p>
+                                    <a href="{{ route('admin.loyalty.rules.create') }}" class="btn btn-primary">
+                                        <i class="bi bi-plus-lg me-1"></i> إضافة قاعدة
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 

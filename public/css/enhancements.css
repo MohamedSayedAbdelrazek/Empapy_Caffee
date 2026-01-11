@@ -269,7 +269,46 @@
 }
 
 [data-theme="dark"] .table td {
+    color: #e8e8e8;
     border-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .table strong {
+    color: #ffffff !important;
+}
+
+/* Tables inside glass-card - ensure all text is visible */
+[data-theme="dark"] .glass-card .table,
+[data-theme="dark"] .glass-card .table th,
+[data-theme="dark"] .glass-card .table td {
+    color: #ffffff;
+}
+
+[data-theme="dark"] .glass-card .table strong {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .glass-card .table .text-muted {
+    color: #9ca3af !important;
+}
+
+[data-theme="dark"] .glass-card .table thead {
+    border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+[data-theme="dark"] .glass-card .table tbody tr {
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme="dark"] .glass-card .btn-outline-secondary {
+    color: #c9a227;
+    border-color: rgba(201, 162, 39, 0.5);
+}
+
+[data-theme="dark"] .glass-card .btn-outline-secondary:hover {
+    background: rgba(201, 162, 39, 0.2);
+    color: #c9a227;
+    border-color: #c9a227;
 }
 
 /* Dropdowns */
