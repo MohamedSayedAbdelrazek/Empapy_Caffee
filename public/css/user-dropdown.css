@@ -151,21 +151,214 @@
     background: linear-gradient(135deg, rgba(255, 107, 107, 0.15), rgba(201, 42, 42, 0.1)) !important;
 }
 
-/* Mobile Responsive */
+/* ============================================
+   MOBILE - SLIDE-IN SIDE PANEL
+   ============================================ */
+
+/* Backdrop overlay for mobile */
+.user-panel-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 99998;
+    /* Just below panel */
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.user-panel-backdrop.show {
+    display: block;
+    opacity: 1;
+}
+
+/* Hide announcement bar when user panel is open */
+body.user-panel-open .announcement-bar {
+    z-index: 1 !important;
+}
+
+@media (max-width: 768px) {
+
+    /* Transform dropdown into slide-in panel */
+    .user-dropdown-menu {
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        left: auto !important;
+        width: 280px !important;
+        max-width: 85vw !important;
+        min-width: unset !important;
+        height: 100vh !important;
+        max-height: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 20px 0 0 20px !important;
+        border: none !important;
+        border-left: 1px solid rgba(201, 162, 39, 0.3) !important;
+        background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f0f1a 100%) !important;
+        box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5) !important;
+        z-index: 99999 !important;
+        /* Higher than announcement bar */
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        /* Smooth scroll on iOS */
+        padding-bottom: 80px !important;
+        /* Space for logout at bottom */
+        /* Use visibility + opacity for animation instead of display */
+        display: block !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        transform: translateX(100%) !important;
+        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+            opacity 0.35s ease,
+            visibility 0.35s ease !important;
+    }
+
+    .user-dropdown-menu.show {
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: translateX(0) !important;
+    }
+
+    /* Panel Header */
+    .user-dropdown-menu::before {
+        content: 'حسابي';
+        display: block;
+        padding: 25px 20px 20px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #c9a227;
+        border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), transparent);
+    }
+
+    /* Menu items container */
+    .user-dropdown-menu>* {
+        opacity: 0;
+        transform: translateX(20px);
+    }
+
+    .user-dropdown-menu.show>* {
+        opacity: 1;
+        transform: translateX(0);
+        transition: all 0.3s ease;
+    }
+
+    /* Stagger animation for items */
+    .user-dropdown-menu.show>*:nth-child(1) {
+        transition-delay: 0.1s;
+    }
+
+    .user-dropdown-menu.show>*:nth-child(2) {
+        transition-delay: 0.15s;
+    }
+
+    .user-dropdown-menu.show>*:nth-child(3) {
+        transition-delay: 0.2s;
+    }
+
+    .user-dropdown-menu.show>*:nth-child(4) {
+        transition-delay: 0.25s;
+    }
+
+    .user-dropdown-menu.show>*:nth-child(5) {
+        transition-delay: 0.3s;
+    }
+
+    .user-dropdown-menu.show>*:nth-child(6) {
+        transition-delay: 0.35s;
+    }
+
+    .user-dropdown-menu.show>*:nth-child(7) {
+        transition-delay: 0.4s;
+    }
+
+    .user-dropdown-menu.show>*:nth-child(8) {
+        transition-delay: 0.45s;
+    }
+
+    /* Premium items in panel */
+    .dropdown-item.premium-item {
+        padding: 16px 20px !important;
+        margin: 4px 10px !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid transparent !important;
+    }
+
+    .dropdown-item.premium-item:hover,
+    .dropdown-item.premium-item:active {
+        background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.1)) !important;
+        border-color: rgba(201, 162, 39, 0.3) !important;
+        transform: translateX(-5px) !important;
+    }
+
+    /* Icons in panel */
+    .item-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
+        border-radius: 12px;
+    }
+
+    /* Dividers */
+    .user-dropdown-menu .dropdown-divider {
+        margin: 15px 20px !important;
+        border-color: rgba(201, 162, 39, 0.15) !important;
+    }
+
+    /* Points badge in panel */
+    .points-badge {
+        font-size: 0.85rem !important;
+        padding: 6px 12px !important;
+    }
+
+    /* Logout item special styling */
+    .logout-item {
+        margin-top: auto !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding-top: 15px !important;
+    }
+
+    /* Close button area (tap to close) */
+    .user-dropdown-menu::after {
+        content: '✕';
+        position: absolute;
+        top: 25px;
+        left: 20px;
+        width: 32px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        color: rgba(255, 255, 255, 0.5);
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+}
+
+/* Extra small screens */
 @media (max-width: 576px) {
     .user-dropdown-menu {
-        min-width: 240px !important;
-        margin-top: 8px !important;
+        width: 260px !important;
     }
 
     .dropdown-item.premium-item {
-        padding: 10px 14px !important;
-        font-size: 0.9rem !important;
+        padding: 14px 16px !important;
+        margin: 3px 8px !important;
     }
 
     .item-icon {
-        width: 32px;
-        height: 32px;
-        font-size: 1rem;
+        width: 40px;
+        height: 40px;
     }
 }

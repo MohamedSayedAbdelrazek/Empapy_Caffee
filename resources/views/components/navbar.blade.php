@@ -61,12 +61,15 @@
 
                 <!-- User -->
                 @auth
+                    <!-- Backdrop for mobile user panel -->
+                    <div class="user-panel-backdrop" id="userPanelBackdrop"></div>
+
                     <div class="dropdown user-dropdown">
                         <button class="btn btn-icon dropdown-toggle user-icon-btn" data-bs-toggle="dropdown"
-                            aria-label="User menu">
+                            aria-label="User menu" id="userDropdownBtn">
                             <i class="bi bi-person-circle"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu shadow-lg">
+                        <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu shadow-lg" id="userDropdownMenu">
                             @if (auth()->user()->isAdmin())
                                 <li>
                                     <a class="dropdown-item premium-item" href="{{ route('admin.dashboard') }}">
@@ -153,6 +156,87 @@
                             </li>
                         </ul>
                     </div>
+
+                    <!-- Mobile user panel script -->
+                    <script>
+                        (function() {
+                            // Run immediately when script loads
+                            function initMobileUserPanel() {
+                                const userBtn = document.getElementById('userDropdownBtn');
+                                const userMenu = document.getElementById('userDropdownMenu');
+                                const backdrop = document.getElementById('userPanelBackdrop');
+
+                                if (!userBtn || !userMenu || !backdrop) return;
+
+                                // Check if mobile
+                                function isMobile() {
+                                    return window.innerWidth <= 768;
+                                }
+
+                                // Disable Bootstrap dropdown on mobile
+                                if (isMobile()) {
+                                    userBtn.removeAttribute('data-bs-toggle');
+                                }
+
+                                function openPanel() {
+                                    userMenu.classList.add('show');
+                                    backdrop.classList.add('show');
+                                    document.body.classList.add('user-panel-open');
+                                    document.body.style.overflow = 'hidden';
+                                }
+
+                                function closePanel() {
+                                    userMenu.classList.remove('show');
+                                    backdrop.classList.remove('show');
+                                    document.body.classList.remove('user-panel-open');
+                                    document.body.style.overflow = '';
+                                }
+
+                                // Toggle on button click
+                                userBtn.addEventListener('click', function(e) {
+                                    if (isMobile()) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        e.stopImmediatePropagation();
+
+                                        if (userMenu.classList.contains('show')) {
+                                            closePanel();
+                                        } else {
+                                            openPanel();
+                                        }
+                                    }
+                                }, true); // Use capture phase
+
+                                // Close on backdrop click
+                                backdrop.addEventListener('click', closePanel);
+
+                                // Close on ESC
+                                document.addEventListener('keydown', function(e) {
+                                    if (e.key === 'Escape' && userMenu.classList.contains('show')) {
+                                        closePanel();
+                                    }
+                                });
+
+                                // Handle resize
+                                window.addEventListener('resize', function() {
+                                    if (isMobile()) {
+                                        userBtn.removeAttribute('data-bs-toggle');
+                                    } else {
+                                        userBtn.setAttribute('data-bs-toggle', 'dropdown');
+                                        closePanel();
+                                    }
+                                });
+                            }
+
+                            // Run when DOM is ready or immediately if already loaded
+                            if (document.readyState === 'loading') {
+                                document.addEventListener('DOMContentLoaded', initMobileUserPanel);
+                            } else {
+                                initMobileUserPanel();
+                            }
+                        })
+                        ();
+                    </script>
                 @else
                     <a href="{{ route('login') }}" class="btn btn-golden">
                         تسجيل الدخول

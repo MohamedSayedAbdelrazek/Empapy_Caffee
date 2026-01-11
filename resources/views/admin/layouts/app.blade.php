@@ -66,7 +66,7 @@
 
         /* Notification Dropdown */
         .notification-dropdown {
-            width: 380px;
+            width: min(380px, calc(100vw - 24px));
             max-height: 500px;
             overflow: hidden;
             border: none;
@@ -358,6 +358,9 @@
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Sidebar Backdrop (Mobile) -->
+    <div class="sidebar-backdrop" id="sidebarBackdrop"></div>
+
     <div class="admin-wrapper">
         <!-- Sidebar -->
         @include('admin.components.sidebar')
@@ -561,6 +564,35 @@
                             to {
                                 opacity: 0;
                                 pointer-events: none;
+                            }
+                        }
+
+                        /* Mobile responsive for welcome overlay */
+                        @media (max-width: 768px) {
+                            .welcome-overlay {
+                                overflow: hidden;
+                            }
+
+                            .welcome-content {
+                                padding: 20px;
+                                max-width: 100vw;
+                            }
+
+                            .welcome-avatar {
+                                width: 80px;
+                                height: 80px;
+                            }
+
+                            .welcome-avatar i {
+                                font-size: 40px;
+                            }
+
+                            .welcome-title {
+                                font-size: 1.5rem;
+                            }
+
+                            .welcome-subtitle {
+                                font-size: 1rem;
                             }
                         }
                     </style>

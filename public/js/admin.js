@@ -7,25 +7,63 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 /**
- * Sidebar Toggle
+ * Sidebar Toggle with Mobile Support
  */
 function initSidebar() {
     const toggle = document.getElementById('sidebarToggle');
     const sidebar = document.getElementById('adminSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
 
     if (toggle && sidebar) {
-        toggle.addEventListener('click', function () {
-            sidebar.classList.toggle('open');
+        // Toggle sidebar on button click
+        toggle.addEventListener('click', function (e) {
+            e.stopPropagation();
+            toggleSidebar();
         });
+
+        // Close sidebar when clicking backdrop
+        if (backdrop) {
+            backdrop.addEventListener('click', function () {
+                closeSidebar();
+            });
+        }
 
         // Close on outside click (mobile)
         document.addEventListener('click', function (e) {
             if (window.innerWidth < 992) {
-                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
-                    sidebar.classList.remove('open');
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target) && sidebar.classList.contains('open')) {
+                    closeSidebar();
                 }
             }
         });
+
+        // Close on ESC key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+                closeSidebar();
+            }
+        });
+    }
+
+    function toggleSidebar() {
+        const isOpen = sidebar.classList.contains('open');
+        if (isOpen) {
+            closeSidebar();
+        } else {
+            openSidebar();
+        }
+    }
+
+    function openSidebar() {
+        sidebar.classList.add('open');
+        if (backdrop) backdrop.classList.add('show');
+        document.body.classList.add('sidebar-open');
+    }
+
+    function closeSidebar() {
+        sidebar.classList.remove('open');
+        if (backdrop) backdrop.classList.remove('show');
+        document.body.classList.remove('sidebar-open');
     }
 }
 

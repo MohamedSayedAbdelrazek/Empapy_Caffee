@@ -14,7 +14,7 @@ use App\Services\CartService;
 use App\Services\ProductService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
-
+use Illuminate\Support\Facades\URL;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -44,5 +44,9 @@ class AppServiceProvider extends ServiceProvider
         Order::observe(OrderObserver::class);
         User::observe(UserObserver::class);
         Review::observe(ReviewObserver::class);
+
+        if (env('APP_ENV') !== 'local') {
+            URL::forceScheme('https'); 
+        }
     }
 }
