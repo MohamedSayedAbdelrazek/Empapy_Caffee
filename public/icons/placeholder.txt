@@ -1,0 +1,2 @@
+/* This is a placeholder file to create the icons directory */
+/* Replace this with actual icon files */

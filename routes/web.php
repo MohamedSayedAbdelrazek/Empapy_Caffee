@@ -27,6 +27,11 @@ Route::get('/about', [HomeController::class, 'about'])->name('about');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact', [HomeController::class, 'submitContact'])->name('contact.submit');
 
+// PWA Offline Page
+Route::get('/offline', function () {
+    return view('offline');
+})->name('offline');
+
 // Shop
 Route::get('/shop', [ShopController::class, 'index'])->name('shop.index');
 Route::get('/shop/{product:slug}', [ShopController::class, 'show'])->name('shop.show');

@@ -7,9 +7,21 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'إمبابي كافيه - قهوة فاخرة')</title>
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="{{ asset('logo.jpg') }}">
-    <link rel="apple-touch-icon" href="{{ asset('logo.jpg') }}">
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <meta name="theme-color" content="#2C1810">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="إمبابي كافيه">
+
+    <!-- Favicon & App Icons -->
+    <link rel="icon" type="image/png" href="{{ asset('icons/ios/32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('icons/ios/16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('icons/ios/32.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('icons/ios/180.png') }}">
+    <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('icons/ios/152.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icons/ios/180.png') }}">
+    <link rel="apple-touch-icon" sizes="167x167" href="{{ asset('icons/ios/167.png') }}">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
@@ -64,6 +76,9 @@
 
     <!-- User Dropdown Menu CSS -->
     <link rel="stylesheet" href="{{ asset('css/user-dropdown.css') }}">
+
+    <!-- PWA Install Prompt CSS -->
+    <link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}">
 
     @stack('styles')
 </head>
@@ -162,6 +177,9 @@
 
     <!-- UX Enhancements JS -->
     <script src="{{ asset('js/ux-enhancements.js') }}"></script>
+
+    <!-- PWA Service Worker & Install Prompt -->
+    <script src="{{ asset('js/pwa.js') }}"></script>
 
     @stack('scripts')
 </body>
