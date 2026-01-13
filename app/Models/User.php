@@ -108,6 +108,14 @@ class User extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+    /**
+     * Get all devices for this user (for push notifications)
+     */
+    public function devices(): HasMany
+    {
+        return $this->hasMany(UserDevice::class);
+    }
+
     // ========================================
     // LOYALTY RELATIONSHIPS
     // ========================================

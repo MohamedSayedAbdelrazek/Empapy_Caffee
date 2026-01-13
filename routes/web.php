@@ -49,6 +49,13 @@ Route::prefix('cart')->name('cart.')->middleware(['throttle:60,1'])->group(funct
 // API Routes for Product Details (used by Quick Shop Modal)
 Route::get('/api/products/{id}', [App\Http\Controllers\Api\ProductController::class, 'show'])->name('api.products.show');
 
+// API Routes for FCM Device Registration
+Route::prefix('api/device')->middleware('auth')->group(function () {
+    Route::post('/register', [App\Http\Controllers\Api\DeviceController::class, 'registerToken'])->name('api.device.register');
+    Route::post('/unregister', [App\Http\Controllers\Api\DeviceController::class, 'unregisterToken'])->name('api.device.unregister');
+});
+Route::get('/api/device/vapid-key', [App\Http\Controllers\Api\DeviceController::class, 'getVapidKey'])->name('api.device.vapid-key');
+
 
 // Checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');

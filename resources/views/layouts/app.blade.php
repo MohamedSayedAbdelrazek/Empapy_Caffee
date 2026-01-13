@@ -80,6 +80,9 @@
     <!-- PWA Install Prompt CSS -->
     <link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}">
 
+    <!-- Firebase Notifications CSS -->
+    <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
+
     @stack('styles')
 </head>
 
@@ -180,6 +183,101 @@
 
     <!-- PWA Service Worker & Install Prompt -->
     <script src="{{ asset('js/pwa.js') }}"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+
+    <!-- Firebase Push Notifications -->
+    <script>
+        // User Notification Logic
+        // User Notification Logic
+        window.handleFirebaseMessage = function(payload) {
+            console.log('[User Layout] Received Firebase Message:', payload);
+            const {
+                notification,
+                data
+            } = payload;
+
+            // Extract data first - available for all blocks
+            const title = notification?.title || data?.title || 'إشعار جديد';
+            const body = notification?.body || data?.body || '';
+            const url = data?.url || data?.click_action || '#';
+            const icon = notification?.icon || data?.icon || '/icons/android/android-launchericon-96-96.png';
+            const time = new Date().toLocaleTimeString('ar-EG', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            // 1. Update Badge
+            const badge = document.getElementById('userNotificationBadge');
+            if (badge) {
+                let count = parseInt(badge.textContent) || 0;
+                count++;
+                badge.textContent = count > 99 ? '99+' : count;
+                badge.style.display = 'block';
+                // Animate badge
+                badge.classList.add('animate__animated', 'animate__heartBeat');
+                setTimeout(() => badge.classList.remove('animate__animated', 'animate__heartBeat'), 1000);
+            }
+
+            // 2. Add to List
+            const list = document.getElementById('userNotificationList');
+            if (list) {
+                const emptyMsg = list.querySelector('.notification-empty');
+                if (emptyMsg) emptyMsg.remove();
+
+                const itemHtml = `
+                    <a href="${url}" class="dropdown-item p-2 border-bottom notification-item unread" 
+                       style="background: rgba(var(--bs-primary-rgb), 0.05);">
+                        <div class="d-flex align-items-start gap-2">
+                            <img src="${icon}" class="rounded-circle" width="40" height="40" alt="icon">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 small fw-bold">${title}</h6>
+                                <p class="mb-1 small text-muted text-truncate" style="max-width: 200px;">${body}</p>
+                                <small class="text-secondary" style="font-size: 0.7rem;">${time}</small>
+                            </div>
+                            <span class="badge bg-primary rounded-pill p-1" style="font-size: 0.5rem;">جديد</span>
+                        </div>
+                    </a>
+                `;
+
+                list.insertAdjacentHTML('afterbegin', itemHtml);
+            }
+
+            // 3. Play Sound manually
+            const audio = new Audio('/sounds/notification.mp3');
+            audio.play().catch(e => console.log('Audio play failed', e));
+
+            // Show Toast manually
+            if (window.FCM && window.FCM.showToast) {
+                window.FCM.showToast({
+                    title: title,
+                    body: body,
+                    icon: icon,
+                    url: url
+                });
+            }
+        };
+
+
+        // Placeholder for mark all read
+        function markAllUserNotificationsRead() {
+            // TODO: Implement backend call
+            const badge = document.getElementById('userNotificationBadge');
+            if (badge) {
+                badge.style.display = 'none';
+                badge.textContent = '0';
+            }
+            // Remove unread styling
+            document.querySelectorAll('.notification-item.unread').forEach(el => {
+                el.style.background = 'transparent';
+                el.querySelector('.badge')?.remove();
+                el.classList.remove('unread');
+            });
+        }
+    </script>
+    <script src="{{ asset('js/firebase-notifications.js') }}"></script>
 
     @stack('scripts')
 </body>

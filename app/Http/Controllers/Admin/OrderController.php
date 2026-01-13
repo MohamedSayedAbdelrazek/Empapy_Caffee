@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Services\FirebaseNotificationService;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -56,13 +57,26 @@ class OrderController extends Controller
             'status' => 'required|in:pending,processing,shipped,delivered,cancelled'
         ]);
 
+        $oldStatus = $order->status;
+        $newStatus = $request->status;
+
         $order->update([
-            'status' => $request->status
+            'status' => $newStatus
         ]);
 
         // If delivered, mark as paid
-        if ($request->status === 'delivered' && $order->payment_method === 'cash_on_delivery') {
+        if ($newStatus === 'delivered' && $order->payment_method === 'cash_on_delivery') {
             $order->update(['payment_status' => 'paid']);
+        }
+
+        // Send push notification to customer
+        if ($oldStatus !== $newStatus && $order->user_id) {
+            try {
+                $firebaseService = new FirebaseNotificationService();
+                $firebaseService->notifyOrderStatusChange($order, $oldStatus, $newStatus);
+            } catch (\Exception $e) {
+                \Log::error('[FCM] Failed to send status change notification: ' . $e->getMessage());
+            }
         }
 
         return back()->with('success', 'تم تحديث حالة الطلب');
@@ -188,6 +202,16 @@ class OrderController extends Controller
             'delivered' => 'تم التوصيل',
             'cancelled' => 'ملغي',
         ];
+
+        // Send push notification to customer
+        if ($oldStatus !== $newStatus && $order->user_id) {
+            try {
+                $firebaseService = new FirebaseNotificationService();
+                $firebaseService->notifyOrderStatusChange($order, $oldStatus, $newStatus);
+            } catch (\Exception $e) {
+                \Log::error('[FCM] Failed to send status change notification: ' . $e->getMessage());
+            }
+        }
 
         return response()->json([
             'success' => true,

@@ -88,13 +88,21 @@ class HomeController extends Controller
             'message.required' => 'يرجى إدخال الرسالة',
         ]);
 
-        ContactMessage::create([
+        $contact = ContactMessage::create([
             'user_id' => auth()->id(),
             'name' => $validated['name'],
             'email' => $validated['email'],
             'subject' => $validated['subject'],
             'message' => $validated['message'],
         ]);
+
+        // Send push notification to admin
+        try {
+            $firebaseService = new \App\Services\FirebaseNotificationService();
+            $firebaseService->notifyNewContactMessage($contact);
+        } catch (\Exception $e) {
+            \Log::error('[FCM] Failed to send contact notification: ' . $e->getMessage());
+        }
 
         return back()->with('success', 'تم إرسال رسالتك بنجاح! سنتواصل معك قريباً.');
     }

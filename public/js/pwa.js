@@ -245,12 +245,11 @@
         }, 5000);
     }
 
-    // Show update available notification
+    // Show update available notification - silent auto-update
     function showUpdateAvailable() {
-        // You can customize this notification
-        if (confirm('تتوفر نسخة جديدة من التطبيق. هل تريد التحديث الآن؟')) {
-            window.location.reload();
-        }
+        // Silent update - just log and reload automatically in the background
+        console.log('[PWA] New version available - will update on next reload');
+        // Don't show annoying popup - the user will get the new version on next visit
     }
 
     // Listen for beforeinstallprompt event

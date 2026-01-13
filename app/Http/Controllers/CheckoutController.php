@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Services\FirebaseNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -210,6 +211,14 @@ class CheckoutController extends Controller
 
             // Fire OrderCreated event
             event(new \App\Events\OrderCreated($order));
+
+            // Send push notification to staff (async, non-blocking)
+            try {
+                $firebaseService = new FirebaseNotificationService();
+                $firebaseService->notifyNewOrder($order);
+            } catch (\Exception $e) {
+                \Log::error('[FCM] Failed to send new order notification: ' . $e->getMessage());
+            }
 
             // Mark reward redemption as applied
             if ($redemption) {

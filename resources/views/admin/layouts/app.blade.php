@@ -385,7 +385,7 @@
                         <i class="bi bi-volume-up-fill"></i>
                     </button>
 
-                    <!-- Notifications -->
+                    <!-- Notification Dropdown -->
                     <div class="dropdown">
                         <button class="btn btn-icon notification-bell position-relative" data-bs-toggle="dropdown"
                             id="notificationBell">
@@ -669,16 +669,16 @@
     <!-- Admin JS -->
     <script src="{{ asset('js/admin.js') }}"></script>
 
+    <!-- Firebase Push Notifications -->
+    <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
+    <script src="{{ asset('js/firebase-notifications.js') }}"></script>
+
     <!-- Notification System JS -->
     <script>
         // Notification Configuration
+        // Notification Configuration (FCM-based)
         const NotificationSystem = {
-            pollInterval: 10000, // Poll every 10 seconds for fast response 🚀
-            lastCheckTime: new Date().toISOString(),
-            isInitialLoad: true, // Track if this is the first load
             soundEnabled: localStorage.getItem('notificationSound') !== 'muted',
-            playedSoundIds: new Set(JSON.parse(localStorage.getItem('playedSoundIds') ||
-                '[]')), // Persist played sounds
 
             // Different sounds for different notification types 🔊
             sounds: {
@@ -691,27 +691,10 @@
 
             init() {
                 this.updateSoundButton();
-                // Clean old played IDs (keep only last 100)
-                this.cleanupPlayedIds();
-                this.loadNotifications();
-                this.startPolling();
                 this.bindEvents();
             },
 
-            // Save played IDs to localStorage
-            savePlayedIds() {
-                const ids = Array.from(this.playedSoundIds).slice(-100); // Keep last 100
-                localStorage.setItem('playedSoundIds', JSON.stringify(ids));
-            },
 
-            // Cleanup old played IDs to prevent memory bloat
-            cleanupPlayedIds() {
-                if (this.playedSoundIds.size > 100) {
-                    const ids = Array.from(this.playedSoundIds).slice(-100);
-                    this.playedSoundIds = new Set(ids);
-                    this.savePlayedIds();
-                }
-            },
 
             bindEvents() {
                 // Sound toggle
@@ -767,66 +750,8 @@
                 }
             },
 
-            async loadNotifications() {
-                try {
-                    // Build URL with parameters
-                    let url = `/admin/notifications/get?last_check=${encodeURIComponent(this.lastCheckTime)}`;
 
-                    // Add initial_load flag on first request
-                    if (this.isInitialLoad) {
-                        url += '&initial_load=true';
-                    }
-
-                    const response = await fetch(url, {
-                        headers: {
-                            'Accept': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        }
-                    });
-
-                    if (!response.ok) throw new Error('Network response was not ok');
-
-                    const data = await response.json();
-
-                    if (data.success) {
-                        this.updateNotificationUI(data);
-
-                        // Play sound and show toast for new notifications (only during polling, not initial load)
-                        if (data.has_new && data.notifications.length > 0) {
-                            // Get the newest notification
-                            const newest = data.notifications[0];
-
-                            // Only play sound if we haven't already played for this notification
-                            if (newest.id && !this.playedSoundIds.has(newest.id)) {
-                                // Mark this notification as having played sound
-                                this.playedSoundIds.add(newest.id);
-                                this.savePlayedIds(); // Persist to localStorage
-
-                                // Play sound based on notification type 🔊
-                                this.playSound(newest.type);
-
-                                // Show toast for the notification
-                                this.showToast({
-                                    title: newest.title,
-                                    message: newest.message,
-                                    type: newest.type === 'new_order' ? 'order' : newest.type ===
-                                        'low_stock' ?
-                                        'warning' : 'info',
-                                    url: newest.action_url
-                                });
-                            }
-                        }
-
-                        this.lastCheckTime = data.server_time;
-
-                        // Mark initial load as complete
-                        this.isInitialLoad = false;
-                    }
-                } catch (error) {
-                    console.error('Error loading notifications:', error);
-                }
-            },
-
+            // Update notification UI (called by FCM handler)
             updateNotificationUI(data) {
                 const badge = document.getElementById('notificationBadge');
                 const countSpan = document.getElementById('notificationCount');
@@ -842,37 +767,27 @@
                     countSpan.textContent = 'لا يوجد جديد';
                 }
 
-                // Build notification list
+                // Build notification list (add new at top, don't duplicate)
                 if (data.notifications && data.notifications.length > 0) {
+                    const existingItems = list.querySelectorAll('.notification-item');
+                    const existingIds = new Set();
+                    existingItems.forEach(item => existingIds.add(item.dataset.id));
+
                     let html = '';
-
-                    // On initial load, replace all content
-                    if (this.isInitialLoad) {
-                        data.notifications.forEach(n => {
+                    data.notifications.forEach(n => {
+                        if (!existingIds.has(String(n.id))) {
                             html += this.renderNotificationItem(n);
-                        });
-                        list.innerHTML = html;
-                    } else {
-                        // During polling, only add new notifications at the top
-                        const existingItems = list.querySelectorAll('.notification-item');
-                        const existingIds = new Set();
-                        existingItems.forEach(item => existingIds.add(item.dataset.id));
+                        }
+                    });
 
-                        data.notifications.forEach(n => {
-                            if (!existingIds.has(String(n.id))) {
-                                html += this.renderNotificationItem(n);
-                            }
-                        });
-
-                        if (html) {
-                            if (list.querySelector('.notification-empty')) {
-                                list.innerHTML = html;
-                            } else {
-                                list.insertAdjacentHTML('afterbegin', html);
-                            }
+                    if (html) {
+                        if (list.querySelector('.notification-empty')) {
+                            list.innerHTML = html;
+                        } else {
+                            list.insertAdjacentHTML('afterbegin', html);
                         }
                     }
-                } else if (this.isInitialLoad || !list.querySelector('.notification-item')) {
+                } else if (!list.querySelector('.notification-item')) {
                     // Show empty state only if no notifications at all
                     list.innerHTML = `
                         <div class="notification-empty">
@@ -953,16 +868,94 @@
                 }, 5000);
             },
 
-            startPolling() {
-                setInterval(() => {
-                    this.loadNotifications();
-                }, this.pollInterval);
-            }
+
         };
 
         // Initialize when DOM is ready
         document.addEventListener('DOMContentLoaded', () => {
             NotificationSystem.init();
+
+            // Listen for Firebase foreground messages and update dashboard UI
+            // Define global handler that firebase-notifications.js will call
+            window.handleFirebaseMessage = function(payload) {
+                const {
+                    notification,
+                    data
+                } = payload;
+
+                // Play sound
+                NotificationSystem.playSound(data?.type || 'new_order');
+
+                // Show toast in admin dashboard
+                NotificationSystem.showToast({
+                    title: notification?.title || 'إشعار جديد',
+                    message: notification?.body || '',
+                    type: data?.type === 'new_order' ? 'order' : 'info'
+                });
+
+                // Update badge count (increment by 1)
+                const badge = document.getElementById('notificationBadge');
+                const countSpan = document.getElementById('notificationCount');
+                if (badge) {
+                    let currentCount = parseInt(badge.textContent) || 0;
+                    currentCount++;
+                    badge.style.display = 'block';
+                    badge.textContent = currentCount > 99 ? '99+' : currentCount;
+                    if (countSpan) {
+                        countSpan.textContent = `${currentCount} جديد`;
+                    }
+                }
+
+                // Add notification to the list
+                const list = document.getElementById('notificationList');
+                if (list) {
+                    // Remove empty state if exists
+                    const emptyState = list.querySelector('.notification-empty');
+                    if (emptyState) {
+                        emptyState.remove();
+                    }
+
+                    // Create notification item for dashboard
+                    const typeIcons = {
+                        'new_order': 'bi-cart-check-fill',
+                        'order_status_change': 'bi-truck',
+                        'new_contact': 'bi-envelope-fill',
+                        'order_cancelled': 'bi-x-circle-fill',
+                        'new_user': 'bi-person-plus-fill'
+                    };
+                    const typeColors = {
+                        'new_order': 'success',
+                        'order_status_change': 'info',
+                        'new_contact': 'warning',
+                        'order_cancelled': 'danger',
+                        'new_user': 'primary'
+                    };
+
+                    const icon = typeIcons[data?.type] || 'bi-bell-fill';
+                    const color = typeColors[data?.type] || 'primary';
+                    const url = data?.url || '#';
+                    const now = new Date();
+                    const timeAgo = 'الآن';
+
+                    const notificationHtml = `
+                            <a href="${url}" 
+                               class="notification-item unread" 
+                               data-id="fcm-${Date.now()}"
+                               style="animation: slideInRight 0.3s ease-out;">
+                                <div class="notification-icon ${color}">
+                                    <i class="${icon}"></i>
+                                </div>
+                                <div class="notification-content">
+                                    <div class="notification-title">${notification?.title || 'إشعار'}</div>
+                                    <div class="notification-message">${notification?.body || ''}</div>
+                                    <div class="notification-time">${timeAgo}</div>
+                                </div>
+                            </a>
+                        `;
+
+                    list.insertAdjacentHTML('afterbegin', notificationHtml);
+                }
+            };
         });
 
         // Global functions for onclick handlers

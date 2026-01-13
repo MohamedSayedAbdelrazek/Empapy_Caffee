@@ -59,6 +59,36 @@
                     <span class="cart-badge" id="cartBadge">0</span>
                 </button>
 
+                <!-- Notifications -->
+                @auth
+                    <div class="dropdown notification-dropdown">
+                        <button class="btn btn-icon notification-bell position-relative" data-bs-toggle="dropdown"
+                            id="userNotificationBell" style="border: none; background: transparent;">
+                            <i class="bi bi-bell"></i>
+                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                id="userNotificationBadge" style="display: none; font-size: 0.6rem;">
+                                0
+                            </span>
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-end notification-menu shadow-lg p-0"
+                            style="width: 320px; max-height: 400px; overflow-y: auto;">
+                            <div class="p-2 border-bottom d-flex justify-content-between align-items-center">
+                                <h6 class="m-0">الإشعارات</h6>
+                                <button class="btn btn-sm btn-link text-decoration-none"
+                                    onclick="markAllUserNotificationsRead()">
+                                    تحديد الكل كمقروء
+                                </button>
+                            </div>
+                            <div id="userNotificationList" class="notification-list">
+                                <div class="text-center p-4 text-muted notification-empty">
+                                    <i class="bi bi-bell-slash fs-4 d-block mb-2"></i>
+                                    لا توجد إشعارات جديدة
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endauth
+
                 <!-- User -->
                 @auth
                     <!-- Backdrop for mobile user panel -->
@@ -243,7 +273,8 @@
                     </a>
                 @endauth
                 <!-- Theme Toggle -->
-                <button class="btn btn-icon theme-toggle-navbar" id="themeToggleNavbar" aria-label="Toggle dark mode">
+                <button class="btn btn-icon theme-toggle-navbar" id="themeToggleNavbar"
+                    aria-label="Toggle dark mode">
                     <i class="bi bi-sun-fill sun-icon"></i>
                     <i class="bi bi-moon-fill moon-icon"></i>
                 </button>

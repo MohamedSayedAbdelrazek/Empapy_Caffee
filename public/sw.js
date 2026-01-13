@@ -3,6 +3,9 @@
  * Provides offline functionality and caching
  */
 
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
+
 const CACHE_NAME = 'empapy-caffe-v1';
 const OFFLINE_URL = '/offline';
 
@@ -151,12 +154,20 @@ function isStaticAsset(pathname) {
 
 // Helper function to fetch and cache
 function fetchAndCache(request) {
+    // Only cache http/https requests - skip chrome-extension and other schemes
+    if (!request.url.startsWith('http://') && !request.url.startsWith('https://')) {
+        return fetch(request);
+    }
+
     return fetch(request)
         .then((response) => {
             if (response.ok) {
                 const responseClone = response.clone();
                 caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(request, responseClone);
+                    // Double check URL before caching
+                    if (request.url.startsWith('http://') || request.url.startsWith('https://')) {
+                        cache.put(request, responseClone);
+                    }
                 });
             }
             return response;
@@ -167,38 +178,102 @@ function fetchAndCache(request) {
 }
 
 // Handle push notifications (future use)
-self.addEventListener('push', (event) => {
-    if (event.data) {
-        const data = event.data.json();
-        const options = {
-            body: data.body,
-            icon: '/icons/android/android-launchericon-192-192.png',
-            badge: '/icons/android/android-launchericon-72-72.png',
-            vibrate: [100, 50, 100],
-            data: {
-                url: data.url || '/'
-            },
-            actions: [
-                { action: 'open', title: 'فتح' },
-                { action: 'close', title: 'إغلاق' }
-            ]
-        };
+// === FIREBASE MESSAGING LOGIC ===
 
-        event.waitUntil(
-            self.registration.showNotification(data.title, options)
-        );
-    }
-});
+// Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyC9xBlrJOtsMPWgGwJnMLmuVkYiCDCJF_M",
+    authDomain: "empapy-caffe.firebaseapp.com",
+    projectId: "empapy-caffe",
+    storageBucket: "empapy-caffe.firebasestorage.app",
+    messagingSenderId: "345834961954",
+    appId: "1:345834961954:web:d9e1c1df8e54be93935e7b",
+    measurementId: "G-47B8S82J14"
+};
 
-// Handle notification clicks
+// Initialize Firebase
+try {
+    firebase.initializeApp(firebaseConfig);
+    const messaging = firebase.messaging();
+
+    // Handle background messages
+    messaging.onBackgroundMessage((payload) => {
+        console.log('[FCM SW] Background message received:', payload);
+
+        // Check if app is in foreground (focused)
+        self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+            const isFocused = windowClients.some(client => client.focused);
+
+            // Notify clients regardless (so they can update badges/lists/play sound if they want)
+            windowClients.forEach((client) => {
+                client.postMessage({
+                    type: 'NOTIFICATION_RECEIVED',
+                    payload: payload
+                });
+            });
+
+            // IF FOCUSED: Do NOT show system notification (App handles Toast + Sound)
+            // This prevents "Double Sound" (System Ding + App Mp3)
+            if (isFocused) {
+                console.log('[FCM SW] App in foreground, suppressing system notification.');
+                return;
+            }
+
+            // Support both notification (from backend) and data-only messages
+            const title = payload.notification?.title || payload.data?.title || 'إمبابي كافيه';
+            const body = payload.notification?.body || payload.data?.body || '';
+            const icon = payload.notification?.icon || payload.data?.icon || '/icons/android/android-launchericon-192-192.png';
+
+            const notificationTitle = title;
+            const notificationOptions = {
+                body: body,
+                icon: icon,
+                badge: '/icons/android/android-launchericon-72-72.png',
+                vibrate: [100, 50, 100],
+                tag: payload.data?.type || 'general',
+                renotify: true,
+                requireInteraction: true,
+                data: payload.data || {},
+                actions: [
+                    { action: 'open', title: 'فتح' },
+                    { action: 'close', title: 'إغلاق' }
+                ]
+            };
+
+            // Show notification (Only in background)
+            self.registration.showNotification(notificationTitle, notificationOptions);
+        });
+    });
+} catch (e) {
+    console.error('[FCM SW] Failed to initialize Firebase:', e);
+}
+
+// Handle notification click (Merged Logic)
 self.addEventListener('notificationclick', (event) => {
+    console.log('[FCM SW] Notification clicked:', event);
     event.notification.close();
 
-    if (event.action === 'open' || !event.action) {
-        event.waitUntil(
-            clients.openWindow(event.notification.data.url)
-        );
+    const urlToOpen = event.notification.data?.url || '/';
+
+    if (event.action === 'close') {
+        return;
     }
+
+    // Open or focus the relevant page
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
+            // Check if there's already a window open
+            for (const client of windowClients) {
+                if (client.url.includes(urlToOpen) && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            // If no window is open, open a new one
+            if (clients.openWindow) {
+                return clients.openWindow(urlToOpen);
+            }
+        })
+    );
 });
 
-console.log('[SW] Service Worker loaded!');
+console.log('[SW+FCM] Service Worker loaded!');
