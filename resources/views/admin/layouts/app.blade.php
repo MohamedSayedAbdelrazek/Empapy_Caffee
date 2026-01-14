@@ -385,6 +385,12 @@
                         <i class="bi bi-volume-up-fill"></i>
                     </button>
 
+                    <!-- PWA Install Button (Hidden by default, shown via pwa.js) -->
+                    <button class="btn btn-icon navbar-install-btn" id="adminNavbarInstallBtn" style="display: none;"
+                        title="تثبيت التطبيق">
+                        <i class="bi bi-download"></i>
+                    </button>
+
                     <!-- Notification Dropdown -->
                     <div class="dropdown">
                         <button class="btn btn-icon notification-bell position-relative" data-bs-toggle="dropdown"
@@ -672,6 +678,10 @@
     <!-- Firebase Push Notifications -->
     <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
     <script src="{{ asset('js/firebase-notifications.js') }}"></script>
+
+    <!-- PWA Install -->
+    <link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}">
+    <script src="{{ asset('js/pwa.js') }}"></script>
 
     <!-- Notification System JS -->
     <script>

@@ -81,6 +81,25 @@
         </div>
     </div>
 
+    <!-- PWA Install Section (Hidden by default, shown via JS when installable) -->
+    <div class="footer-install-section" id="footerInstallSection" style="display: none;">
+        <div class="container">
+            <div class="install-cta">
+                <div class="install-content">
+                    <i class="bi bi-phone-fill install-icon"></i>
+                    <div class="install-text">
+                        <strong>حمّل التطبيق مجاناً!</strong>
+                        <span>تجربة أسرع وإشعارات فورية</span>
+                    </div>
+                </div>
+                <button type="button" class="btn-install-app" id="footerInstallBtn">
+                    <i class="bi bi-download"></i>
+                    تثبيت التطبيق
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Copyright -->
     <div class="footer-bottom">
         <div class="container">

@@ -12,12 +12,29 @@
 
     // Check if app is already installed
     function checkIfInstalled() {
-        // Check if running in standalone mode
+        // Check if running in standalone mode (most browsers)
         if (window.matchMedia('(display-mode: standalone)').matches) {
+            console.log('[PWA] Detected: display-mode standalone');
+            return true;
+        }
+        // Check fullscreen mode (some Android browsers)
+        if (window.matchMedia('(display-mode: fullscreen)').matches) {
+            console.log('[PWA] Detected: display-mode fullscreen');
+            return true;
+        }
+        // Check minimal-ui mode (some browsers)
+        if (window.matchMedia('(display-mode: minimal-ui)').matches) {
+            console.log('[PWA] Detected: display-mode minimal-ui');
             return true;
         }
         // Check iOS standalone
         if (window.navigator.standalone === true) {
+            console.log('[PWA] Detected: iOS standalone');
+            return true;
+        }
+        // Check if opened from homescreen on Android (TWA)
+        if (document.referrer.includes('android-app://')) {
+            console.log('[PWA] Detected: Android TWA');
             return true;
         }
         return false;
@@ -197,6 +214,83 @@
         }
     }
 
+    // Show footer install section (persistent) + navbar buttons
+    function showFooterInstall() {
+        if (isInstalled || checkIfInstalled()) {
+            return; // Don't show if already installed
+        }
+
+        const footerSection = document.getElementById('footerInstallSection');
+        const navbarBtn = document.getElementById('navbarInstallBtn');
+        const adminNavbarBtn = document.getElementById('adminNavbarInstallBtn');
+
+        // Show footer section if exists
+        if (footerSection) {
+            footerSection.style.display = 'block';
+            if (isIOS()) {
+                footerSection.classList.add('ios');
+            }
+            setupInstallButton('footerInstallBtn');
+            console.log('[PWA] Footer install section shown');
+        }
+
+        // Show user navbar button if exists
+        if (navbarBtn) {
+            navbarBtn.style.display = 'flex';
+            setupInstallButton('navbarInstallBtn');
+            console.log('[PWA] User navbar install button shown');
+        }
+
+        // Show admin navbar button if exists
+        if (adminNavbarBtn) {
+            adminNavbarBtn.style.display = 'flex';
+            setupInstallButton('adminNavbarInstallBtn');
+            console.log('[PWA] Admin navbar install button shown');
+        }
+    }
+
+    // Setup click handler for any install button
+    function setupInstallButton(buttonId) {
+        const btn = document.getElementById(buttonId);
+        if (btn && !btn.hasAttribute('data-setup')) {
+            btn.setAttribute('data-setup', 'true');
+            btn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log('[PWA] Install button clicked - User choice:', outcome);
+
+                    if (outcome === 'accepted') {
+                        showInstalledBadge();
+                        isInstalled = true;
+                        hideFooterInstall();
+                    }
+
+                    deferredPrompt = null;
+                    hideInstallBanner();
+                } else if (isIOS()) {
+                    showInstallBanner();
+                }
+            });
+        }
+    }
+
+    // Hide footer install section + navbar buttons
+    function hideFooterInstall() {
+        const elements = [
+            'footerInstallSection',
+            'navbarInstallBtn',
+            'adminNavbarInstallBtn'
+        ];
+
+        elements.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = 'none';
+            }
+        });
+    }
+
     // Setup banner event listeners
     function setupBannerEvents() {
         // Install button
@@ -258,6 +352,7 @@
         e.preventDefault();
         deferredPrompt = e;
         showInstallBanner();
+        showFooterInstall(); // Also show footer install button
     });
 
     // Listen for app installed event
@@ -265,6 +360,7 @@
         console.log('[PWA] App installed!');
         isInstalled = true;
         hideInstallBanner();
+        hideFooterInstall(); // Hide footer install button
         showInstalledBadge();
         deferredPrompt = null;
     });
@@ -283,11 +379,17 @@
         // Register service worker
         registerServiceWorker();
 
-        // If iOS and not installed, show banner after delay
+        // If iOS and not installed, show banner and footer after delay
         if (isIOS() && !isInstalled) {
             setTimeout(() => {
                 showInstallBanner();
+                showFooterInstall();
             }, 5000);
+        }
+
+        // Show footer install if not installed (for when deferredPrompt already fired)
+        if (!isInstalled) {
+            showFooterInstall();
         }
 
         console.log('[PWA] Initialized. Installed:', isInstalled);

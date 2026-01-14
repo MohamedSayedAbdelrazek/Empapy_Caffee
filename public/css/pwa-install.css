@@ -30,7 +30,7 @@
     background: linear-gradient(145deg, #1a1a2e 0%, #16213e 100%);
     border-radius: 24px;
     padding: 24px;
-    box-shadow: 
+    box-shadow:
         0 20px 60px rgba(0, 0, 0, 0.4),
         0 0 0 1px rgba(201, 162, 39, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.1);
@@ -66,8 +66,17 @@
 }
 
 @keyframes floatSteam {
-    0%, 100% { transform: translateY(0) scale(1); opacity: 0.5; }
-    50% { transform: translateY(-20px) scale(1.1); opacity: 0.8; }
+
+    0%,
+    100% {
+        transform: translateY(0) scale(1);
+        opacity: 0.5;
+    }
+
+    50% {
+        transform: translateY(-20px) scale(1.1);
+        opacity: 0.8;
+    }
 }
 
 /* ========================================
@@ -342,36 +351,36 @@
         width: calc(100% - 24px);
         bottom: -250px;
     }
-    
+
     .pwa-install-banner.show {
         bottom: 16px;
     }
-    
+
     .pwa-install-card {
         padding: 20px;
         border-radius: 20px;
     }
-    
+
     .pwa-install-icon {
         width: 52px;
         height: 52px;
     }
-    
+
     .pwa-install-title {
         font-size: 1.05rem;
     }
-    
+
     .pwa-install-features {
         gap: 8px;
         padding: 10px;
     }
-    
+
     .pwa-feature-icon {
         width: 32px;
         height: 32px;
         font-size: 14px;
     }
-    
+
     .pwa-btn {
         padding: 12px 16px;
         font-size: 0.9rem;
@@ -381,4 +390,171 @@
 /* Dark mode adjustments */
 [data-bs-theme="dark"] .pwa-install-card {
     background: linear-gradient(145deg, #0f0f1a 0%, #1a1a2e 100%);
+}
+
+/* ========================================
+   Footer Install Section
+   ======================================== */
+.footer-install-section {
+    background: linear-gradient(135deg, #c9a227 0%, #a78419 100%);
+    padding: 20px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-install-section .install-cta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.footer-install-section .install-content {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.footer-install-section .install-icon {
+    font-size: 2rem;
+    color: #1a1a2e;
+    animation: phoneBounce 2s ease-in-out infinite;
+}
+
+@keyframes phoneBounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-6px);
+    }
+}
+
+.footer-install-section .install-text {
+    color: #1a1a2e;
+}
+
+.footer-install-section .install-text strong {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.footer-install-section .install-text span {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+.footer-install-section .btn-install-app {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #1a1a2e;
+    color: #c9a227;
+    border: none;
+    border-radius: 50px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.footer-install-section .btn-install-app:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+    background: #0f0f1a;
+}
+
+.footer-install-section .btn-install-app i {
+    font-size: 1.1rem;
+}
+
+/* iOS Safari - show tap instructions instead */
+.footer-install-section.ios .btn-install-app {
+    display: none;
+}
+
+.footer-install-section .ios-install-hint {
+    display: none;
+    color: #1a1a2e;
+    font-size: 0.9rem;
+}
+
+.footer-install-section.ios .ios-install-hint {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .footer-install-section .install-cta {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .footer-install-section .install-content {
+        flex-direction: column;
+    }
+
+    .footer-install-section .btn-install-app {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* ========================================
+   Navbar Install Button
+   ======================================== */
+.navbar-install-btn {
+    position: relative;
+    color: #c9a227 !important;
+    border: 2px solid #c9a227 !important;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    animation: installPulse 2s ease-in-out infinite;
+}
+
+.navbar-install-btn:hover {
+    background: #c9a227 !important;
+    color: #1a1a2e !important;
+    transform: scale(1.1);
+    animation: none;
+}
+
+.navbar-install-btn i {
+    font-size: 1.1rem;
+}
+
+@keyframes installPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 0 8px rgba(201, 162, 39, 0);
+    }
+}
+
+/* Admin navbar specific */
+.admin-topbar .navbar-install-btn {
+    width: 36px;
+    height: 36px;
+}
+
+.admin-topbar .navbar-install-btn i {
+    font-size: 1rem;
 }

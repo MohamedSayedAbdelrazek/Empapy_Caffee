@@ -1,2 +1,15 @@
+# Empapy Caffe Robots.txt
+# SEO Optimization
+
 User-agent: *
-Disallow:
+Allow: /
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /checkout/
+Disallow: /account/
+Disallow: /cart/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://empapy-caffe.com/sitemap.xml

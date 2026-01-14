@@ -59,6 +59,12 @@
                     <span class="cart-badge" id="cartBadge">0</span>
                 </button>
 
+                <!-- PWA Install Button (Hidden by default, shown via pwa.js) -->
+                <button class="btn btn-icon navbar-install-btn" id="navbarInstallBtn" style="display: none;"
+                    title="تثبيت التطبيق">
+                    <i class="bi bi-download"></i>
+                </button>
+
                 <!-- Notifications -->
                 @auth
                     <div class="dropdown notification-dropdown">
