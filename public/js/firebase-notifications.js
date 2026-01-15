@@ -363,6 +363,31 @@
         }
     }
 
+    // Clear app badge (called when user views notifications)
+    function clearBadge() {
+        // Clear badge using Badging API
+        if ('clearAppBadge' in navigator) {
+            navigator.clearAppBadge().catch(err => {
+                console.log('[FCM] Badge clear failed:', err);
+            });
+        }
+
+        // Also notify Service Worker to reset its count
+        if (swRegistration && swRegistration.active) {
+            swRegistration.active.postMessage({ type: 'RESET_BADGE' });
+        }
+
+        console.log('[FCM] Badge cleared');
+    }
+
+    // Auto-clear badge when app becomes visible
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            // Clear badge after a short delay to let user see it first
+            setTimeout(clearBadge, 2000);
+        }
+    });
+
     // Expose functions globally
     window.FCM = {
         init,
@@ -370,6 +395,7 @@
         getToken,
         showToast: showNotificationToast,
         playSound: playNotificationSound,
+        clearBadge: clearBadge,
     };
 
     // Auto-initialize

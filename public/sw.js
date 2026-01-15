@@ -196,9 +196,22 @@ try {
     firebase.initializeApp(firebaseConfig);
     const messaging = firebase.messaging();
 
+    // Track notification count for badge
+    let notificationCount = 0;
+
     // Handle background messages
     messaging.onBackgroundMessage((payload) => {
         console.log('[FCM SW] Background message received:', payload);
+
+        // Increment notification count for badge
+        notificationCount++;
+        
+        // Update app badge (if supported)
+        if ('setAppBadge' in navigator) {
+            navigator.setAppBadge(notificationCount).catch(err => {
+                console.log('[FCM SW] Badge update failed:', err);
+            });
+        }
 
         // Check if app is in foreground (focused)
         self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {
@@ -208,7 +221,8 @@ try {
             windowClients.forEach((client) => {
                 client.postMessage({
                     type: 'NOTIFICATION_RECEIVED',
-                    payload: payload
+                    payload: payload,
+                    notificationCount: notificationCount
                 });
             });
 
@@ -229,11 +243,15 @@ try {
                 body: body,
                 icon: icon,
                 badge: '/icons/android/android-launchericon-72-72.png',
-                vibrate: [100, 50, 100],
+                vibrate: [200, 100, 200, 100, 200], // More noticeable vibration pattern
                 tag: payload.data?.type || 'general',
                 renotify: true,
                 requireInteraction: true,
-                data: payload.data || {},
+                silent: false, // Ensure device plays notification sound
+                data: {
+                    ...payload.data,
+                    notificationCount: notificationCount
+                },
                 actions: [
                     { action: 'open', title: 'فتح' },
                     { action: 'close', title: 'إغلاق' }
@@ -242,8 +260,23 @@ try {
 
             // Show notification (Only in background)
             self.registration.showNotification(notificationTitle, notificationOptions);
+            console.log('[FCM SW] Background notification shown with sound enabled');
         });
     });
+
+    // Listen for messages from clients to reset badge
+    self.addEventListener('message', (event) => {
+        if (event.data && event.data.type === 'RESET_BADGE') {
+            notificationCount = 0;
+            if ('clearAppBadge' in navigator) {
+                navigator.clearAppBadge().catch(err => {
+                    console.log('[FCM SW] Badge clear failed:', err);
+                });
+            }
+            console.log('[FCM SW] Badge count reset');
+        }
+    });
+
 } catch (e) {
     console.error('[FCM SW] Failed to initialize Firebase:', e);
 }

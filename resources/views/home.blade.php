@@ -446,8 +446,8 @@
         }
 
         /* =========================================
-                       CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                       ========================================= */
+                                   CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                   ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
@@ -456,6 +456,8 @@
             justify-content: center;
             overflow: hidden;
             margin: 0;
+            /* Fix mobile scroll issues - allow vertical scrolling to pass through */
+            touch-action: pan-y;
         }
 
         /* Video Background */
@@ -466,6 +468,8 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: none;
+            /* Allow scroll to pass through */
         }
 
         .video-background video {
@@ -505,6 +509,8 @@
             inset: 0;
             background: rgba(44, 24, 16, 0.45);
             z-index: 3;
+            pointer-events: none;
+            /* Allow scroll to pass through */
         }
 
         /* Steam Particle Animation */

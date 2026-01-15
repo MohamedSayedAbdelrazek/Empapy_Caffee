@@ -9,35 +9,89 @@
     // Store the install prompt event
     let deferredPrompt = null;
     let isInstalled = false;
+    const INSTALL_FLAG_KEY = 'pwa-installed';
 
-    // Check if app is already installed
+    // Check if app is already installed (ONLY check actual display mode, NOT localStorage)
     function checkIfInstalled() {
         // Check if running in standalone mode (most browsers)
         if (window.matchMedia('(display-mode: standalone)').matches) {
-            console.log('[PWA] Detected: display-mode standalone');
+            console.log('[PWA] Running in standalone mode');
             return true;
         }
         // Check fullscreen mode (some Android browsers)
         if (window.matchMedia('(display-mode: fullscreen)').matches) {
-            console.log('[PWA] Detected: display-mode fullscreen');
+            console.log('[PWA] Running in fullscreen mode');
             return true;
         }
         // Check minimal-ui mode (some browsers)
         if (window.matchMedia('(display-mode: minimal-ui)').matches) {
-            console.log('[PWA] Detected: display-mode minimal-ui');
+            console.log('[PWA] Running in minimal-ui mode');
             return true;
         }
         // Check iOS standalone
         if (window.navigator.standalone === true) {
-            console.log('[PWA] Detected: iOS standalone');
+            console.log('[PWA] Running in iOS standalone mode');
             return true;
         }
         // Check if opened from homescreen on Android (TWA)
         if (document.referrer.includes('android-app://')) {
-            console.log('[PWA] Detected: Android TWA');
+            console.log('[PWA] Running as Android TWA');
             return true;
         }
+        // NOT in standalone mode = show install buttons
+        console.log('[PWA] Not in standalone mode - buttons should be visible');
         return false;
+    }
+
+    // Read stored install state
+    function getStoredInstalled() {
+        return localStorage.getItem(INSTALL_FLAG_KEY) === 'true';
+    }
+
+    // Store install state (persisted)
+    function setStoredInstalled(value) {
+        if (value) {
+            localStorage.setItem(INSTALL_FLAG_KEY, 'true');
+        } else {
+            localStorage.removeItem(INSTALL_FLAG_KEY);
+        }
+    }
+
+    // Mark app as installed
+    function markAsInstalled() {
+        isInstalled = true;
+        setStoredInstalled(true);
+        console.log('[PWA] Marked as installed');
+    }
+
+    // Re-validate stored install state (uninstall detection)
+    async function resolveStoredInstalled() {
+        const stored = getStoredInstalled();
+        if (!stored) {
+            return false;
+        }
+
+        // If running in standalone, it's installed
+        if (checkIfInstalled()) {
+            return true;
+        }
+
+        // Try to confirm installed apps on supported browsers
+        if ('getInstalledRelatedApps' in navigator) {
+            try {
+                const relatedApps = await navigator.getInstalledRelatedApps();
+                if (!relatedApps || relatedApps.length === 0) {
+                    setStoredInstalled(false);
+                    return false;
+                }
+                return true;
+            } catch (error) {
+                console.warn('[PWA] getInstalledRelatedApps failed:', error);
+            }
+        }
+
+        // Fallback: keep stored state if we cannot verify
+        return true;
     }
 
     // Detect iOS
@@ -202,8 +256,9 @@
     // Reset function for testing - call from browser console: resetPWAInstall()
     window.resetPWAInstall = function () {
         localStorage.removeItem('pwa-install-dismissed');
-        console.log('[PWA] Install dismissed state cleared. Reload the page to see the banner.');
-        alert('تم إعادة ضبط حالة التثبيت. أعد تحميل الصفحة لرؤية رسالة التثبيت.');
+        localStorage.removeItem('pwa-installed');
+        console.log('[PWA] All PWA states cleared. Reload the page to see the install buttons.');
+        alert('تم إعادة ضبط حالة التثبيت. أعد تحميل الصفحة لرؤية أزرار التثبيت.');
     };
 
     // Hide install banner
@@ -255,7 +310,10 @@
         if (btn && !btn.hasAttribute('data-setup')) {
             btn.setAttribute('data-setup', 'true');
             btn.addEventListener('click', async () => {
+                console.log('[PWA] Install button clicked, deferredPrompt:', !!deferredPrompt);
+
                 if (deferredPrompt) {
+                    // Browser supports install prompt
                     deferredPrompt.prompt();
                     const { outcome } = await deferredPrompt.userChoice;
                     console.log('[PWA] Install button clicked - User choice:', outcome);
@@ -263,16 +321,43 @@
                     if (outcome === 'accepted') {
                         showInstalledBadge();
                         isInstalled = true;
+                        setStoredInstalled(true);
                         hideFooterInstall();
                     }
 
                     deferredPrompt = null;
                     hideInstallBanner();
                 } else if (isIOS()) {
+                    // iOS - show instructions
                     showInstallBanner();
+                } else {
+                    // Android/Desktop but no prompt available yet
+                    // Show manual instructions
+                    showManualInstallInstructions();
                 }
             });
         }
+    }
+
+    // Show manual install instructions when prompt is not available
+    function showManualInstallInstructions() {
+        const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+        const isEdge = /Edg/.test(navigator.userAgent);
+        const isFirefox = /Firefox/.test(navigator.userAgent);
+        const isSamsung = /SamsungBrowser/.test(navigator.userAgent);
+
+        let instructions = '';
+        if (isChrome || isEdge) {
+            instructions = '📱 لتثبيت التطبيق:\n\n1. اضغط على ⋮ (النقاط الثلاث) أعلى الشاشة\n2. اختر "تثبيت التطبيق" أو "Add to Home screen"';
+        } else if (isSamsung) {
+            instructions = '📱 لتثبيت التطبيق:\n\n1. اضغط على ☰ (القائمة)\n2. اختر "إضافة الصفحة إلى" ثم "الشاشة الرئيسية"';
+        } else if (isFirefox) {
+            instructions = '📱 لتثبيت التطبيق:\n\n1. اضغط على ⋮ (القائمة)\n2. اختر "تثبيت" أو "Install"';
+        } else {
+            instructions = '📱 لتثبيت التطبيق:\n\nاستخدم قائمة المتصفح واختر "إضافة إلى الشاشة الرئيسية"';
+        }
+
+        alert(instructions);
     }
 
     // Hide footer install section + navbar buttons
@@ -303,6 +388,7 @@
                 if (outcome === 'accepted') {
                     showInstalledBadge();
                     isInstalled = true;
+                    setStoredInstalled(true);
                 }
 
                 deferredPrompt = null;
@@ -351,6 +437,9 @@
         console.log('[PWA] beforeinstallprompt fired');
         e.preventDefault();
         deferredPrompt = e;
+        // If install prompt is available, app is not installed
+        setStoredInstalled(false);
+        isInstalled = false;
         showInstallBanner();
         showFooterInstall(); // Also show footer install button
     });
@@ -359,6 +448,7 @@
     window.addEventListener('appinstalled', (e) => {
         console.log('[PWA] App installed!');
         isInstalled = true;
+        markAsInstalled();
         hideInstallBanner();
         hideFooterInstall(); // Hide footer install button
         showInstalledBadge();
@@ -372,24 +462,26 @@
         init();
     }
 
-    function init() {
-        // Check if already installed
-        isInstalled = checkIfInstalled();
+    async function init() {
+        // Check if already installed (standalone or stored)
+        const standaloneInstalled = checkIfInstalled();
+        const storedInstalled = await resolveStoredInstalled();
+        isInstalled = standaloneInstalled || storedInstalled;
 
         // Register service worker
         registerServiceWorker();
 
-        // If iOS and not installed, show banner and footer after delay
-        if (isIOS() && !isInstalled) {
-            setTimeout(() => {
-                showInstallBanner();
-                showFooterInstall();
-            }, 5000);
-        }
-
-        // Show footer install if not installed (for when deferredPrompt already fired)
+        // Show install buttons only if not installed
         if (!isInstalled) {
+            console.log('[PWA] Not installed - showing install buttons');
             showFooterInstall();
+
+            // For iOS: Also show banner after delay with instructions
+            if (isIOS()) {
+                setTimeout(() => {
+                    showInstallBanner();
+                }, 3000);
+            }
         }
 
         console.log('[PWA] Initialized. Installed:', isInstalled);
