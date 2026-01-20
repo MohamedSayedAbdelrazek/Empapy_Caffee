@@ -50,7 +50,7 @@ services:
       - "443:443"
     volumes:
       - ./public:/var/www/html/public:ro
-      - ./storage/app/public:/var/www/html/storage/app/public:ro
+      - ./storage/app/public:/var/www/html/storage/app/public
       - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
       - ./docker/nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
