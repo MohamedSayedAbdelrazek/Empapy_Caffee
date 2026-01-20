@@ -8,15 +8,21 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function initCreativeEffects() {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
     initCoffeeCursor();
     initCoffeeLoader();
     initCoffeeScrollProgress();
-    initSteamEffect();
-    initTypingAnimation();
-    initInteractiveParticles();
     initTimeBasedTheme();
-    initAdvanced3DCards();
-    initMagneticButtonsAdvanced();
+
+    if (!prefersReducedMotion && !isMobile) {
+        initSteamEffect();
+        initTypingAnimation();
+        initInteractiveParticles();
+        initAdvanced3DCards();
+        initMagneticButtonsAdvanced();
+    }
 }
 
 /**

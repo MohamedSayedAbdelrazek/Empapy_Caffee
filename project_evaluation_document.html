@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تقييم مشروع إمبابي كافيه - Empapy Caffe Project Evaluation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #333;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .document {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        /* Header Section */
+        .header {
+            background: linear-gradient(135deg, #2C1810 0%, #4a2c1a 50%, #1a1a2e 100%);
+            color: #fff;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(201,162,39,0.1)" stroke-width="1"/></svg>') repeat;
+            opacity: 0.5;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-text {
+            font-size: 3.5em;
+            font-weight: 900;
+            color: #c9a227;
+            text-shadow: 0 4px 20px rgba(201,162,39,0.5);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.4em;
+            color: rgba(255,255,255,0.9);
+            margin-bottom: 30px;
+        }
+
+        .document-title {
+            background: linear-gradient(135deg, #c9a227 0%, #d4b83d 100%);
+            color: #2C1810;
+            padding: 15px 40px;
+            border-radius: 50px;
+            display: inline-block;
+            font-weight: 700;
+            font-size: 1.2em;
+            box-shadow: 0 10px 30px rgba(201,162,39,0.4);
+        }
+
+        .date {
+            margin-top: 25px;
+            font-size: 1em;
+            color: rgba(255,255,255,0.7);
+        }
+
+        /* Content Section */
+        .content {
+            padding: 50px 40px;
+        }
+
+        /* Section Styles */
+        .section {
+            margin-bottom: 45px;
+            page-break-inside: avoid;
+        }
+
+        .section-title {
+            background: linear-gradient(90deg, #2C1810 0%, transparent 100%);
+            color: #fff;
+            padding: 15px 25px;
+            font-size: 1.5em;
+            font-weight: 700;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section-title .icon {
+            width: 40px;
+            height: 40px;
+            background: #c9a227;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+        }
+
+        /* Feature Cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .feature-card {
+            background: linear-gradient(135deg, #faf8f5 0%, #f5f0e8 100%);
+            border: 2px solid #e8e0d5;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #c9a227 0%, transparent 100%);
+            opacity: 0.1;
+            border-radius: 0 0 0 100%;
+        }
+
+        .feature-card h4 {
+            color: #2C1810;
+            font-size: 1.15em;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-card h4::before {
+            content: '★';
+            color: #c9a227;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 0.95em;
+            line-height: 1.7;
+        }
+
+        /* Full Width Feature */
+        .feature-full {
+            grid-column: span 2;
+        }
+
+        /* List Styles */
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            background: #fff;
+            border-right: 4px solid #c9a227;
+            padding: 18px 25px;
+            margin-bottom: 12px;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.05);
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+        }
+
+        .feature-list li::before {
+            content: '✓';
+            color: #fff;
+            background: #c9a227;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* Stats Section */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #2C1810 0%, #4a2c1a 100%);
+            color: #fff;
+            padding: 30px 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: 900;
+            color: #c9a227;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.8);
+            margin-top: 5px;
+        }
+
+        /* Technology Stack */
+        .tech-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: 2px solid #dee2e6;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+
+        .tech-badge.primary {
+            background: linear-gradient(135deg, #c9a227 0%, #d4b83d 100%);
+            border-color: #c9a227;
+            color: #2C1810;
+        }
+
+        /* Highlight Box */
+        .highlight-box {
+            background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 100%);
+            border: 2px solid #ffc107;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .highlight-box h4 {
+            color: #e65100;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        /* Value Section */
+        .value-section {
+            background: linear-gradient(135deg, #1a5f2a 0%, #2d7a3d 100%);
+            color: #fff;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .value-section h3 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .value-range {
+            font-size: 1.1em;
+            color: rgba(255,255,255,0.9);
+            line-height: 2;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2C1810;
+            color: rgba(255,255,255,0.8);
+            padding: 30px 40px;
+            text-align: center;
+        }
+
+        .footer-note {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .contact-info {
+            color: #c9a227;
+            font-weight: 600;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: #fff;
+            }
+            
+            .document {
+                box-shadow: none;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+
+            .feature-card, .stat-card {
+                break-inside: avoid;
+            }
+        }
+
+        /* Subsection */
+        .subsection {
+            margin-bottom: 30px;
+        }
+
+        .subsection-title {
+            color: #2C1810;
+            font-size: 1.2em;
+            font-weight: 700;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #c9a227;
+            display: inline-block;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .comparison-table th {
+            background: #2C1810;
+            color: #fff;
+            padding: 15px;
+            text-align: right;
+        }
+
+        .comparison-table td {
+            padding: 15px;
+            border-bottom: 1px solid #e8e0d5;
+        }
+
+        .comparison-table tr:nth-child(even) {
+            background: #faf8f5;
+        }
+
+        .check {
+            color: #28a745;
+            font-size: 1.3em;
+        }
+    </style>
+</head>
+<body>
+    <div class="document">
+        <!-- Header -->
+        <div class="header">
+            <div class="header-content">
+                <div class="logo-text">☕ إمبابي كافيه</div>
+                <div class="subtitle">Empapy Caffe - Premium Coffee E-Commerce Platform</div>
+                <div class="document-title">📋 وثيقة تقييم المشروع الشاملة</div>
+                <div class="date">📅 تاريخ التقييم: يناير 2026</div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Project Overview -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🎯</span>
+                    نظرة عامة على المشروع
+                </h2>
+                <p style="font-size: 1.1em; color: #555; margin-bottom: 25px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+                    <strong>"إمبابي كافيه"</strong> هو منصة تجارة إلكترونية متكاملة ومتطورة مخصصة لبيع القهوة الفاخرة، تم تطويرها باستخدام أحدث التقنيات وأفضل الممارسات في عالم تطوير الويب. المنصة تجمع بين التصميم الجذاب والأداء العالي مع تجربة مستخدم استثنائية تدعم اللغة العربية بالكامل.
+                </p>
+
+                <!-- Stats -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">21+</span>
+                        <span class="stat-label">نموذج بيانات</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">15+</span>
+                        <span class="stat-label">وحدة تحكم</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">40+</span>
+                        <span class="stat-label">صفحة واجهة</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">دعم العربية</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Core Features -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">💎</span>
+                    المميزات الأساسية للمتجر
+                </h2>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>نظام إدارة المنتجات المتقدم</h4>
+                        <p>إضافة وتعديل وحذف المنتجات مع دعم الفئات المتعددة، الصور، الأوصاف، خيارات المنتج (الحجم، النوع، الإضافات) مع أسعار مختلفة لكل خيار، والحذف الناعم (Soft Delete) لاستعادة المنتجات المحذوفة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>نظام الفئات المرن</h4>
+                        <p>تنظيم المنتجات في فئات مختلفة مع صور مميزة لكل فئة، روابط ودية (Slugs)، وعرض عدد المنتجات في كل فئة تلقائياً.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>سلة المشتريات الذكية (AJAX)</h4>
+                        <p>سلة تسوق تفاعلية تعمل بدون إعادة تحميل الصفحة، مع حفظ تلقائي للجلسة، تحديث الكميات فوري، وعرض ملخص الطلب بشكل ديناميكي.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>نظام الدفع والطلبات</h4>
+                        <p>عملية دفع سلسة مع دعم الدفع عند الاستلام، حساب الشحن التلقائي، وتطبيق كوبونات الخصم مع التحقق الفوري.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>نظام التقييمات والمراجعات</h4>
+                        <p>يسمح للعملاء بتقييم المنتجات وكتابة مراجعات، مع عرض متوسط التقييم وعدد المراجعات لكل منتج.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>قائمة الأمنيات (Wishlist)</h4>
+                        <p>حفظ المنتجات المفضلة للمستخدمين المسجلين مع إمكانية الإضافة والإزالة بنقرة واحدة.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PWA Features -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">📱</span>
+                    تطبيق الويب التقدمي (PWA)
+                </h2>
+                
+                <div class="highlight-box">
+                    <h4>🚀 تجربة تطبيق أصلي على الويب</h4>
+                    <p>المنصة مبنية كتطبيق ويب تقدمي (Progressive Web App) يمكن تثبيته على الهاتف والحاسوب كتطبيق مستقل، مما يوفر تجربة سريعة وموثوقة حتى بدون اتصال بالإنترنت.</p>
+                </div>
+
+                <ul class="feature-list">
+                    <li>
+                        <div>
+                            <strong>التشغيل بدون إنترنت (Offline Mode)</strong><br>
+                            صفحة offline مخصصة وجذابة مع تخزين مؤقت ذكي للأصول والصفحات المهمة باستخدام Service Worker.
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <strong>قابلية التثبيت</strong><br>
+                            نافذة تثبيت احترافية مع دعم iOS وAndroid، أيقونات مختلفة الأحجام، وتجربة تثبيت سلسة.
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <strong>التحميل السريع</strong><br>
+                            استراتيجيات تخزين مؤقت متقدمة (Cache-First للأصول، Network-First للمحتوى) لضمان سرعة التحميل.
+                        </div>
+                    </li>
+                    <li>
+                        <div>
+                            <strong>اختصارات التطبيق (App Shortcuts)</strong><br>
+                            وصول سريع للمتجر وطلباتي مباشرة من أيقونة التطبيق على الشاشة الرئيسية.
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Push Notifications -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🔔</span>
+                    نظام الإشعارات الفورية (Firebase Cloud Messaging)
+                </h2>
+
+                <div class="feature-grid">
+                    <div class="feature-card feature-full">
+                        <h4>إشعارات لحظية للإدارة والعملاء</h4>
+                        <p>نظام إشعارات متكامل باستخدام Firebase Cloud Messaging يدعم إشعارات الطلبات الجديدة، تغيير حالة الطلب، رسائل التواصل الجديدة، إلغاء الطلبات، والمستخدمين الجدد. يعمل في الخلفية وعند فتح التطبيق مع صوت مخصص وتأثيرات بصرية.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>إشعارات ذكية حسب السياق</h4>
+                        <p>النظام يتعرف تلقائياً إذا كان التطبيق مفتوحاً ويمنع تكرار الإشعارات، مع عرض Toast داخل التطبيق وإشعار نظام عند الخلفية.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>إدارة الأجهزة المسجلة</h4>
+                        <p>تسجيل وإلغاء تسجيل أجهزة المستخدمين تلقائياً، مع دعم أجهزة متعددة لكل مستخدم.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loyalty System -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🎁</span>
+                    نظام الولاء والمكافآت المتكامل
+                </h2>
+
+                <p style="color: #666; margin-bottom: 25px;">
+                    نظام ولاء متقدم ومتعدد المستويات يشجع العملاء على التكرار والإحالة مع مكافآت قابلة للتخصيص.
+                </p>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">🏆 مستويات العضوية (Tiers)</h3>
+                    <ul class="feature-list">
+                        <li><strong>نظام مستويات متدرج:</strong> برونزي، فضي، ذهبي، بلاتيني مع مزايا متصاعدة لكل مستوى</li>
+                        <li><strong>ترقية تلقائية:</strong> ترقية المستوى تلقائياً عند تحقيق النقاط المطلوبة</li>
+                        <li><strong>مزايا حصرية:</strong> مضاعفات نقاط، خصومات إضافية، أولوية الدعم لكل مستوى</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">💰 قواعد كسب النقاط (Point Rules)</h3>
+                    <ul class="feature-list">
+                        <li><strong>قواعد مخصصة:</strong> نقاط لكل عملية شراء، تسجيل، إحالة، طلب أول</li>
+                        <li><strong>مرونة كاملة:</strong> تحديد عدد النقاط لكل نوع حدث مع تمكين/تعطيل القواعد</li>
+                        <li><strong>شروط متقدمة:</strong> دعم قاعدة "الطلب الأول فقط" للترحيب بالعملاء الجدد</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">🎀 المكافآت (Rewards)</h3>
+                    <ul class="feature-list">
+                        <li><strong>أنواع متعددة:</strong> خصم نسبي، خصم ثابت، منتج مجاني، شحن مجاني</li>
+                        <li><strong>إدارة المخزون:</strong> تحديد الكمية المتاحة لكل مكافأة مع تتبع الاسترداد</li>
+                        <li><strong>صلاحية محددة:</strong> تاريخ انتهاء للمكافآت المستردة</li>
+                    </ul>
+                </div>
+
+                <div class="subsection">
+                    <h3 class="subsection-title">👥 نظام الإحالات (Referrals)</h3>
+                    <ul class="feature-list">
+                        <li><strong>كود إحالة فريد:</strong> كود مخصص لكل مستخدم يُنشأ تلقائياً</li>
+                        <li><strong>مكافأة مزدوجة:</strong> نقاط للمُحيل والمُحال عليه</li>
+                        <li><strong>تتبع شامل:</strong> إحصائيات الإحالات الناجحة والمعلقة</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Admin Panel -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">⚙️</span>
+                    لوحة تحكم الإدارة المتقدمة
+                </h2>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>لوحة معلومات تحليلية</h4>
+                        <p>إحصائيات شاملة: إجمالي الإيرادات، عدد الطلبات، الطلبات المعلقة، المنتجات، العملاء، مع رسوم بيانية للأداء الشهري.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>لوحة كانبان للطلبات</h4>
+                        <p>واجهة سحب وإفلات (Drag & Drop) لإدارة حالات الطلبات بأسلوب Kanban احترافي مع تأثيرات بصرية وصوتية.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>إدارة الموظفين</h4>
+                        <p>أدوار متعددة (Admin, Cashier) مع صلاحيات مختلفة - الكاشير يرى الطلبات فقط، الأدمن لديه صلاحيات كاملة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>نظام الكوبونات</h4>
+                        <p>إنشاء كوبونات خصم بنسبة أو مبلغ ثابت، مع حد استخدام، تاريخ انتهاء، وحد أدنى للطلب.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>إدارة رسائل التواصل</h4>
+                        <p>استلام وإدارة رسائل العملاء من صفحة "اتصل بنا" مع تحديث حالة الرسائل (جديد، مقروء، مُجاب).</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>إدارة العملاء</h4>
+                        <p>عرض قائمة العملاء مع تفاصيل الحساب، سجل الطلبات، ونقاط الولاء.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technical Features -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🔧</span>
+                    المميزات التقنية
+                </h2>
+
+                <table class="comparison-table">
+                    <tr>
+                        <th>الميزة</th>
+                        <th>الحالة</th>
+                        <th>التفاصيل</th>
+                    </tr>
+                    <tr>
+                        <td>دعم RTL الكامل</td>
+                        <td><span class="check">✓</span></td>
+                        <td>واجهة عربية 100% مع اتجاه من اليمين لليسار</td>
+                    </tr>
+                    <tr>
+                        <td>تصميم متجاوب (Responsive)</td>
+                        <td><span class="check">✓</span></td>
+                        <td>يعمل بشكل مثالي على جميع أحجام الشاشات</td>
+                    </tr>
+                    <tr>
+                        <td>تحسين SEO</td>
+                        <td><span class="check">✓</span></td>
+                        <td>Sitemap تلقائي، روابط ودية، علامات Meta</td>
+                    </tr>
+                    <tr>
+                        <td>الأمان</td>
+                        <td><span class="check">✓</span></td>
+                        <td>حماية CSRF، Rate Limiting، التحقق من البيانات</td>
+                    </tr>
+                    <tr>
+                        <td>الأداء</td>
+                        <td><span class="check">✓</span></td>
+                        <td>تحسين الرسوم المتحركة، Lazy Loading، ضغط الأصول</td>
+                    </tr>
+                    <tr>
+                        <td>تتبع الطلبات</td>
+                        <td><span class="check">✓</span></td>
+                        <td>تتبع برقم الطلب للمستخدمين والضيوف</td>
+                    </tr>
+                    <tr>
+                        <td>قاعدة بيانات محسّنة</td>
+                        <td><span class="check">✓</span></td>
+                        <td>29 Migration مع علاقات متقدمة وفهارس</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- Design Features -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🎨</span>
+                    التصميم والتجربة البصرية
+                </h2>
+
+                <ul class="feature-list">
+                    <li><strong>تصميم احترافي فاخر:</strong> ألوان متناسقة (ذهبي، بني غامق) تعكس هوية القهوة الفاخرة</li>
+                    <li><strong>تأثيرات بصرية متقدمة:</strong> Glassmorphism، رسوم متحركة سلسة، تأثيرات Hover جذابة</li>
+                    <li><strong>فيديو سينمائي:</strong> قسم عرض فيديو مع تراكبات وتأثيرات بخار متحركة</li>
+                    <li><strong>بطاقات منتجات تفاعلية:</strong> Quick Shop Modal مع تحميل AJAX للتفاصيل</li>
+                    <li><strong>حبوب قهوة متحركة:</strong> تأثير حبوب قهوة عائمة في قسم الهيرو مع تحسين الأداء</li>
+                    <li><strong>دعم الوضع الداكن:</strong> تصميم متوافق مع الوضع الفاتح والداكن</li>
+                </ul>
+            </div>
+
+            <!-- Technology Stack -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🛠️</span>
+                    التقنيات المستخدمة
+                </h2>
+
+                <div class="tech-grid">
+                    <span class="tech-badge primary">Laravel 11</span>
+                    <span class="tech-badge primary">PHP 8.2+</span>
+                    <span class="tech-badge primary">MySQL</span>
+                    <span class="tech-badge">Blade Templates</span>
+                    <span class="tech-badge">Bootstrap 5</span>
+                    <span class="tech-badge">JavaScript ES6+</span>
+                    <span class="tech-badge">AJAX/Fetch API</span>
+                    <span class="tech-badge">Firebase FCM</span>
+                    <span class="tech-badge">PWA/Service Worker</span>
+                    <span class="tech-badge">Vite</span>
+                    <span class="tech-badge">AOS Animations</span>
+                    <span class="tech-badge">Cairo Font</span>
+                </div>
+            </div>
+
+            <!-- Scalability -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">📈</span>
+                    قابلية التوسع والتطوير
+                </h2>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4>هيكل كود نظيف</h4>
+                        <p>MVC Architecture مع فصل واضح للمسؤوليات، Controllers منظمة، Models مع علاقات Eloquent، Services للمنطق المعقد.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>جاهز للـ Deployment</h4>
+                        <p>مُعد للنشر على Digital Ocean أو أي خادم Linux، مع ملفات التكوين الجاهزة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>قابل للتخصيص</h4>
+                        <p>يمكن تحويله لأي متجر آخر (ملابس، إلكترونيات، مطاعم) بتعديلات بسيطة.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4>وثائق ومراجعات</h4>
+                        <p>كود موثق مع تعليقات، Migrations واضحة، وسجل Git منظم.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Unique Selling Points -->
+            <div class="section">
+                <h2 class="section-title">
+                    <span class="icon">🌟</span>
+                    نقاط القوة الفريدة
+                </h2>
+
+                <div class="highlight-box">
+                    <h4>ما يميز هذا المشروع عن غيره:</h4>
+                    <ol style="padding-right: 20px; color: #555;">
+                        <li><strong>نظام ولاء متكامل ومتقدم</strong> - نادراً ما تجده في مشاريع مشابهة</li>
+                        <li><strong>PWA كامل مع Push Notifications</strong> - تجربة تطبيق أصلي</li>
+                        <li><strong>لوحة Kanban للطلبات</strong> - إدارة بصرية احترافية</li>
+                        <li><strong>دعم عربي 100%</strong> - من الأساس وليس ترجمة</li>
+                        <li><strong>خيارات منتج متقدمة</strong> - حجم، نوع، إضافات بأسعار مختلفة</li>
+                        <li><strong>تصميم فاخر وعصري</strong> - جاهز للإنتاج مباشرة</li>
+                        <li><strong>أداء محسّن</strong> - Lazy loading، تحسين الرسوم المتحركة</li>
+                        <li><strong>أمان متقدم</strong> - حماية من الهجمات الشائعة</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Value Estimation -->
+            <div class="value-section">
+                <h3>💰 التقييم المقترح لقيمة المشروع</h3>
+                <div class="value-range">
+                    <p>بناءً على حجم المشروع، المميزات المتقدمة، وجودة الكود:</p>
+                    <p style="font-size: 1.3em; font-weight: 700; color: #90EE90; margin: 20px 0;">
+                        القيمة التقديرية: 35,000 - 60,000 جنيه مصري
+                    </p>
+                    <p style="font-size: 0.95em; opacity: 0.9;">
+                        * التقييم يعتمد على ساعات العمل المقدرة (200-300 ساعة) × متوسط سعر الساعة للمطور المحترف
+                    </p>
+                    <p style="font-size: 0.95em; opacity: 0.9;">
+                        * القيمة قد تزيد حسب متطلبات العميل، التخصيص الإضافي، والدعم المستمر
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-note">تم إعداد هذه الوثيقة لأغراض التقييم الفني والمالي للمشروع</p>
+            <p class="contact-info">☕ إمبابي كافيه - Empapy Caffe © 2026</p>
+        </div>
+    </div>
+
+    <script>
+        // Add print button functionality
+        window.addEventListener('load', function() {
+            console.log('📄 لطباعة المستند كـ PDF: اضغط Ctrl+P واختر "Save as PDF"');
+        });
+    </script>
+</body>
+</html>

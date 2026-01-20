@@ -19,6 +19,16 @@
 
     const VAPID_KEY = 'BB_6B4n5vvVhVvzJlQSJhtVDgCZ-5BMHQR_vaZsJt3862E59iG5NWBncya4kqNeG7suv-d-gFn6zSo79ne3IzJI';
 
+    // Debug mode - set to false for production
+    const DEBUG_MODE = false;
+
+    // Conditional logging wrapper
+    function fcmLog(...args) {
+        if (DEBUG_MODE) {
+            console.log(...args);
+        }
+    }
+
     let messaging = null;
     let notificationSound = null;
     let swRegistration = null;
@@ -28,7 +38,7 @@
         try {
             // Check if Firebase is already loaded
             if (typeof firebase === 'undefined') {
-                console.log('[FCM] Loading Firebase SDK...');
+                fcmLog('[FCM] Loading Firebase SDK...');
                 await loadFirebaseSDK();
             }
 
@@ -40,22 +50,22 @@
 
             // Wait for existing Service Worker (PWA)
             swRegistration = await navigator.serviceWorker.ready;
-            console.log('[FCM] Using existing Service Worker:', swRegistration.scope);
+            fcmLog('[FCM] Using existing Service Worker:', swRegistration.scope);
 
             // NOTE: useServiceWorker is deprecated in Firebase v9+
             // The service worker registration is passed to getToken instead
 
             // Handle foreground messages - this receives messages when browser tab is focused
-            console.log('[FCM] Setting up onMessage listener...');
+            fcmLog('[FCM] Setting up onMessage listener...');
             messaging.onMessage((payload) => {
-                console.log('[FCM] 🔔 Foreground message RECEIVED:', payload);
+                fcmLog('[FCM] 🔔 Foreground message RECEIVED:', payload);
                 handleForegroundNotification(payload);
             });
-            console.log('[FCM] onMessage listener attached successfully');
+            fcmLog('[FCM] onMessage listener attached successfully');
 
             // Also listen via navigator for broadcast messages
             navigator.serviceWorker.addEventListener('message', (event) => {
-                console.log('[FCM] Service Worker message event:', event.data);
+                fcmLog('[FCM] Service Worker message event:', event.data);
                 if (event.data && event.data.type === 'NOTIFICATION_RECEIVED') {
                     handleForegroundNotification(event.data.payload);
                 }
@@ -95,11 +105,11 @@
             const permission = await Notification.requestPermission();
 
             if (permission === 'granted') {
-                console.log('[FCM] Notification permission granted');
+                fcmLog('[FCM] Notification permission granted');
                 const token = await getToken();
                 return token;
             } else {
-                console.log('[FCM] Notification permission denied');
+                fcmLog('[FCM] Notification permission denied');
                 return null;
             }
         } catch (error) {
@@ -126,12 +136,12 @@
             });
 
             if (token) {
-                console.log('[FCM] Token obtained:', token.substring(0, 30) + '...');
+                fcmLog('[FCM] Token obtained:', token.substring(0, 30) + '...');
                 await registerTokenWithServer(token);
                 return token;
             }
 
-            console.log('[FCM] No token available');
+            fcmLog('[FCM] No token available');
             return null;
         } catch (error) {
             console.error('[FCM] Token error:', error);
@@ -159,7 +169,7 @@
             });
 
             if (response.ok) {
-                console.log('[FCM] Token registered with server');
+                fcmLog('[FCM] Token registered with server');
                 localStorage.setItem('fcm_token_registered', 'true');
             } else {
                 console.error('[FCM] Token registration failed:', await response.text());
@@ -176,14 +186,14 @@
         // Prevent duplicates (deduplication)
         const messageId = payload.messageId || (payload.data && payload.data.google_message_id) || JSON.stringify(payload.data);
         if (messageId === lastProcessedMessageId) {
-            console.log('[FCM] Duplicate message ignored:', messageId);
+            fcmLog('[FCM] Duplicate message ignored:', messageId);
             return;
         }
         lastProcessedMessageId = messageId;
         // Reset after 2 seconds to allow similar messages later
         setTimeout(() => lastProcessedMessageId = null, 2000);
 
-        console.log('[FCM] Handling notification:', payload);
+        fcmLog('[FCM] Handling notification:', payload);
 
         const { notification, data } = payload;
 
@@ -220,10 +230,10 @@
         try {
             if (notificationSound) {
                 notificationSound.currentTime = 0;
-                notificationSound.play().catch(e => console.log('[FCM] Sound play blocked:', e));
+                notificationSound.play().catch(e => fcmLog('[FCM] Sound play blocked:', e));
             }
         } catch (error) {
-            console.log('[FCM] Sound error:', error);
+            fcmLog('[FCM] Sound error:', error);
         }
     }
 
@@ -345,7 +355,7 @@
     async function init() {
         // Only initialize if notifications are supported
         if (!('Notification' in window) || !('serviceWorker' in navigator)) {
-            console.log('[FCM] Push notifications not supported');
+            fcmLog('[FCM] Push notifications not supported');
             return;
         }
 
@@ -358,7 +368,23 @@
             // Check if prompt was recently dismissed
             const dismissed = localStorage.getItem('fcm_prompt_dismissed');
             if (!dismissed || Date.now() - parseInt(dismissed) > 86400000) { // 24 hours
-                setTimeout(showPermissionPrompt, 3000);
+                // COORDINATED: Wait for PWA install banner to be dismissed/hidden first
+                // This prevents overlapping/stacking prompts
+                const checkAndShowPrompt = () => {
+                    const pwaBanner = document.getElementById('pwaInstallBanner');
+                    const pwaBannerVisible = pwaBanner && pwaBanner.classList.contains('show');
+
+                    if (!pwaBannerVisible) {
+                        // Show FCM prompt after a delay
+                        setTimeout(showPermissionPrompt, 2000);
+                    } else {
+                        // PWA banner is visible, check again later
+                        setTimeout(checkAndShowPrompt, 3000);
+                    }
+                };
+
+                // Initial check after 5 seconds (giving PWA time to show first)
+                setTimeout(checkAndShowPrompt, 5000);
             }
         }
     }
@@ -368,7 +394,7 @@
         // Clear badge using Badging API
         if ('clearAppBadge' in navigator) {
             navigator.clearAppBadge().catch(err => {
-                console.log('[FCM] Badge clear failed:', err);
+                fcmLog('[FCM] Badge clear failed:', err);
             });
         }
 
@@ -377,7 +403,7 @@
             swRegistration.active.postMessage({ type: 'RESET_BADGE' });
         }
 
-        console.log('[FCM] Badge cleared');
+        fcmLog('[FCM] Badge cleared');
     }
 
     // Auto-clear badge when app becomes visible

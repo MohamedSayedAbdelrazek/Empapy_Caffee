@@ -6,8 +6,27 @@
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
-const CACHE_NAME = 'empapy-caffe-v1';
+const CACHE_NAME = 'empapy-caffe-v11';
 const OFFLINE_URL = '/offline';
+
+// Routes that should NEVER be cached (personalized/authenticated content)
+const NEVER_CACHE_ROUTES = [
+    '/cart',
+    '/checkout',
+    '/account',
+    '/my-orders',
+    '/wishlist',
+    '/loyalty',
+    '/login',
+    '/register',
+    '/logout',
+    '/admin'
+];
+
+// Check if a path should never be cached
+function shouldNeverCache(pathname) {
+    return NEVER_CACHE_ROUTES.some(route => pathname.startsWith(route));
+}
 
 // Assets to cache immediately on install
 const PRECACHE_ASSETS = [
@@ -80,6 +99,14 @@ self.addEventListener('fetch', (event) => {
 
     // Skip API routes (always fresh)
     if (url.pathname.startsWith('/api')) return;
+
+    // SECURITY: Skip personalized routes - NEVER cache these
+    if (shouldNeverCache(url.pathname)) {
+        event.respondWith(
+            fetch(request).catch(() => caches.match(OFFLINE_URL))
+        );
+        return;
+    }
 
     // Handle navigation requests
     if (request.mode === 'navigate') {
@@ -205,7 +232,7 @@ try {
 
         // Increment notification count for badge
         notificationCount++;
-        
+
         // Update app badge (if supported)
         if ('setAppBadge' in navigator) {
             navigator.setAppBadge(notificationCount).catch(err => {

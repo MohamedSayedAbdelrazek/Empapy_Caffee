@@ -359,6 +359,11 @@
             }
 
             function removeCartItem(key, row) {
+                // OPTIMISTIC UI: Fade out immediately
+                row.style.transition = 'opacity 0.3s, transform 0.3s';
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                
                 fetch('/cart/remove', {
                         method: 'POST',
                         headers: {
@@ -373,16 +378,39 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            row.remove();
-                            // showToast(data.message, 'success'); // Toast logic might vary
-
-                            // Reload if cart is empty
-                            if (document.querySelectorAll('.cart-item').length === 0) {
-                                location.reload();
-                            } else {
-                                location.reload(); // Reload to update totals for now
+                            // Remove row after animation
+                            setTimeout(() => {
+                                row.remove();
+                                
+                                // Update totals from server response
+                                if (data.cart) {
+                                    updateCartDisplay(data.cart);
+                                }
+                                
+                                // Reload only if cart is empty
+                                if (document.querySelectorAll('.cart-item').length === 0) {
+                                    location.reload();
+                                }
+                            }, 300);
+                            
+                            // Show success toast
+                            if (window.Toast) {
+                                window.Toast.success('تم الحذف', 'تم حذف المنتج من السلة');
+                            }
+                        } else {
+                            // ROLLBACK: Show row again
+                            row.style.opacity = '1';
+                            row.style.transform = '';
+                            if (window.Toast) {
+                                window.Toast.error('خطأ', data.message || 'حدث خطأ أثناء الحذف');
                             }
                         }
+                    })
+                    .catch(error => {
+                        // ROLLBACK: Show row again
+                        row.style.opacity = '1';
+                        row.style.transform = '';
+                        console.error('Error removing item:', error);
                     });
             }
         });

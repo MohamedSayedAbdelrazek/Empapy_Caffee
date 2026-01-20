@@ -4,6 +4,43 @@
 
 @section('meta_description', Str::limit($product->description, 160))
 
+@push('scripts')
+    {{-- JSON-LD Structured Data for SEO --}}
+    <script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": "{{ $product->name }}",
+    "description": "{{ Str::limit($product->description, 300) }}",
+    "image": "{{ $product->image }}",
+    "sku": "{{ $product->id }}",
+    "brand": {
+        "@type": "Brand",
+        "name": "إمبابي كافيه"
+    },
+    "category": "{{ $product->category?->name }}",
+    "offers": {
+        "@type": "Offer",
+        "url": "{{ url()->current() }}",
+        "priceCurrency": "EGP",
+        "price": "{{ $product->current_price }}",
+        "availability": "{{ $product->in_stock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock' }}",
+        "seller": {
+            "@type": "Organization",
+            "name": "إمبابي كافيه"
+        }
+    }
+    @if(isset($product->reviews_avg_rating) && $product->reviews_count > 0)
+    ,"aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "{{ number_format($product->reviews_avg_rating, 1) }}",
+        "reviewCount": "{{ $product->reviews_count }}"
+    }
+    @endif
+}
+</script>
+@endpush
+
 @section('content')
     <!-- Page Header -->
     <div class="page-header" style="padding: 140px 0 60px;">

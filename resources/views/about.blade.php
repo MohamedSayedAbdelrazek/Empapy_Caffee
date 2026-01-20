@@ -20,7 +20,7 @@
         <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6" data-aos="fade-up">
-                    <img src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800" alt="About Empapy Caffe"
+                    <img src="{{ asset('images/about-coffee.jpg') }}" alt="About Empapy Caffe"
                         class="rounded-4 w-100 shadow-lg">
                 </div>
                 <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">

@@ -1,5 +1,8 @@
 <!-- Quick Shop Modal Component -->
-<div id="quickShopModal" class="quick-shop-modal" style="display: none;">
+<div id="quickShopModal" class="quick-shop-modal" style="display: none;" role="dialog" aria-modal="true" aria-hidden="true"
+    aria-labelledby="quickShopModalTitle">
+    <!-- Static accessible title for screen readers -->
+    <h2 id="quickShopModalTitle" class="visually-hidden">تسوق سريع</h2>
     <div class="modal-overlay" onclick="closeQuickShopModal()"></div>
     <div class="modal-container">
         <button class="modal-close" onclick="closeQuickShopModal()">
@@ -340,12 +343,47 @@
     let currentProductData = null;
     let selectedOptions = {};
     let currentQuantity = 1;
+    let lastFocusedElement = null;
+    let modalKeydownHandler = null;
+
+    /**
+     * SECURITY: HTML escape helper to prevent XSS
+     */
+    function escapeHtmlModal(text) {
+        if (text === null || text === undefined) return '';
+        const div = document.createElement('div');
+        div.textContent = String(text);
+        return div.innerHTML;
+    }
+
+    function getFocusableElements(modal) {
+        return Array.from(modal.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        )).filter(el => !el.hasAttribute('disabled') && !el.getAttribute('aria-hidden'));
+    }
+
+    function trapFocus(modal, e) {
+        const focusable = getFocusableElements(modal);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+        }
+    }
 
     // Open Quick Shop Modal
     function openQuickShopModal(productId, hasOptions) {
         const modal = document.getElementById('quickShopModal');
         modal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        modal.setAttribute('aria-hidden', 'false');
+        lastFocusedElement = document.activeElement;
 
         // Reset state
         selectedOptions = {};
@@ -354,6 +392,21 @@
         // Show loading
         document.getElementById('modalLoadingState').style.display = 'block';
         document.getElementById('modalProductContent').style.display = 'none';
+
+        // Focus management & ESC handling
+        const closeBtn = modal.querySelector('.modal-close');
+        if (closeBtn) closeBtn.focus();
+
+        modalKeydownHandler = (e) => {
+            if (e.key === 'Escape') {
+                closeQuickShopModal();
+                return;
+            }
+            if (e.key === 'Tab') {
+                trapFocus(modal, e);
+            }
+        };
+        document.addEventListener('keydown', modalKeydownHandler);
 
         // Fetch product details
         fetch(`/api/products/${productId}`)
@@ -373,16 +426,26 @@
         const modal = document.getElementById('quickShopModal');
         modal.style.display = 'none';
         document.body.style.overflow = '';
+        modal.setAttribute('aria-hidden', 'true');
+        if (modalKeydownHandler) {
+            document.removeEventListener('keydown', modalKeydownHandler);
+            modalKeydownHandler = null;
+        }
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+            lastFocusedElement.focus();
+            lastFocusedElement = null;
+        }
     }
 
     // Render Product Content in Modal
     function renderProductContent(product) {
         const content = document.getElementById('modalProductContent');
 
+        // SECURITY: Escape all user-provided content
         let html = `
-            <img src="${product.image}" alt="${product.name}" class="modal-product-image">
-            <h2 class="modal-product-title">${product.name}</h2>
-            ${product.category ? `<span class="modal-product-category"><i class="bi bi-tag me-1"></i>${product.category.name}</span>` : ''}
+            <img src="${escapeHtmlModal(product.image)}" alt="${escapeHtmlModal(product.name)}" class="modal-product-image">
+            <h2 class="modal-product-title" id="quickShopTitle">${escapeHtmlModal(product.name)}</h2>
+            ${product.category ? `<span class="modal-product-category"><i class="bi bi-tag me-1"></i>${escapeHtmlModal(product.category.name)}</span>` : ''}
             <div class="modal-price-display" id="modalCurrentPrice">${formatPrice(product.current_price)} ج.م</div>
         `;
 
@@ -467,13 +530,14 @@
                 (option.price_modifier >= 0 ? `+${formatPrice(option.price_modifier)}` : formatPrice(option
                     .price_modifier)) + ' ج.م';
 
+            // SECURITY: Escape option values
             html += `
                 <button class="modal-option-pill" 
-                    data-type="${type}" 
-                    data-value-id="${option.id}"
-                    onclick="selectModalOption('${type}', ${option.id})">
-                    <span>${option.value}</span>
-                    ${option.price_modifier != 0 || isWeight ? `<span class="modal-option-price">${priceText}</span>` : ''}
+                    data-type="${escapeHtmlModal(type)}" 
+                    data-value-id="${parseInt(option.id)}"
+                    onclick="selectModalOption('${escapeHtmlModal(type)}', ${parseInt(option.id)})">
+                    <span>${escapeHtmlModal(option.value)}</span>
+                    ${option.price_modifier != 0 || isWeight ? `<span class="modal-option-price">${escapeHtmlModal(priceText)}</span>` : ''}
                 </button>
             `;
         });
@@ -648,10 +712,5 @@
         return new Intl.NumberFormat('ar-EG').format(price);
     }
 
-    // Close modal on ESC key
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeQuickShopModal();
-        }
-    });
+    // NOTE: ESC key handler moved to openQuickShopModal to avoid duplicates
 </script>

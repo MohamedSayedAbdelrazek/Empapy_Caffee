@@ -47,6 +47,17 @@
     --gradient-dark: linear-gradient(135deg, var(--espresso) 0%, var(--dark-roast) 100%);
     --gradient-hero: linear-gradient(135deg, rgba(44, 24, 16, 0.95) 0%, rgba(61, 35, 23, 0.9) 100%);
 
+    /* Z-Index Scale - Single Source of Truth */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-overlay: 5000;
+    --z-modal: 9000;
+    --z-modal-backdrop: 8999;
+    --z-toast: 9500;
+    --z-tooltip: 9999;
+    --z-max: 99999;
+
     /* Shadows */
     --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
     --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.12);
@@ -68,6 +79,9 @@
     --radius-lg: 20px;
     --radius-xl: 30px;
     --radius-full: 9999px;
+
+    /* Fixed header offset for anchor scrolling */
+    --sticky-offset: 120px;
 }
 
 /* ========================================
@@ -84,6 +98,9 @@ html {
     /* For smooth anchor scrolling on desktop, use JS-based smooth scroll instead */
     overflow-x: hidden;
     max-width: 100%;
+    scroll-padding-top: var(--sticky-offset);
+    height: auto;
+    overflow-y: auto;
 }
 
 /* Enable smooth scroll only for non-touch devices */
@@ -99,19 +116,36 @@ body {
     color: var(--espresso);
     line-height: 1.7;
     overflow-x: hidden;
+    overflow-y: auto;
     max-width: 100%;
     position: relative;
     /* Fix mobile scroll issues */
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: auto;
+    height: auto;
 }
 
-/* Ensure all sections allow smooth vertical scrolling on touch devices */
+/* Ensure normal page scroll (avoid internal scroll traps) */
 section,
 .container,
 .row,
 [data-aos] {
-    touch-action: pan-y;
+    touch-action: auto;
+}
+
+section {
+    overflow: visible !important;
+    max-height: none !important;
+}
+
+/* Prevent headings/anchors from being hidden behind fixed bars */
+section,
+[id] {
+    scroll-margin-top: var(--sticky-offset);
+}
+
+body.announcement-hidden {
+    --sticky-offset: 80px;
 }
 
 h1,
@@ -146,6 +180,17 @@ img {
     width: 10px;
 }
 
+/* Hide scrollbars on touch devices (mobile/tablet) */
+@media (pointer: coarse) {
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    * {
+        scrollbar-width: none;
+    }
+}
+
 ::-webkit-scrollbar-track {
     background: var(--cream);
 }
@@ -159,28 +204,24 @@ img {
     background: var(--medium-roast);
 }
 
-/* Hide scrollbars on mobile - keep scroll functionality */
-@media (max-width: 1024px) {
+/* 
+ * Scrollbar visibility - REMOVED global hiding per UX audit
+ * Scrollbars now visible for better discoverability
+ * Only hide on specific decorative elements below 
+ */
 
-    /* Hide scrollbar for Chrome, Safari, Opera */
-    ::-webkit-scrollbar {
-        width: 0 !important;
-        height: 0 !important;
-        display: none !important;
-    }
+/* Hide scrollbars only on horizontal scroll containers and galleries */
+.gallery-thumbnails,
+.horizontal-scroll-container,
+.categories-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
 
-    * {
-        -ms-overflow-style: none !important;
-        /* IE and Edge */
-        scrollbar-width: none !important;
-        /* Firefox */
-    }
-
-    *::-webkit-scrollbar {
-        width: 0 !important;
-        height: 0 !important;
-        display: none !important;
-    }
+.gallery-thumbnails::-webkit-scrollbar,
+.horizontal-scroll-container::-webkit-scrollbar,
+.categories-scroll::-webkit-scrollbar {
+    display: none;
 }
 
 /* ========================================
@@ -239,8 +280,10 @@ img {
 }
 
 .btn-icon {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
+    min-width: 48px; /* Ensure minimum touch target */
+    min-height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -302,6 +345,24 @@ img {
     -webkit-backdrop-filter: blur(20px);
     padding: 12px 0;
     box-shadow: var(--shadow-lg);
+    transition: transform 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Smart hide on scroll down - only on larger screens */
+.navbar-main.navbar-hidden {
+    transform: translateY(-100%);
+}
+
+/* Disable navbar hiding on mobile - can cause issues */
+@media (max-width: 768px) {
+    .navbar-main.navbar-hidden {
+        transform: none;
+        /* Don't hide navbar on mobile */
+    }
+
+    .navbar-main.scrolled {
+        transition-duration: 0.2s;
+    }
 }
 
 .navbar-main .navbar-brand {

@@ -1,14 +1,23 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#2C1810">
-    <title>أنت غير متصل - إمبابي كافيه</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>غير متصل - إمبابي كافيه</title>
     <link rel="manifest" href="/manifest.json">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <meta name="theme-color" content="#2C1810">
+    <link rel="icon" type="image/png" href="/icons/ios/32.png">
+    <link rel="apple-touch-icon" href="/icons/ios/180.png">
+
     <style>
+        :root {
+            --espresso: #2C1810;
+            --dark-roast: #3D2317;
+            --gold: #C9A227;
+            --cream: #FFF8E7;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -16,351 +25,306 @@
         }
 
         body {
-            font-family: 'Cairo', sans-serif;
-            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 50%, #0f0f1a 100%);
+            font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, var(--espresso) 0%, var(--dark-roast) 100%);
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            color: #ffffff;
-            overflow: hidden;
+            padding: 20px;
+            color: var(--cream);
         }
 
-        .offline-container {
+        .container {
             text-align: center;
-            padding: 40px 24px;
-            max-width: 400px;
-            position: relative;
-            z-index: 1;
+            max-width: 500px;
         }
 
-        /* Animated coffee cup */
+        /* Coffee cup animation */
         .coffee-cup {
             width: 120px;
             height: 120px;
-            margin: 0 auto 32px;
+            margin: 0 auto 30px;
             position: relative;
         }
 
         .cup-body {
             width: 80px;
             height: 70px;
-            background: linear-gradient(145deg, #c9a227, #8b6914);
-            border-radius: 0 0 35px 35px;
+            background: var(--gold);
+            border-radius: 0 0 40px 40px;
             position: absolute;
             bottom: 0;
             left: 50%;
             transform: translateX(-50%);
-            box-shadow: 
-                0 10px 30px rgba(201, 162, 39, 0.3),
-                inset 0 -10px 20px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
 
         .cup-handle {
-            width: 25px;
-            height: 35px;
-            border: 6px solid #c9a227;
+            width: 20px;
+            height: 30px;
+            border: 5px solid var(--gold);
             border-left: none;
-            border-radius: 0 15px 15px 0;
+            border-radius: 0 20px 20px 0;
             position: absolute;
             right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        .cup-top {
-            width: 90px;
-            height: 15px;
-            background: linear-gradient(145deg, #d4a84b, #c9a227);
-            border-radius: 8px 8px 0 0;
-            position: absolute;
-            bottom: 70px;
-            left: 50%;
-            transform: translateX(-50%);
+            top: 50px;
         }
 
         /* Steam animation */
         .steam-container {
             position: absolute;
-            top: -20px;
+            top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 60px;
-            height: 60px;
+            display: flex;
+            gap: 10px;
         }
 
         .steam {
-            position: absolute;
-            width: 8px;
-            height: 30px;
-            background: linear-gradient(to top, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.5));
-            border-radius: 10px;
+            width: 10px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
             animation: steam 2s ease-in-out infinite;
         }
 
         .steam:nth-child(1) {
-            left: 15px;
             animation-delay: 0s;
         }
 
         .steam:nth-child(2) {
-            left: 26px;
             animation-delay: 0.3s;
-            height: 35px;
         }
 
         .steam:nth-child(3) {
-            left: 37px;
             animation-delay: 0.6s;
         }
 
         @keyframes steam {
-            0%, 100% {
-                transform: translateY(0) scaleX(1);
-                opacity: 0;
-            }
-            15% {
-                opacity: 1;
-            }
-            50% {
-                transform: translateY(-20px) scaleX(1.2);
-                opacity: 0.5;
-            }
+
+            0%,
             100% {
-                transform: translateY(-40px) scaleX(0.8);
                 opacity: 0;
+                transform: translateY(0) scaleY(1);
+            }
+
+            50% {
+                opacity: 0.6;
+                transform: translateY(-20px) scaleY(1.5);
             }
         }
 
-        /* WiFi off icon */
-        .wifi-icon {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 28px;
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        /* Wifi icon with X */
+        .wifi-off {
+            width: 80px;
+            height: 80px;
+            margin: 20px auto;
+            position: relative;
         }
 
-        /* Text content */
-        .offline-title {
-            font-size: 1.8rem;
-            font-weight: 800;
-            margin-bottom: 12px;
-            color: #c9a227;
-            text-shadow: 0 2px 20px rgba(201, 162, 39, 0.3);
+        .wifi-off svg {
+            width: 100%;
+            height: 100%;
+            fill: none;
+            stroke: var(--gold);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
         }
 
-        .offline-message {
-            font-size: 1rem;
-            color: rgba(255, 255, 255, 0.7);
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        p {
+            font-size: 1.1rem;
             line-height: 1.8;
-            margin-bottom: 32px;
+            margin-bottom: 30px;
+            opacity: 0.9;
         }
 
-        /* Retry button */
-        .retry-btn {
+        .btn {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            padding: 16px 32px;
-            background: linear-gradient(135deg, #c9a227 0%, #a78419 100%);
-            color: #1a1a2e;
-            font-size: 1rem;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--gold) 0%, #E8C547 100%);
+            color: var(--espresso);
+            text-decoration: none;
+            border-radius: 50px;
             font-weight: 700;
-            font-family: inherit;
-            border: none;
-            border-radius: 100px;
-            cursor: pointer;
+            font-size: 1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 10px 30px rgba(201, 162, 39, 0.3);
+            box-shadow: 0 5px 20px rgba(201, 162, 39, 0.4);
+            border: none;
+            cursor: pointer;
         }
 
-        .retry-btn:hover {
+        .btn:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(201, 162, 39, 0.4);
+            box-shadow: 0 10px 30px rgba(201, 162, 39, 0.5);
         }
 
-        .retry-btn:active {
-            transform: translateY(0);
+        .tips {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
         }
 
-        .retry-btn svg {
-            width: 20px;
-            height: 20px;
-            animation: spin 2s linear infinite paused;
+        .tips h3 {
+            color: var(--gold);
+            margin-bottom: 15px;
+            font-size: 1rem;
         }
 
-        .retry-btn.loading svg {
-            animation-play-state: running;
+        .tips ul {
+            list-style: none;
+            text-align: right;
         }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        .tips li {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        /* Background decorations */
-        .bg-circle {
-            position: fixed;
-            border-radius: 50%;
-            pointer-events: none;
+        .tips li::before {
+            content: '☕';
         }
 
-        .bg-circle-1 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(201, 162, 39, 0.1) 0%, transparent 70%);
-            top: -100px;
-            right: -100px;
-        }
-
-        .bg-circle-2 {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
-            bottom: -50px;
-            left: -50px;
-        }
-
-        /* Floating coffee beans */
+        /* Floating beans decoration */
         .bean {
             position: fixed;
             width: 20px;
             height: 30px;
-            background: linear-gradient(145deg, #3D2317, #2C1810);
+            background: var(--gold);
+            opacity: 0.2;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            opacity: 0.3;
-            animation: floatBean 20s linear infinite;
+            animation: float 6s ease-in-out infinite;
         }
 
-        .bean::before {
-            content: '';
-            position: absolute;
-            width: 2px;
-            height: 60%;
-            background: rgba(0, 0, 0, 0.3);
-            left: 50%;
+        .bean:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .bean:nth-child(2) {
             top: 20%;
-            transform: translateX(-50%);
-            border-radius: 2px;
+            right: 15%;
+            animation-delay: 1s;
         }
 
-        .bean:nth-child(1) { left: 10%; animation-delay: 0s; animation-duration: 18s; }
-        .bean:nth-child(2) { left: 30%; animation-delay: -5s; animation-duration: 22s; }
-        .bean:nth-child(3) { left: 50%; animation-delay: -10s; animation-duration: 20s; }
-        .bean:nth-child(4) { left: 70%; animation-delay: -15s; animation-duration: 25s; }
-        .bean:nth-child(5) { left: 90%; animation-delay: -8s; animation-duration: 19s; }
+        .bean:nth-child(3) {
+            bottom: 30%;
+            left: 5%;
+            animation-delay: 2s;
+        }
 
-        @keyframes floatBean {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-            }
+        .bean:nth-child(4) {
+            bottom: 15%;
+            right: 10%;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+
+            0%,
             100% {
-                transform: translateY(-100px) rotate(360deg);
+                transform: translateY(0) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(180deg);
             }
         }
 
-        /* Tip text */
-        .offline-tip {
-            margin-top: 32px;
-            padding: 16px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .offline-tip-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #c9a227;
-            margin-bottom: 8px;
-        }
-
-        .offline-tip-text {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.6);
-            line-height: 1.6;
+        .logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
+
 <body>
-    <!-- Background decorations -->
-    <div class="bg-circle bg-circle-1"></div>
-    <div class="bg-circle bg-circle-2"></div>
-    
-    <!-- Floating beans -->
-    <div class="bean"></div>
+    <!-- Decorative beans -->
     <div class="bean"></div>
     <div class="bean"></div>
     <div class="bean"></div>
     <div class="bean"></div>
 
-    <div class="offline-container">
-        <!-- Animated coffee cup -->
+    <div class="container">
+        <!-- Logo -->
+        <img src="/icons/android/android-launchericon-192-192.png" alt="إمبابي كافيه" class="logo"
+            onerror="this.style.display='none'">
+
+        <!-- Coffee cup with steam -->
         <div class="coffee-cup">
             <div class="steam-container">
                 <div class="steam"></div>
                 <div class="steam"></div>
                 <div class="steam"></div>
             </div>
-            <div class="cup-top"></div>
-            <div class="cup-body">
-                <span class="wifi-icon">📵</span>
-            </div>
+            <div class="cup-body"></div>
             <div class="cup-handle"></div>
         </div>
 
-        <h1 class="offline-title">أنت غير متصل بالإنترنت</h1>
-        
-        <p class="offline-message">
-            لا تقلق! يمكنك الاستمتاع بقهوتك بينما تنتظر عودة الاتصال.
-            <br>
-            سنعود للعمل فور اتصالك بالشبكة.
+        <!-- Wifi off icon -->
+        <div class="wifi-off">
+            <svg viewBox="0 0 24 24">
+                <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55" />
+                <path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39" />
+                <path d="M10.71 5.05A16 16 0 0 1 22.58 9" />
+                <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88" />
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0" />
+                <circle cx="12" cy="20" r="1" />
+            </svg>
+        </div>
+
+        <h1>أنت غير متصل بالإنترنت</h1>
+
+        <p>
+            يبدو أنك فقدت الاتصال بالإنترنت. لا تقلق، يمكنك الاستمتاع بالمحتوى المحفوظ مسبقاً أو المحاولة مرة أخرى.
         </p>
 
-        <button class="retry-btn" onclick="retryConnection()">
-            <svg viewBox="0 0 24 24" fill="currentColor">
-                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+        <button class="btn" onclick="window.location.reload()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <path d="M23 4v6h-6" />
+                <path d="M1 20v-6h6" />
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
             </svg>
-            إعادة المحاولة
+            حاول مرة أخرى
         </button>
 
-        <div class="offline-tip">
-            <div class="offline-tip-title">💡 نصيحة</div>
-            <div class="offline-tip-text">
-                تحقق من اتصالك بالإنترنت أو حاول الاتصال بشبكة Wi-Fi أخرى
-            </div>
+        <div class="tips">
+            <h3>نصائح للاتصال:</h3>
+            <ul>
+                <li>تأكد من تفعيل الواي فاي أو بيانات الهاتف</li>
+                <li>حاول الاقتراب من جهاز الراوتر</li>
+                <li>أعد تشغيل الاتصال بالإنترنت</li>
+            </ul>
         </div>
     </div>
 
     <script>
-        function retryConnection() {
-            const btn = document.querySelector('.retry-btn');
-            btn.classList.add('loading');
-            
-            // Try to fetch the homepage
-            fetch('/')
-                .then(response => {
-                    if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        throw new Error('Still offline');
-                    }
-                })
-                .catch(() => {
-                    btn.classList.remove('loading');
-                    // Show feedback
-                    const tip = document.querySelector('.offline-tip-text');
-                    tip.textContent = 'لا يزال الاتصال غير متاح. حاول مرة أخرى بعد قليل.';
-                });
-        }
-
-        // Auto-retry when online
+        // Auto-refresh when back online
         window.addEventListener('online', () => {
             window.location.reload();
         });
     </script>
 </body>
+
 </html>

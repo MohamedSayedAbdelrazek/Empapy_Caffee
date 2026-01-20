@@ -1,5 +1,5 @@
 <!-- Premium Sticky Navbar -->
-<nav class="navbar navbar-expand-lg fixed-top navbar-main" id="mainNavbar">
+<nav class="navbar navbar-expand-lg navbar-main" id="mainNavbar">
     <div class="container">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ route('home') }}">
@@ -45,12 +45,12 @@
 
 
                 <!-- Search -->
-                <button class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#searchModal">
+                <button class="btn btn-icon" data-bs-toggle="modal" data-bs-target="#searchModal" aria-label="بحث">
                     <i class="bi bi-search"></i>
                 </button>
 
                 <!-- Cart -->
-                <button class="btn btn-icon cart-toggle position-relative" id="cartToggle">
+                <button class="btn btn-icon cart-toggle position-relative" id="cartToggle" aria-label="السلة">
                     <svg class="cart-icon" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960"
                         width="24px" fill="currentColor">
                         <path
@@ -69,7 +69,7 @@
                 @auth
                     <div class="dropdown notification-dropdown">
                         <button class="btn btn-icon notification-bell position-relative" data-bs-toggle="dropdown"
-                            id="userNotificationBell" style="border: none; background: transparent;">
+                            id="userNotificationBell">
                             <i class="bi bi-bell"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                 id="userNotificationBadge" style="display: none; font-size: 0.6rem;">
@@ -106,6 +106,13 @@
                             <i class="bi bi-person-circle"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu shadow-lg" id="userDropdownMenu">
+                            <!-- Close button for mobile -->
+                            <li class="d-md-none">
+                                <button type="button" class="mobile-panel-close" id="userPanelClose"
+                                    aria-label="إغلاق القائمة">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </li>
                             @if (auth()->user()->isAdmin())
                                 <li>
                                     <a class="dropdown-item premium-item" href="{{ route('admin.dashboard') }}">
@@ -214,7 +221,17 @@
                                     userBtn.removeAttribute('data-bs-toggle');
                                 }
 
+                                // Store original parent for later
+                                const originalMenuParent = userMenu.parentElement;
+                                const originalBackdropParent = backdrop.parentElement;
+
                                 function openPanel() {
+                                    // Move panel and backdrop to body to escape any stacking context
+                                    if (isMobile()) {
+                                        document.body.appendChild(backdrop);
+                                        document.body.appendChild(userMenu);
+                                    }
+
                                     userMenu.classList.add('show');
                                     backdrop.classList.add('show');
                                     document.body.classList.add('user-panel-open');
@@ -226,14 +243,25 @@
                                     backdrop.classList.remove('show');
                                     document.body.classList.remove('user-panel-open');
                                     document.body.style.overflow = '';
+
+                                    // Move elements back to original parent after close animation
+                                    if (isMobile()) {
+                                        setTimeout(() => {
+                                            if (originalBackdropParent && !originalBackdropParent.contains(backdrop)) {
+                                                originalBackdropParent.appendChild(backdrop);
+                                            }
+                                            if (originalMenuParent && !originalMenuParent.contains(userMenu)) {
+                                                originalMenuParent.appendChild(userMenu);
+                                            }
+                                        }, 400);
+                                    }
                                 }
 
-                                // Toggle on button click
+                                // Toggle on button click - removed stopImmediatePropagation
                                 userBtn.addEventListener('click', function(e) {
                                     if (isMobile()) {
                                         e.preventDefault();
-                                        e.stopPropagation();
-                                        e.stopImmediatePropagation();
+                                        e.stopPropagation(); // Only stopPropagation, not Immediate
 
                                         if (userMenu.classList.contains('show')) {
                                             closePanel();
@@ -241,7 +269,13 @@
                                             openPanel();
                                         }
                                     }
-                                }, true); // Use capture phase
+                                });
+
+                                // Close button click
+                                const closeBtn = document.getElementById('userPanelClose');
+                                if (closeBtn) {
+                                    closeBtn.addEventListener('click', closePanel);
+                                }
 
                                 // Close on backdrop click
                                 backdrop.addEventListener('click', closePanel);
@@ -250,6 +284,18 @@
                                 document.addEventListener('keydown', function(e) {
                                     if (e.key === 'Escape' && userMenu.classList.contains('show')) {
                                         closePanel();
+                                    }
+                                });
+
+                                // Click outside to close navbar collapse
+                                document.addEventListener('click', function(e) {
+                                    const navbarCollapse = document.getElementById('navbarMain');
+                                    const toggler = document.querySelector('.navbar-toggler');
+                                    if (navbarCollapse && navbarCollapse.classList.contains('show') &&
+                                        !navbarCollapse.contains(e.target) &&
+                                        !toggler.contains(e.target)) {
+                                        const bsCollapse = bootstrap.Collapse.getInstance(navbarCollapse);
+                                        if (bsCollapse) bsCollapse.hide();
                                     }
                                 });
 
@@ -297,7 +343,7 @@
                 <form action="{{ route('shop.index') }}" method="GET">
                     <div class="input-group input-group-lg">
                         <input type="text" name="search" class="form-control"
-                            placeholder="ابحث عن قهوتك المفضلة..." autofocus>
+                            placeholder="ابحث عن قهوتك المفضلة..." aria-label="البحث في المنتجات" autofocus>
                         <button type="submit" class="btn btn-golden">
                             <i class="bi bi-search"></i>
                         </button>

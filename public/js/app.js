@@ -10,6 +10,17 @@ let cartCache = {
     ttl: 5000 // 5 seconds cache
 };
 
+/**
+ * SECURITY: HTML escape helper to prevent XSS
+ * Use this for all user-provided content inserted into DOM
+ */
+function escapeHtml(text) {
+    if (text === null || text === undefined) return '';
+    const div = document.createElement('div');
+    div.textContent = String(text);
+    return div.innerHTML;
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     // Initialize all components
     initNavbar();
@@ -18,25 +29,95 @@ document.addEventListener('DOMContentLoaded', function () {
     initFloatingBeans();
     initQuantityInputs(); // Fixed: was missing
     initSearch();
+    initAnnouncementBar();
+    initScrollGuard();
 });
 
 /**
- * Navbar Scroll Effect
+ * Keep body scroll active unless a modal/overlay is open
+ * FIXED: Now includes mobile user panel state
+ */
+function initScrollGuard() {
+    function isOverlayOpen() {
+        const cartOpen = document.getElementById('cartDrawer')?.classList.contains('open');
+        const quickShopOpen = document.getElementById('quickShopModal')?.style.display === 'flex';
+        const quickViewOpen = document.querySelector('.quick-view-modal.open');
+        const lightboxOpen = document.querySelector('.lightbox.active');
+        const bootstrapModalOpen = document.body.classList.contains('modal-open');
+        const userPanelOpen = document.body.classList.contains('user-panel-open'); // ADDED
+
+        return cartOpen || quickShopOpen || quickViewOpen || lightboxOpen || bootstrapModalOpen || userPanelOpen;
+    }
+
+    function enforceBodyScroll() {
+        if (!isOverlayOpen()) {
+            document.body.style.overflow = '';
+        }
+    }
+
+    enforceBodyScroll();
+    window.addEventListener('scroll', enforceBodyScroll, { passive: true });
+    window.addEventListener('touchmove', enforceBodyScroll, { passive: true });
+}
+
+/**
+ * Announcement Bar Dismiss
+ */
+function initAnnouncementBar() {
+    const bar = document.getElementById('announcementBar');
+    const closeBtn = document.getElementById('announcementCloseBtn');
+    if (!bar || !closeBtn) return;
+
+    const dismissed = localStorage.getItem('announcement-dismissed') === 'true';
+    if (dismissed) {
+        bar.style.display = 'none';
+        document.body.classList.add('announcement-hidden');
+        return;
+    }
+
+    closeBtn.addEventListener('click', () => {
+        bar.style.display = 'none';
+        document.body.classList.add('announcement-hidden');
+        localStorage.setItem('announcement-dismissed', 'true');
+    });
+}
+
+/**
+ * Navbar Scroll Effect - Smart Hide/Show
+ * Hides on scroll down, shows on scroll up
  */
 function initNavbar() {
     const navbar = document.getElementById('mainNavbar');
     if (!navbar) return;
 
+    let lastScrollY = 0;
+    let ticking = false;
+    const SCROLL_THRESHOLD = 100;
+
+    // Always keep compact (scrolled) navbar to avoid heading overlap
+    navbar.classList.add('scrolled');
+
     function updateNavbar() {
-        if (window.scrollY > 50) {
-            navbar.classList.add('scrolled');
+        const currentScrollY = window.scrollY;
+
+        // Only hide when scrolling down past threshold
+        if (currentScrollY > lastScrollY && currentScrollY > SCROLL_THRESHOLD) {
+            navbar.classList.add('navbar-hidden');
         } else {
-            navbar.classList.remove('scrolled');
+            navbar.classList.remove('navbar-hidden');
         }
+
+        lastScrollY = currentScrollY;
+        ticking = false;
     }
 
-    window.addEventListener('scroll', updateNavbar);
-    updateNavbar();
+    // Use requestAnimationFrame for performance
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateNavbar);
+            ticking = true;
+        }
+    }, { passive: true });
 }
 
 /**
@@ -95,24 +176,24 @@ function loadCartItems() {
         .then(response => response.json())
         .then(data => {
             if (data.items && data.items.length > 0) {
-                // Build cart items HTML
+                // Build cart items HTML - SECURITY: All user content escaped
                 let html = '';
                 data.items.forEach(item => {
                     html += `
                     <div class="cart-item d-flex gap-3 mb-3 pb-3 border-bottom border-secondary">
-                        <img src="${item.image}" alt="${item.name_ar}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
+                        <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name_ar)}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                         <div class="flex-grow-1">
-                            <h6 class="mb-1 small text-white">${item.name_ar}</h6>
+                            <h6 class="mb-1 small text-white">${escapeHtml(item.name_ar)}</h6>
                             ${item.options && item.options.length > 0
                             ? `<div class="mb-1">
-                                        ${item.options.map(opt => `<span class="badge bg-secondary" style="font-size: 0.65rem;">${opt.label}: ${opt.value}</span>`).join(' ')}
+                                        ${item.options.map(opt => `<span class="badge bg-secondary" style="font-size: 0.65rem;">${escapeHtml(opt.label)}: ${escapeHtml(opt.value)}</span>`).join(' ')}
                                     </div>`
                             : ''
                         }
-                            <small class="text-white-50">الكمية: ${item.quantity}</small>
-                            <div class="text-warning fw-bold">${item.subtotal.toLocaleString()} ج.م</div>
+                            <small class="text-white-50">الكمية: ${parseInt(item.quantity) || 0}</small>
+                            <div class="text-warning fw-bold">${(parseFloat(item.subtotal) || 0).toLocaleString()} ج.م</div>
                         </div>
-                        <button class="btn btn-sm btn-outline-danger" onclick="removeFromCartDrawer('${item.key}')">
+                        <button class="btn btn-sm btn-outline-danger" onclick="removeFromCartDrawer('${escapeHtml(item.key)}')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>

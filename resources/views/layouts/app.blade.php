@@ -95,12 +95,15 @@
     <!-- Firebase Notifications CSS -->
     <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
 
+    <!-- Product Card CSS (extracted for better caching) -->
+    <link rel="stylesheet" href="{{ asset('css/product-card.css') }}">
+
     @stack('styles')
 </head>
 
 <body>
     <!-- Announcement Bar -->
-    <div class="announcement-bar">
+    <div class="announcement-bar" id="announcementBar">
         <div class="announcement-track">
             <div class="announcement-content">
                 <span class="announcement-item">
@@ -114,38 +117,53 @@
                 </span>
                 <span class="announcement-divider">☕</span>
                 <span class="announcement-item">
-                    <i class="bi bi-star-fill"></i>
-                    قهوة طازجة محمصة يومياً
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-clock"></i>
-                    توصيل سريع خلال 24 ساعة
-                </span>
-                <span class="announcement-divider">☕</span>
-                <!-- Repeat for seamless loop -->
-                <span class="announcement-item">
-                    <i class="bi bi-truck"></i>
-                    توصيل مجاني للطلبات أكثر من 500 ج.م
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-gift"></i>
-                    خصم 15% على طلبك الأول - كود: WELCOME15
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-star-fill"></i>
-                    قهوة طازجة محمصة يومياً
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-clock"></i>
-                    توصيل سريع خلال 24 ساعة
-                </span>
-                <span class="announcement-divider">☕</span>
+                    <span class="announcement-item">
+                        <i class="bi bi-star-fill"></i>
+                        قهوة طازجة محمصة يومياً
+                    </span>
+                    <span class="announcement-divider">☕</span>
+                    <span class="announcement-item">
+                        <i class="bi bi-clock"></i>
+                        توصيل سريع خلال 24 ساعة
+                    </span>
+                    <span class="announcement-divider">☕</span>
+                    <span class="announcement-item">
+                        <i class="bi bi-truck"></i>
+                        توصيل مجاني للطلبات أكثر من 500 ج.م
+                    </span>
+                    <span class="announcement-divider">☕</span>
+                    <span class="announcement-item">
+                        <i class="bi bi-gift"></i>
+                        خصم 15% على طلبك الأول - كود: WELCOME15
+                    </span>
+                    <span class="announcement-divider">☕</span>
+
+                    <!-- DUPLICATE SET FOR SEAMLESS LOOP -->
+                    <span class="announcement-item">
+                        <i class="bi bi-star-fill"></i>
+                        قهوة طازجة محمصة يومياً
+                    </span>
+                    <span class="announcement-divider">☕</span>
+                    <span class="announcement-item">
+                        <i class="bi bi-clock"></i>
+                        توصيل سريع خلال 24 ساعة
+                    </span>
+                    <span class="announcement-divider">☕</span>
+                    <span class="announcement-item">
+                        <i class="bi bi-truck"></i>
+                        توصيل مجاني للطلبات أكثر من 500 ج.م
+                    </span>
+                    <span class="announcement-divider">☕</span>
+                    <span class="announcement-item">
+                        <i class="bi bi-gift"></i>
+                        خصم 15% على طلبك الأول - كود: WELCOME15
+                    </span>
+                    <span class="announcement-divider">☕</span>
             </div>
         </div>
+        <button class="announcement-close" id="announcementCloseBtn" aria-label="إخفاء شريط الإعلانات">
+            <i class="bi bi-x"></i>
+        </button>
     </div>
 
     <!-- Navbar -->
@@ -193,6 +211,9 @@
     <!-- UX Enhancements JS -->
     <script src="{{ asset('js/ux-enhancements.js') }}"></script>
 
+    <!-- Product Card JS (extracted for better caching) -->
+    <script src="{{ asset('js/product-card.js') }}"></script>
+
     <!-- PWA Service Worker & Install Prompt -->
     <script src="{{ asset('js/pwa.js') }}"></script>
 
@@ -204,6 +225,15 @@
     <script>
         // User Notification Logic
         // User Notification Logic
+
+        // SECURITY: HTML escape helper to prevent XSS
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return '';
+            const div = document.createElement('div');
+            div.textContent = String(text);
+            return div.innerHTML;
+        }
+
         window.handleFirebaseMessage = function(payload) {
             console.log('[User Layout] Received Firebase Message:', payload);
             const {
@@ -233,21 +263,21 @@
                 setTimeout(() => badge.classList.remove('animate__animated', 'animate__heartBeat'), 1000);
             }
 
-            // 2. Add to List
+            // 2. Add to List - ESCAPED to prevent XSS
             const list = document.getElementById('userNotificationList');
             if (list) {
                 const emptyMsg = list.querySelector('.notification-empty');
                 if (emptyMsg) emptyMsg.remove();
 
                 const itemHtml = `
-                    <a href="${url}" class="dropdown-item p-2 border-bottom notification-item unread" 
+                    <a href="${escapeHtml(url)}" class="dropdown-item p-2 border-bottom notification-item unread" 
                        style="background: rgba(var(--bs-primary-rgb), 0.05);">
                         <div class="d-flex align-items-start gap-2">
-                            <img src="${icon}" class="rounded-circle" width="40" height="40" alt="icon">
+                            <img src="${escapeHtml(icon)}" class="rounded-circle" width="40" height="40" alt="icon">
                             <div class="flex-grow-1">
-                                <h6 class="mb-1 small fw-bold">${title}</h6>
-                                <p class="mb-1 small text-muted text-truncate" style="max-width: 200px;">${body}</p>
-                                <small class="text-secondary" style="font-size: 0.7rem;">${time}</small>
+                                <h6 class="mb-1 small fw-bold">${escapeHtml(title)}</h6>
+                                <p class="mb-1 small text-muted text-truncate" style="max-width: 200px;">${escapeHtml(body)}</p>
+                                <small class="text-secondary" style="font-size: 0.7rem;">${escapeHtml(time)}</small>
                             </div>
                             <span class="badge bg-primary rounded-pill p-1" style="font-size: 0.5rem;">جديد</span>
                         </div>

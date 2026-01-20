@@ -6,8 +6,7 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-bg">
-            <img src="https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=1920&q=80" alt="Coffee Background"
-                loading="lazy" decoding="async">
+            <img src="{{ asset('images/hero-bg.jpg') }}" alt="Coffee Background" fetchpriority="high" decoding="async">
         </div>
         <div class="hero-overlay"></div>
 
@@ -49,8 +48,8 @@
                 </div>
                 <div class="col-lg-6 d-none d-lg-block" data-aos="fade-up" data-aos-delay="200">
                     <div class="hero-image text-center" style="position: relative; z-index: 100;">
-                        <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=420&h=500&fit=crop"
-                            alt="Premium Coffee" loading="lazy" decoding="async"
+                        <img src="{{ asset('images/hero-coffee.jpg') }}" alt="Premium Coffee" loading="lazy"
+                            decoding="async"
                             style="border-radius: 30px; max-height: 450px; width: auto; object-fit: cover;">
                     </div>
                 </div>
@@ -446,18 +445,15 @@
         }
 
         /* =========================================
-                                   CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                   ========================================= */
+                                           CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                           ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
             margin: 0;
-            /* Fix mobile scroll issues - allow vertical scrolling to pass through */
-            touch-action: pan-y;
         }
 
         /* Video Background */

@@ -4,21 +4,27 @@
  */
 
 document.addEventListener('DOMContentLoaded', function () {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
     // Initialize all enhancements
     initScrollProgress();
     initDarkMode();
-    init3DHoverEffect();
     initLazyLoading();
-    initCustomCursor();
-    initParallax();
     initMicroInteractions();
-    initParticles();
     initQuickView();
     initAnimatedCounters();
     initScrollAnimations();
     initBackToTop();
     initPageTransitions();
-    initMagneticButtons();
+
+    // Heavy/scroll-sensitive effects (disable on mobile or reduced motion)
+    if (!prefersReducedMotion && !isMobile) {
+        init3DHoverEffect();
+        initParallax();
+        initParticles();
+        initMagneticButtons();
+    }
 });
 
 /**
@@ -193,6 +199,9 @@ function initCustomCursor() {
  */
 function initParallax() {
     const parallaxElements = document.querySelectorAll('.hero-bg img, .page-header::before');
+    if (!parallaxElements.length) return;
+    
+    let ticking = false;
 
     function updateParallax() {
         const scrolled = window.scrollY;
@@ -202,9 +211,17 @@ function initParallax() {
             const yPos = -(scrolled * speed);
             el.style.transform = `translate3d(0, ${yPos}px, 0)`;
         });
+        
+        ticking = false;
     }
 
-    window.addEventListener('scroll', updateParallax, { passive: true });
+    // Throttled scroll listener using requestAnimationFrame
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(updateParallax);
+            ticking = true;
+        }
+    }, { passive: true });
 }
 
 /**
@@ -492,21 +509,33 @@ function initScrollAnimations() {
  * 12. Back to Top Button
  */
 function initBackToTop() {
+    // Prevent duplicate buttons
+    if (document.querySelector('.back-to-top')) return;
+    
     const btn = document.createElement('button');
     btn.className = 'back-to-top';
     btn.innerHTML = '<i class="bi bi-chevron-up"></i>';
     btn.setAttribute('aria-label', 'Back to top');
     document.body.appendChild(btn);
 
+    let ticking = false;
+    
     function toggleVisibility() {
         if (window.scrollY > 300) {
             btn.classList.add('visible');
         } else {
             btn.classList.remove('visible');
         }
+        ticking = false;
     }
 
-    window.addEventListener('scroll', toggleVisibility, { passive: true });
+    // Throttled scroll listener
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            requestAnimationFrame(toggleVisibility);
+            ticking = true;
+        }
+    }, { passive: true });
 
     btn.addEventListener('click', () => {
         window.scrollTo({

@@ -11,22 +11,36 @@
     color: #fff;
     padding: 10px 0;
     overflow: hidden;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
+    position: relative;
+    top: auto;
+    left: auto;
+    right: auto;
     z-index: 1100;
     border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
 /* Push body content down to account for fixed announcement bar */
 body {
-    padding-top: 42px !important;
+    padding-top: 0 !important;
 }
 
-/* Ensure navbar is positioned below announcement bar */
+/* Ensure navbar is positioned with proper z-index for dropdowns */
 .navbar-main {
-    margin-top: 42px;
+    position: relative !important;
+    z-index: 1050 !important;
+    /* Above page content, below modals */
+}
+
+/* Hide announcement bar and reclaim space */
+body.announcement-hidden {
+    padding-top: 0 !important;
+}
+
+body.announcement-hidden .navbar-main {
+    top: auto;
 }
 
 .announcement-track {
@@ -35,10 +49,34 @@ body {
     overflow: hidden;
 }
 
+.announcement-close {
+    position: absolute;
+    left: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.announcement-close:hover {
+    background: rgba(201, 162, 39, 0.25);
+    color: #fff;
+}
+
 .announcement-content {
     display: flex;
     animation: marquee 30s linear infinite;
     white-space: nowrap;
+    /* Force LTR order for correct marquee loop ([Set1][Set2]) */
+    direction: ltr;
 }
 
 .announcement-content:hover {
@@ -46,6 +84,8 @@ body {
 }
 
 .announcement-item {
+    direction: rtl;
+    /* Restore RTL alignment */
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -89,6 +129,12 @@ body {
 
     .announcement-content {
         animation-duration: 20s;
+    }
+
+    .announcement-close {
+        left: 8px;
+        width: 26px;
+        height: 26px;
     }
 }
 

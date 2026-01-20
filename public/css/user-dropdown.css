@@ -2,6 +2,28 @@
    USER DROPDOWN MENU - PREMIUM STYLING
    ============================================ */
 
+/* MOBILE: Break out of stacking context so panel can appear above everything */
+@media (max-width: 768px) {
+
+    /* Ensure navbar doesn't create limiting stacking context */
+    .navbar-main,
+    .navbar-collapse,
+    .navbar-actions,
+    .user-dropdown {
+        transform: none !important;
+        isolation: auto !important;
+    }
+
+    /* When user panel is open, ensure no stacking context limits it */
+    body.user-panel-open .navbar-main {
+        z-index: auto !important;
+    }
+
+    body.user-panel-open .navbar-collapse {
+        z-index: auto !important;
+    }
+}
+
 /* User Icon Button */
 .user-icon-btn {
     position: relative;
@@ -29,8 +51,9 @@
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
 }
 
-/* Dark Mode Dropdown */
-[data-bs-theme="dark"] .user-dropdown-menu {
+/* Dark Mode Dropdown - support both selectors */
+[data-bs-theme="dark"] .user-dropdown-menu,
+[data-theme="dark"] .user-dropdown-menu {
     background: rgba(33, 19, 12, 0.98) !important;
     border-color: rgba(201, 162, 39, 0.3) !important;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
@@ -60,22 +83,29 @@
     font-weight: 500 !important;
     font-size: 0.95rem !important;
     color: #2c1810 !important;
+    /* Dark brown for light mode */
     background: transparent !important;
 }
 
-[data-bs-theme="dark"] .dropdown-item.premium-item {
-    color: #ffffff !important;
+/* Dark Mode Dropdown Item - support both selectors */
+[data-bs-theme="dark"] .dropdown-item.premium-item,
+[data-theme="dark"] .dropdown-item.premium-item {
+    color: #e8e8e8 !important;
+    /* Light gray for dark mode */
 }
 
 .dropdown-item.premium-item:hover {
     background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(201, 162, 39, 0.1)) !important;
     transform: translateX(-3px) !important;
     box-shadow: 0 2px 8px rgba(201, 162, 39, 0.2);
-    color: var(--gold) !important;
+    color: #c9a227 !important;
+    /* Gold on hover */
 }
 
-[data-bs-theme="dark"] .dropdown-item.premium-item:hover {
-    color: var(--gold) !important;
+[data-bs-theme="dark"] .dropdown-item.premium-item:hover,
+[data-theme="dark"] .dropdown-item.premium-item:hover {
+    color: #c9a227 !important;
+    /* Gold on hover */
 }
 
 /* Icon Container */
@@ -155,23 +185,28 @@
    MOBILE - SLIDE-IN SIDE PANEL
    ============================================ */
 
-/* Backdrop overlay for mobile */
+/* Backdrop overlay for mobile - only shown when panel is open */
 .user-panel-backdrop {
-    display: none;
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
     z-index: 99998;
     /* Just below panel */
     opacity: 0;
-    transition: opacity 0.3s ease;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
-.user-panel-backdrop.show {
-    display: block;
-    opacity: 1;
+/* Only show backdrop on mobile */
+@media (max-width: 768px) {
+    .user-panel-backdrop.show {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
 }
 
 /* Hide announcement bar when user panel is open */
@@ -195,25 +230,26 @@ body.user-panel-open .announcement-bar {
         max-height: none !important;
         margin: 0 !important;
         padding: 0 !important;
+        padding-top: 70px !important;
+        /* Space for close button */
         border-radius: 20px 0 0 20px !important;
         border: none !important;
         border-left: 1px solid rgba(201, 162, 39, 0.3) !important;
         background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f0f1a 100%) !important;
         box-shadow: -10px 0 40px rgba(0, 0, 0, 0.5) !important;
-        z-index: 99999 !important;
-        /* Higher than announcement bar */
+        z-index: 999999 !important;
+        /* Super high z-index */
         overflow-y: auto !important;
         overflow-x: hidden !important;
         -webkit-overflow-scrolling: touch !important;
-        /* Smooth scroll on iOS */
         padding-bottom: 80px !important;
-        /* Space for logout at bottom */
-        /* Use visibility + opacity for animation instead of display */
+        /* Fixed: Use right position for smooth slide instead of transform */
         display: block !important;
         visibility: hidden !important;
         opacity: 0 !important;
-        transform: translateX(100%) !important;
-        transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+        right: -100% !important;
+        transform: none !important;
+        transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1),
             opacity 0.35s ease,
             visibility 0.35s ease !important;
     }
@@ -221,129 +257,176 @@ body.user-panel-open .announcement-bar {
     .user-dropdown-menu.show {
         visibility: visible !important;
         opacity: 1 !important;
-        transform: translateX(0) !important;
+        right: 0 !important;
     }
 
-    /* Panel Header */
-    .user-dropdown-menu::before {
-        content: 'حسابي';
-        display: block;
-        padding: 25px 20px 20px;
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: #c9a227;
-        border-bottom: 1px solid rgba(201, 162, 39, 0.2);
-        margin-bottom: 10px;
-        background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), transparent);
+    /* Hide the li wrapper for close button so it doesn't affect layout */
+    .user-dropdown-menu>li:first-child {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        height: 60px !important;
+        display: block !important;
+        list-style: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        background: transparent !important;
     }
 
-    /* Menu items container */
-    .user-dropdown-menu>* {
-        opacity: 0;
-        transform: translateX(20px);
-    }
-
-    .user-dropdown-menu.show>* {
-        opacity: 1;
-        transform: translateX(0);
-        transition: all 0.3s ease;
-    }
-
-    /* Stagger animation for items */
-    .user-dropdown-menu.show>*:nth-child(1) {
-        transition-delay: 0.1s;
-    }
-
-    .user-dropdown-menu.show>*:nth-child(2) {
-        transition-delay: 0.15s;
-    }
-
-    .user-dropdown-menu.show>*:nth-child(3) {
-        transition-delay: 0.2s;
-    }
-
-    .user-dropdown-menu.show>*:nth-child(4) {
-        transition-delay: 0.25s;
-    }
-
-    .user-dropdown-menu.show>*:nth-child(5) {
-        transition-delay: 0.3s;
-    }
-
-    .user-dropdown-menu.show>*:nth-child(6) {
-        transition-delay: 0.35s;
-    }
-
-    .user-dropdown-menu.show>*:nth-child(7) {
-        transition-delay: 0.4s;
-    }
-
-    .user-dropdown-menu.show>*:nth-child(8) {
-        transition-delay: 0.45s;
-    }
-
-    /* Premium items in panel */
-    .dropdown-item.premium-item {
-        padding: 16px 20px !important;
-        margin: 4px 10px !important;
+    /* Mobile close button styling - position fixed relative to panel */
+    .mobile-panel-close {
+        position: absolute !important;
+        top: 12px !important;
+        left: 12px !important;
+        width: 48px !important;
+        height: 48px !important;
+        min-width: 48px !important;
+        min-height: 48px !important;
+        background: rgba(255, 255, 255, 0.15) !important;
+        border: 1px solid rgba(255, 255, 255, 0.3) !important;
         border-radius: 12px !important;
-        font-size: 1rem !important;
-        color: #ffffff !important;
-        background: rgba(255, 255, 255, 0.03) !important;
-        border: 1px solid transparent !important;
+        color: rgba(255, 255, 255, 0.9) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        cursor: pointer !important;
+        z-index: 1000 !important;
+        transition: all 0.3s ease !important;
+        font-size: 1.2rem !important;
     }
 
-    .dropdown-item.premium-item:hover,
-    .dropdown-item.premium-item:active {
-        background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.1)) !important;
-        border-color: rgba(201, 162, 39, 0.3) !important;
-        transform: translateX(-5px) !important;
+    .mobile-panel-close:hover,
+    .mobile-panel-close:active {
+        background: rgba(201, 162, 39, 0.3) !important;
+        color: #c9a227 !important;
+        transform: scale(1.1) !important;
     }
 
-    /* Icons in panel */
-    .item-icon {
-        width: 44px;
-        height: 44px;
-        font-size: 1.2rem;
-        border-radius: 12px;
+    /* ============================================
+       NOTIFICATION DROPDOWN - MOBILE FIX
+       ============================================ */
+    .notification-menu,
+    .notification-dropdown .dropdown-menu {
+        position: fixed !important;
+        top: 70px !important;
+        left: 10px !important;
+        right: 10px !important;
+        width: auto !important;
+        max-width: calc(100vw - 20px) !important;
+        max-height: 70vh !important;
+        z-index: 999999 !important;
+        border-radius: 16px !important;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4) !important;
     }
+}
 
-    /* Dividers */
-    .user-dropdown-menu .dropdown-divider {
-        margin: 15px 20px !important;
-        border-color: rgba(201, 162, 39, 0.15) !important;
-    }
+/* Panel Header */
+.user-dropdown-menu::before {
+    content: 'حسابي';
+    display: block;
+    padding: 25px 20px 20px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #c9a227;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), transparent);
+}
 
-    /* Points badge in panel */
-    .points-badge {
-        font-size: 0.85rem !important;
-        padding: 6px 12px !important;
-    }
+/* Menu items container */
+.user-dropdown-menu>* {
+    opacity: 0;
+    transform: translateX(20px);
+}
 
-    /* Logout item special styling */
-    .logout-item {
-        margin-top: auto !important;
-        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-        padding-top: 15px !important;
-    }
+.user-dropdown-menu.show>* {
+    opacity: 1;
+    transform: translateX(0);
+    transition: all 0.3s ease;
+}
 
-    /* Close button area (tap to close) */
-    .user-dropdown-menu::after {
-        content: '✕';
-        position: absolute;
-        top: 25px;
-        left: 20px;
-        width: 32px;
-        height: 32px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 16px;
-        color: rgba(255, 255, 255, 0.5);
-        cursor: pointer;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-    }
+/* Stagger animation for items */
+.user-dropdown-menu.show>*:nth-child(1) {
+    transition-delay: 0.1s;
+}
+
+.user-dropdown-menu.show>*:nth-child(2) {
+    transition-delay: 0.15s;
+}
+
+.user-dropdown-menu.show>*:nth-child(3) {
+    transition-delay: 0.2s;
+}
+
+.user-dropdown-menu.show>*:nth-child(4) {
+    transition-delay: 0.25s;
+}
+
+.user-dropdown-menu.show>*:nth-child(5) {
+    transition-delay: 0.3s;
+}
+
+.user-dropdown-menu.show>*:nth-child(6) {
+    transition-delay: 0.35s;
+}
+
+.user-dropdown-menu.show>*:nth-child(7) {
+    transition-delay: 0.4s;
+}
+
+.user-dropdown-menu.show>*:nth-child(8) {
+    transition-delay: 0.45s;
+}
+
+/* Premium items in panel */
+.dropdown-item.premium-item {
+    padding: 16px 20px !important;
+    margin: 4px 10px !important;
+    border-radius: 12px !important;
+    font-size: 1rem !important;
+    color: #ffffff !important;
+    background: rgba(255, 255, 255, 0.03) !important;
+    border: 1px solid transparent !important;
+}
+
+.dropdown-item.premium-item:hover,
+.dropdown-item.premium-item:active {
+    background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.1)) !important;
+    border-color: rgba(201, 162, 39, 0.3) !important;
+    transform: translateX(-5px) !important;
+}
+
+/* Icons in panel */
+.item-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+    border-radius: 12px;
+}
+
+/* Dividers */
+.user-dropdown-menu .dropdown-divider {
+    margin: 15px 20px !important;
+    border-color: rgba(201, 162, 39, 0.15) !important;
+}
+
+/* Points badge in panel */
+.points-badge {
+    font-size: 0.85rem !important;
+    padding: 6px 12px !important;
+}
+
+/* Logout item special styling */
+.logout-item {
+    margin-top: auto !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+    padding-top: 15px !important;
+}
+
+/* Close button area - removed since we have real button now */
+.user-dropdown-menu::after {
+    display: none !important;
 }
 
 /* Extra small screens */

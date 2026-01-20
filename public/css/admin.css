@@ -192,6 +192,13 @@ body {
     z-index: 100;
 }
 
+@media (max-width: 992px) {
+    .admin-topbar {
+        position: relative;
+        top: auto;
+    }
+}
+
 .btn-icon {
     width: 42px;
     height: 42px;
