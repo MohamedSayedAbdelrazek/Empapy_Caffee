@@ -241,7 +241,6 @@ class DatabaseSeeder extends Seeder
 
                     // Create the option
                     $option = $product->options()->create($optionData);
-
                     // Create option values
                     foreach ($values as $valueData) {
                         $option->values()->create($valueData);
