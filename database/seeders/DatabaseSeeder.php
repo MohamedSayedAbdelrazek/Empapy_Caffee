@@ -39,43 +39,33 @@ class DatabaseSeeder extends Seeder
         // Create Categories
         $categories = [
             [
-                'name' => 'Espresso Blends',
-                'name_ar' => 'خلطات الإسبريسو',
+                'name' => 'خلطات الإسبريسو',
                 'slug' => 'espresso-blends',
-                'description' => 'Premium espresso blends for the perfect shot',
-                'description_ar' => 'خلطات إسبريسو فاخرة للحصول على أفضل كوب قهوة',
+                'description' => 'خلطات إسبريسو فاخرة للحصول على أفضل كوب قهوة',
                 'image' => 'https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=400&h=400&fit=crop',
             ],
             [
-                'name' => 'Single Origin',
-                'name_ar' => 'قهوة أحادية المصدر',
+                'name' => 'قهوة أحادية المصدر',
                 'slug' => 'single-origin',
-                'description' => 'Carefully sourced beans from the world\'s finest regions',
-                'description_ar' => 'حبوب قهوة مختارة بعناية من أفضل مناطق العالم',
+                'description' => 'حبوب قهوة مختارة بعناية من أفضل مناطق العالم',
                 'image' => 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=400&fit=crop',
             ],
             [
-                'name' => 'Flavored Coffee',
-                'name_ar' => 'قهوة منكّهة',
+                'name' => 'قهوة منكّهة',
                 'slug' => 'flavored-coffee',
-                'description' => 'Delicious flavored coffee varieties',
-                'description_ar' => 'أنواع قهوة منكّهة لذيذة ومميزة',
+                'description' => 'أنواع قهوة منكّهة لذيذة ومميزة',
                 'image' => 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?w=400&h=400&fit=crop',
             ],
             [
-                'name' => 'Cold Brew',
-                'name_ar' => 'القهوة الباردة',
+                'name' => 'القهوة الباردة',
                 'slug' => 'cold-brew',
-                'description' => 'Smooth and refreshing cold brew coffee',
-                'description_ar' => 'قهوة باردة منعشة وناعمة',
+                'description' => 'قهوة باردة منعشة وناعمة',
                 'image' => 'https://images.unsplash.com/photo-1517701550927-30cf4ba1dba5?w=400&h=400&fit=crop',
             ],
             [
-                'name' => 'Arabic Coffee',
-                'name_ar' => 'القهوة العربية',
+                'name' => 'القهوة العربية',
                 'slug' => 'arabic-coffee',
-                'description' => 'Traditional Arabic coffee with cardamom',
-                'description_ar' => 'قهوة عربية تقليدية بالهيل',
+                'description' => 'قهوة عربية تقليدية بالهيل',
                 'image' => 'https://images.unsplash.com/photo-1578374173705-969cbe6f2d6b?w=400&h=400&fit=crop',
             ],
         ];
@@ -89,12 +79,10 @@ class DatabaseSeeder extends Seeder
             // Product 1: Ethiopian Yirgacheffe with full options
             [
                 'category_id' => 2,
-                'name' => 'Ethiopian Yirgacheffe',
-                'name_ar' => 'إثيوبي يرغاشيفي',
+                'name' => 'إثيوبي يرغاشيفي',
                 'slug' => 'ethiopian-yirgacheffe',
-                'description' => 'Bright and fruity with notes of blueberry, citrus, and floral undertones. From the birthplace of coffee.',
-                'description_ar' => 'قهوة مشرقة وفاكهية مع نكهات التوت الأزرق والحمضيات والزهور. من مسقط رأس القهوة.',
-                'price' => 150.00, // Base price
+                'description' => 'قهوة مشرقة وفاكهية مع نكهات التوت الأزرق والحمضيات والزهور. من مسقط رأس القهوة.',
+                'price' => 150.00,
                 'image' => 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400&h=400&fit=crop',
                 'stock' => 9999,
                 'is_featured' => true,
@@ -127,11 +115,9 @@ class DatabaseSeeder extends Seeder
             // Product 2: Colombian Supremo with weight only
             [
                 'category_id' => 2,
-                'name' => 'Colombian Supremo',
-                'name_ar' => 'كولومبي سوبريمو',
+                'name' => 'كولومبي سوبريمو',
                 'slug' => 'colombian-supremo',
-                'description' => 'Smooth and balanced with caramel sweetness and nutty undertones.',
-                'description_ar' => 'قهوة ناعمة ومتوازنة مع حلاوة الكراميل ونكهات المكسرات.',
+                'description' => 'قهوة ناعمة ومتوازنة مع حلاوة الكراميل ونكهات المكسرات.',
                 'price' => 120.00,
                 'sale_price' => 99.00,
                 'image' => 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400&h=400&fit=crop',
@@ -150,11 +136,9 @@ class DatabaseSeeder extends Seeder
             // Product 3: Arabic Cardamom Coffee with roast and additive options
             [
                 'category_id' => 5,
-                'name' => 'Arabic Cardamom Coffee',
-                'name_ar' => 'قهوة عربية بالهيل',
+                'name' => 'قهوة عربية بالهيل',
                 'slug' => 'arabic-cardamom-coffee',
-                'description' => 'Traditional Arabic coffee with premium cardamom. A taste of Arabian hospitality.',
-                'description_ar' => 'قهوة عربية تقليدية مع الهيل الفاخر. طعم الضيافة العربية.',
+                'description' => 'قهوة عربية تقليدية مع الهيل الفاخر. طعم الضيافة العربية.',
                 'price' => 300.00,
                 'image' => 'https://images.unsplash.com/photo-1578374173705-969cbe6f2d6b?w=400&h=400&fit=crop',
                 'stock' => 9999,
@@ -183,11 +167,9 @@ class DatabaseSeeder extends Seeder
             // Product 4: Italian Espresso - Weight + Roast
             [
                 'category_id' => 1,
-                'name' => 'Italian Espresso Blend',
-                'name_ar' => 'خلطة إسبريسو إيطالية',
+                'name' => 'خلطة إسبريسو إيطالية',
                 'slug' => 'italian-espresso-blend',
-                'description' => 'Rich and intense Italian-style espresso with notes of dark chocolate and caramel.',
-                'description_ar' => 'إسبريسو إيطالي غني ومكثف مع نكهات الشوكولاتة الداكنة والكراميل.',
+                'description' => 'إسبريسو إيطالي غني ومكثف مع نكهات الشوكولاتة الداكنة والكراميل.',
                 'price' => 350.00,
                 'sale_price' => 299.00,
                 'image' => 'https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=400&h=400&fit=crop',
@@ -211,11 +193,9 @@ class DatabaseSeeder extends Seeder
             // Product 5: Brazilian Santos - No options (regular product)
             [
                 'category_id' => 2,
-                'name' => 'Brazilian Santos',
-                'name_ar' => 'برازيلي سانتوس',
+                'name' => 'برازيلي سانتوس',
                 'slug' => 'brazilian-santos',
-                'description' => 'Nutty and chocolatey with low acidity. Perfect for everyday drinking.',
-                'description_ar' => 'نكهة المكسرات والشوكولاتة مع حموضة منخفضة. مثالية للشرب اليومي.',
+                'description' => 'نكهة المكسرات والشوكولاتة مع حموضة منخفضة. مثالية للشرب اليومي.',
                 'price' => 290.00,
                 'image' => 'https://images.unsplash.com/photo-1485808191679-5f86510681a2?w=400&h=400&fit=crop',
                 'stock' => 9999,
@@ -226,11 +206,9 @@ class DatabaseSeeder extends Seeder
             // Product 6: Turkish Coffee - Weight + Additive
             [
                 'category_id' => 5,
-                'name' => 'Turkish Coffee Blend',
-                'name_ar' => 'مزيج القهوة التركية',
+                'name' => 'مزيج القهوة التركية',
                 'slug' => 'turkish-coffee-blend',
-                'description' => 'Finely ground for traditional Turkish preparation. Rich and aromatic.',
-                'description_ar' => 'مطحونة ناعماً للتحضير التركي التقليدي. غنية وعطرية.',
+                'description' => 'مطحونة ناعماً للتحضير التركي التقليدي. غنية وعطرية.',
                 'price' => 240.00,
                 'image' => 'https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=400&h=400&fit=crop',
                 'stock' => 9999,
