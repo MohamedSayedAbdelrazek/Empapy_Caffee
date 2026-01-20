@@ -1,0 +1,55 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies (will be installed in container)
+/node_modules
+/vendor
+
+# Development files
+.env
+.env.local
+.env.*.local
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Testing
+/tests
+/phpunit.xml
+.phpunit.result.cache
+coverage
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.docker
+
+# Documentation
+README.md
+docs/
+*.md
+
+# Build artifacts (will be created in container)
+/public/build
+/public/hot
+
+# Storage (mounted as volume)
+/storage/logs/*
+/storage/app/*
+!/storage/app/.gitkeep
+!/storage/logs/.gitkeep
+
+# Cache
+/bootstrap/cache/*
+!/bootstrap/cache/.gitkeep
+
+# Misc
+.DS_Store
+Thumbs.db
+*.log
+npm-debug.log*

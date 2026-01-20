@@ -1,0 +1,98 @@
+# ============================================
+# Empapy Caffe - Docker Compose Production
+# ============================================
+version: '3.8'
+
+services:
+  # ============================================
+  # Laravel Application (PHP-FPM)
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: empapy-app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      # Persist storage folder
+      - ./storage/app:/var/www/html/storage/app
+      - ./storage/logs:/var/www/html/storage/logs
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_KEY=${APP_KEY}
+      - APP_URL=${APP_URL}
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE:-empapy_caffe}
+      - DB_USERNAME=${DB_USERNAME:-empapy}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - CACHE_STORE=file
+      - SESSION_DRIVER=file
+      - QUEUE_CONNECTION=sync
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - empapy-network
+
+  # ============================================
+  # Nginx Web Server
+  # ============================================
+  webserver:
+    image: nginx:alpine
+    container_name: empapy-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./public:/var/www/html/public:ro
+      - ./storage/app/public:/var/www/html/storage/app/public:ro
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./docker/nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    networks:
+      - empapy-network
+
+  # ============================================
+  # MySQL Database
+  # ============================================
+  db:
+    image: mysql:8.0
+    container_name: empapy-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE:-empapy_caffe}
+      MYSQL_USER: ${DB_USERNAME:-empapy}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - empapy-network
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  empapy-network:
+    driver: bridge
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  mysql_data:
+    driver: local
