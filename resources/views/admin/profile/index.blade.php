@@ -592,18 +592,36 @@
 
                     fetch('{{ route('admin.profile.avatar') }}', {
                             method: 'POST',
-                            body: formData
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            }
                         })
-                        .then(response => response.json())
+                        .then(response => {
+                            if (!response.ok) {
+                                return response.json().then(err => Promise.reject(err));
+                            }
+                            return response.json();
+                        })
                         .then(data => {
                             if (data.success) {
                                 mainAvatar.classList.add('success-pulse');
                                 setTimeout(() => mainAvatar.classList.remove('success-pulse'), 1000);
+                                // Update image with new URL
+                                if (data.avatar_url) {
+                                    mainAvatar.innerHTML = `<img src="${data.avatar_url}" alt="Avatar">`;
+                                }
+                            } else {
+                                alert(data.message || 'حدث خطأ أثناء رفع الصورة');
+                                location.reload();
                             }
                         })
                         .catch(error => {
-                            console.error('Error:', error);
-                            alert('حدث خطأ أثناء رفع الصورة');
+                            console.error('Upload Error:', error);
+                            const message = error.message || error.errors?.avatar?.[0] || 'حدث خطأ أثناء رفع الصورة';
+                            alert(message);
+                            location.reload();
                         });
                 }
             });
