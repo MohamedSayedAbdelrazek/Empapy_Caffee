@@ -77,8 +77,10 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progre
 
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html/storage \
-    && chmod -R 755 /var/www/html/bootstrap/cache
+    && chmod -R 775 /var/www/html/storage \
+    && chmod -R 775 /var/www/html/bootstrap/cache \
+    && mkdir -p /var/www/html/storage/app/public/avatars \
+    && chown -R www-data:www-data /var/www/html/storage/app/public/avatars
 
 # Create storage link
 RUN php artisan storage:link || true

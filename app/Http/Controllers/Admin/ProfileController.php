@@ -81,27 +81,44 @@ class ProfileController extends Controller
             'avatar.max' => 'حجم الصورة يجب أن لا يتجاوز 5MB',
         ]);
 
-        $admin = Auth::user();
+        try {
+            $admin = Auth::user();
 
-        // Delete old avatar if exists
-        if ($admin->avatar && Storage::disk('public')->exists($admin->avatar)) {
-            Storage::disk('public')->delete($admin->avatar);
+            // Delete old avatar if exists
+            if ($admin->avatar && Storage::disk('public')->exists($admin->avatar)) {
+                Storage::disk('public')->delete($admin->avatar);
+            }
+
+            // Store new avatar
+            $path = $request->file('avatar')->store('avatars', 'public');
+
+            if (!$path) {
+                throw new \Exception('Failed to store file');
+            }
+
+            $admin->update(['avatar' => $path]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'تم تغيير الصورة بنجاح! 📸',
+                    'avatar_url' => Storage::url($path),
+                ]);
+            }
+
+            return back()->with('success', 'تم تغيير الصورة بنجاح! 📸');
+        } catch (\Exception $e) {
+            \Log::error('Avatar upload error: ' . $e->getMessage());
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'حدث خطأ: ' . $e->getMessage(),
+                ], 500);
+            }
+
+            return back()->with('error', 'حدث خطأ: ' . $e->getMessage());
         }
-
-        // Store new avatar
-        $path = $request->file('avatar')->store('avatars', 'public');
-
-        $admin->update(['avatar' => $path]);
-
-        if ($request->ajax()) {
-            return response()->json([
-                'success' => true,
-                'message' => 'تم تغيير الصورة بنجاح! 📸',
-                'avatar_url' => Storage::url($path),
-            ]);
-        }
-
-        return back()->with('success', 'تم تغيير الصورة بنجاح! 📸');
     }
 
     /**
