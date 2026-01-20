@@ -20,29 +20,27 @@ class CategoryFactory extends Factory
      */
     public function definition(): array
     {
+        // Arabic names only (no _ar columns)
         $name = fake()->unique()->randomElement([
-            'Espresso Blends',
-            'Single Origin',
-            'Flavored Coffee',
-            'Decaf Coffee',
-            'Cold Brew',
+            'خلطات الإسبريسو',
+            'قهوة أحادية المصدر',
+            'قهوة منكّهة',
+            'قهوة منزوعة الكافيين',
+            'القهوة الباردة',
         ]);
 
-        $nameAr = match ($name) {
-            'Espresso Blends' => 'خلطات الإسبريسو',
-            'Single Origin' => 'قهوة أحادية المصدر',
-            'Flavored Coffee' => 'قهوة منكّهة',
-            'Decaf Coffee' => 'قهوة منزوعة الكافيين',
-            'Cold Brew' => 'القهوة الباردة',
-            default => $name,
-        };
+        $descriptions = [
+            'خلطات الإسبريسو' => 'خلطات إسبريسو فاخرة للحصول على أفضل كوب قهوة',
+            'قهوة أحادية المصدر' => 'حبوب قهوة مختارة بعناية من أفضل مناطق العالم',
+            'قهوة منكّهة' => 'أنواع قهوة منكّهة لذيذة ومميزة',
+            'قهوة منزوعة الكافيين' => 'قهوة لذيذة بدون كافيين',
+            'القهوة الباردة' => 'قهوة باردة منعشة وناعمة',
+        ];
 
         return [
             'name' => $name,
-            'name_ar' => $nameAr,
-            'slug' => Str::slug($name),
-            'description' => fake()->paragraph(),
-            'description_ar' => 'اكتشف مجموعتنا الفاخرة من ' . $nameAr . ' المصنوعة بعناية فائقة من أجود حبوب البن المختارة.',
+            'slug' => Str::slug($name) . '-' . fake()->unique()->numberBetween(1, 9999),
+            'description' => $descriptions[$name] ?? 'اكتشف مجموعتنا الفاخرة من القهوة',
             'image' => 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=400&fit=crop',
             'is_active' => true,
         ];

@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
             'governorate' => 'القاهرة',
         ]);
 
-        // Create Categories
+        // Create Categories (Arabic only - no name_ar column)
         $categories = [
             [
                 'name' => 'خلطات الإسبريسو',
@@ -74,7 +74,7 @@ class DatabaseSeeder extends Seeder
             Category::create($category);
         }
 
-        // Create Products with Options/Variants
+        // Create Products with Options/Variants (Arabic only - no _ar columns)
         $products = [
             // Product 1: Ethiopian Yirgacheffe with full options
             [
@@ -90,24 +90,21 @@ class DatabaseSeeder extends Seeder
                 'has_roast_options' => true,
                 'has_additive_options' => true,
                 'options' => [
-                    // Weight options (absolute prices)
-                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
-                        ['value' => '125g', 'value_ar' => '125 جم', 'price_modifier' => 150.00, 'is_default' => true],
-                        ['value' => '250g', 'value_ar' => '250 جم', 'price_modifier' => 280.00, 'is_default' => false],
-                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 520.00, 'is_default' => false],
-                        ['value' => '1kg', 'value_ar' => '1 كجم', 'price_modifier' => 980.00, 'is_default' => false],
+                    ['type' => 'weight', 'name' => 'الوزن', 'values' => [
+                        ['value' => '125 جم', 'price_modifier' => 150.00, 'is_default' => true],
+                        ['value' => '250 جم', 'price_modifier' => 280.00, 'is_default' => false],
+                        ['value' => '500 جم', 'price_modifier' => 520.00, 'is_default' => false],
+                        ['value' => '1 كجم', 'price_modifier' => 980.00, 'is_default' => false],
                     ]],
-                    // Roast options (modifiers)
-                    ['type' => 'roast', 'name' => 'Roast Level', 'name_ar' => 'درجة التحميص', 'values' => [
-                        ['value' => 'Light', 'value_ar' => 'فاتح', 'price_modifier' => 0, 'is_default' => true],
-                        ['value' => 'Medium', 'value_ar' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
-                        ['value' => 'Medium-Dark', 'value_ar' => 'متوسط داكن', 'price_modifier' => 0, 'is_default' => false],
+                    ['type' => 'roast', 'name' => 'درجة التحميص', 'values' => [
+                        ['value' => 'فاتح', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
+                        ['value' => 'متوسط داكن', 'price_modifier' => 0, 'is_default' => false],
                     ]],
-                    // Additive options (modifiers)
-                    ['type' => 'additive', 'name' => 'Additions', 'name_ar' => 'الإضافات', 'values' => [
-                        ['value' => 'Plain', 'value_ar' => 'عادية', 'price_modifier' => 0, 'is_default' => true],
-                        ['value' => 'With Cardamom', 'value_ar' => 'بالهيل', 'price_modifier' => 15.00, 'is_default' => false],
-                        ['value' => 'Extra Cardamom', 'value_ar' => 'هيل زيادة', 'price_modifier' => 25.00, 'is_default' => false],
+                    ['type' => 'additive', 'name' => 'الإضافات', 'values' => [
+                        ['value' => 'عادية', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'بالهيل', 'price_modifier' => 15.00, 'is_default' => false],
+                        ['value' => 'هيل زيادة', 'price_modifier' => 25.00, 'is_default' => false],
                     ]],
                 ],
             ],
@@ -125,10 +122,10 @@ class DatabaseSeeder extends Seeder
                 'is_featured' => true,
                 'has_weight_options' => true,
                 'options' => [
-                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
-                        ['value' => '250g', 'value_ar' => '250 جم', 'price_modifier' => 220.00, 'is_default' => true],
-                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 380.00, 'is_default' => false],
-                        ['value' => '1kg', 'value_ar' => '1 كجم', 'price_modifier' => 720.00, 'is_default' => false],
+                    ['type' => 'weight', 'name' => 'الوزن', 'values' => [
+                        ['value' => '250 جم', 'price_modifier' => 220.00, 'is_default' => true],
+                        ['value' => '500 جم', 'price_modifier' => 380.00, 'is_default' => false],
+                        ['value' => '1 كجم', 'price_modifier' => 720.00, 'is_default' => false],
                     ]],
                 ],
             ],
@@ -147,19 +144,19 @@ class DatabaseSeeder extends Seeder
                 'has_roast_options' => true,
                 'has_additive_options' => true,
                 'options' => [
-                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
-                        ['value' => '250g', 'value_ar' => '250 جم', 'price_modifier' => 300.00, 'is_default' => true],
-                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 550.00, 'is_default' => false],
+                    ['type' => 'weight', 'name' => 'الوزن', 'values' => [
+                        ['value' => '250 جم', 'price_modifier' => 300.00, 'is_default' => true],
+                        ['value' => '500 جم', 'price_modifier' => 550.00, 'is_default' => false],
                     ]],
-                    ['type' => 'roast', 'name' => 'Roast Level', 'name_ar' => 'درجة التحميص', 'values' => [
-                        ['value' => 'Light', 'value_ar' => 'فاتح', 'price_modifier' => 0, 'is_default' => true],
-                        ['value' => 'Medium', 'value_ar' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
+                    ['type' => 'roast', 'name' => 'درجة التحميص', 'values' => [
+                        ['value' => 'فاتح', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
                     ]],
-                    ['type' => 'additive', 'name' => 'Cardamom Level', 'name_ar' => 'مستوى الهيل', 'values' => [
-                        ['value' => 'Regular Cardamom', 'value_ar' => 'هيل عادي', 'price_modifier' => 0, 'is_default' => true],
-                        ['value' => 'Extra Cardamom', 'value_ar' => 'هيل زيادة', 'price_modifier' => 20.00, 'is_default' => false],
-                        ['value' => 'With Saffron', 'value_ar' => 'مع الزعفران', 'price_modifier' => 50.00, 'is_default' => false],
-                        ['value' => 'With Mastic', 'value_ar' => 'مع المستكة', 'price_modifier' => 30.00, 'is_default' => false],
+                    ['type' => 'additive', 'name' => 'مستوى الهيل', 'values' => [
+                        ['value' => 'هيل عادي', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'هيل زيادة', 'price_modifier' => 20.00, 'is_default' => false],
+                        ['value' => 'مع الزعفران', 'price_modifier' => 50.00, 'is_default' => false],
+                        ['value' => 'مع المستكة', 'price_modifier' => 30.00, 'is_default' => false],
                     ]],
                 ],
             ],
@@ -178,14 +175,14 @@ class DatabaseSeeder extends Seeder
                 'has_weight_options' => true,
                 'has_roast_options' => true,
                 'options' => [
-                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
-                        ['value' => '250g', 'value_ar' => '250 جم', 'price_modifier' => 350.00, 'is_default' => true],
-                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 650.00, 'is_default' => false],
+                    ['type' => 'weight', 'name' => 'الوزن', 'values' => [
+                        ['value' => '250 جم', 'price_modifier' => 350.00, 'is_default' => true],
+                        ['value' => '500 جم', 'price_modifier' => 650.00, 'is_default' => false],
                     ]],
-                    ['type' => 'roast', 'name' => 'Roast Level', 'name_ar' => 'درجة التحميص', 'values' => [
-                        ['value' => 'Medium', 'value_ar' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
-                        ['value' => 'Dark', 'value_ar' => 'داكن', 'price_modifier' => 0, 'is_default' => true],
-                        ['value' => 'Extra Dark', 'value_ar' => 'داكن جداً', 'price_modifier' => 10.00, 'is_default' => false],
+                    ['type' => 'roast', 'name' => 'درجة التحميص', 'values' => [
+                        ['value' => 'متوسط', 'price_modifier' => 0, 'is_default' => false],
+                        ['value' => 'داكن', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'داكن جداً', 'price_modifier' => 10.00, 'is_default' => false],
                     ]],
                 ],
             ],
@@ -215,14 +212,14 @@ class DatabaseSeeder extends Seeder
                 'has_weight_options' => true,
                 'has_additive_options' => true,
                 'options' => [
-                    ['type' => 'weight', 'name' => 'Weight', 'name_ar' => 'الوزن', 'values' => [
-                        ['value' => '200g', 'value_ar' => '200 جم', 'price_modifier' => 240.00, 'is_default' => true],
-                        ['value' => '500g', 'value_ar' => '500 جم', 'price_modifier' => 550.00, 'is_default' => false],
+                    ['type' => 'weight', 'name' => 'الوزن', 'values' => [
+                        ['value' => '200 جم', 'price_modifier' => 240.00, 'is_default' => true],
+                        ['value' => '500 جم', 'price_modifier' => 550.00, 'is_default' => false],
                     ]],
-                    ['type' => 'additive', 'name' => 'Spices', 'name_ar' => 'التوابل', 'values' => [
-                        ['value' => 'Plain', 'value_ar' => 'عادي', 'price_modifier' => 0, 'is_default' => true],
-                        ['value' => 'With Cardamom', 'value_ar' => 'مع الهيل', 'price_modifier' => 10.00, 'is_default' => false],
-                        ['value' => 'With Mastic', 'value_ar' => 'مع المستكة', 'price_modifier' => 15.00, 'is_default' => false],
+                    ['type' => 'additive', 'name' => 'التوابل', 'values' => [
+                        ['value' => 'عادي', 'price_modifier' => 0, 'is_default' => true],
+                        ['value' => 'مع الهيل', 'price_modifier' => 10.00, 'is_default' => false],
+                        ['value' => 'مع المستكة', 'price_modifier' => 15.00, 'is_default' => false],
                     ]],
                 ],
             ],
