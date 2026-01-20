@@ -175,7 +175,6 @@ class ProductFactory extends Factory
             'sale_price' => fake()->boolean(30) ? round($price * 0.85, 2) : null,
             'image' => fake()->randomElement($this->coffeeImages),
             'gallery' => null,
-            'stock' => fake()->numberBetween(10, 100),
             'weight' => fake()->randomElement(['250g', '500g', '1kg']),
             'roast_level' => $coffee['roast'],
             'origin' => $coffee['origin'],
