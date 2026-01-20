@@ -15,6 +15,7 @@ use App\Services\ProductService;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -45,8 +46,10 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Review::observe(ReviewObserver::class);
 
-        if (env('APP_ENV') !== 'local') {
-            URL::forceScheme('https'); 
+        // Only force HTTPS when explicitly enabled via .env
+        // Set FORCE_HTTPS=true in .env when you have SSL certificate
+        if (config('app.force_https', false)) {
+            URL::forceScheme('https');
         }
     }
 }
