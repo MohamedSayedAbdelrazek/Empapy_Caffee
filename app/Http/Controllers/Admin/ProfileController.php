@@ -98,7 +98,7 @@ class ProfileController extends Controller
 
             $admin->update(['avatar' => $path]);
 
-            if ($request->ajax()) {
+            if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
                     'message' => 'تم تغيير الصورة بنجاح! 📸',
@@ -109,8 +109,8 @@ class ProfileController extends Controller
             return back()->with('success', 'تم تغيير الصورة بنجاح! 📸');
         } catch (\Exception $e) {
             \Log::error('Avatar upload error: ' . $e->getMessage());
-            
-            if ($request->ajax()) {
+
+            if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'حدث خطأ: ' . $e->getMessage(),
