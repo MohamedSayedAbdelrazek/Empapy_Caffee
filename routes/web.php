@@ -65,6 +65,13 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.in
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
+// Payment Routes (Stripe)
+Route::post('/payment/create-intent', [App\Http\Controllers\PaymentController::class, 'createIntent'])
+    ->name('payment.create-intent');
+Route::post('/stripe/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->name('stripe.webhook');
+
 // Order Tracking (Public)
 Route::get('/track', [App\Http\Controllers\OrderTrackingController::class, 'track'])->name('orders.track');
 Route::post('/track', [App\Http\Controllers\OrderTrackingController::class, 'search'])->name('orders.search');

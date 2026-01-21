@@ -62,7 +62,7 @@ class CheckoutController extends Controller
             'city' => 'required|string|max:100',
             'governorate' => 'nullable|string|max:100',
             'notes' => 'nullable|string|max:500',
-            'payment_method' => 'required|in:cash_on_delivery',
+            'payment_method' => 'required|in:cash_on_delivery,card',
             'coupon_code' => 'nullable|string|max:50'
         ]);
 
@@ -169,8 +169,9 @@ class CheckoutController extends Controller
                 'coupon_code' => $couponCode,
                 'total' => $total,
                 'status' => 'pending',
-                'payment_status' => 'pending',
-                'payment_method' => 'cash_on_delivery',
+                'payment_status' => $request->payment_method === 'card' ? 'pending' : 'pending',
+                'payment_method' => $request->payment_method,
+                'currency' => 'EGP',
                 'customer_name' => $request->customer_name,
                 'customer_email' => $request->customer_email,
                 'customer_phone' => $request->customer_phone,

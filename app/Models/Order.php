@@ -22,6 +22,8 @@ class Order extends Model
         'status',
         'payment_status',
         'payment_method',
+        'transaction_id',
+        'currency',
         'customer_name',
         'customer_email',
         'customer_phone',

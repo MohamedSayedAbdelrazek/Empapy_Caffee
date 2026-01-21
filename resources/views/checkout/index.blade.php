@@ -102,9 +102,10 @@
                         <div class="glass-card p-4">
                             <h5 class="mb-4"><i class="bi bi-credit-card me-2"></i>طريقة الدفع</h5>
 
-                            <div class="form-check glass-card p-3">
+                            <!-- Cash on Delivery Option -->
+                            <div class="form-check glass-card p-3 mb-3">
                                 <input class="form-check-input" type="radio" name="payment_method"
-                                    value="cash_on_delivery" id="cod" checked>
+                                    value="cash_on_delivery" id="cod" checked onchange="togglePaymentMethod()">
                                 <label class="form-check-label d-flex align-items-center gap-3" for="cod">
                                     <i class="bi bi-cash-coin fs-4 text-success"></i>
                                     <div>
@@ -112,6 +113,30 @@
                                         <p class="mb-0 small text-muted">ادفع نقداً عند استلام طلبك</p>
                                     </div>
                                 </label>
+                            </div>
+
+                            <!-- Card Payment Option -->
+                            <div class="form-check glass-card p-3">
+                                <input class="form-check-input" type="radio" name="payment_method" value="card"
+                                    id="card" onchange="togglePaymentMethod()">
+                                <label class="form-check-label d-flex align-items-center gap-3" for="card">
+                                    <i class="bi bi-credit-card fs-4 text-primary"></i>
+                                    <div>
+                                        <strong>الدفع بالبطاقة</strong>
+                                        <p class="mb-0 small text-muted">ادفع بأمان باستخدام بطاقتك الائتمانية</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Stripe Card Element Container (Hidden by default) -->
+                            <div id="cardElementContainer" class="mt-3" style="display: none;">
+                                <div class="glass-card p-3">
+                                    <label class="form-label mb-2">
+                                        <i class="bi bi-credit-card-2-front me-2"></i>بيانات البطاقة
+                                    </label>
+                                    <div id="card-element" class="form-control p-3" style="height: auto;"></div>
+                                    <div id="card-errors" class="text-danger small mt-2"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -195,13 +220,166 @@
     </section>
 @endsection
 
+@push('head')
+    <!-- Stripe.js -->
+    <script src="https://js.stripe.com/v3/"></script>
+@endpush
+
 @push('scripts')
     <script>
         const originalTotal = {{ $total }};
         const subtotal = {{ $subtotal }};
         const shipping = {{ $shipping }};
         let currentDiscount = 0;
+        let currentTotal = {{ $total }};
 
+        // Initialize Stripe
+        const stripe = Stripe('{{ config('stripe.key') }}');
+        let elements;
+        let cardElement;
+        let paymentIntentClientSecret;
+
+        // Initialize Stripe Elements when card payment is selected
+        function initializeStripeElements() {
+            if (!elements) {
+                elements = stripe.elements({
+                    locale: 'ar'
+                });
+
+                cardElement = elements.create('card', {
+                    style: {
+                        base: {
+                            fontSize: '16px',
+                            color: '#424770',
+                            '::placeholder': {
+                                color: '#aab7c4',
+                            },
+                        },
+                        invalid: {
+                            color: '#9e2146',
+                        },
+                    },
+                });
+
+                cardElement.mount('#card-element');
+
+                // Handle card errors
+                cardElement.on('change', function(event) {
+                    const displayError = document.getElementById('card-errors');
+                    if (event.error) {
+                        displayError.textContent = event.error.message;
+                    } else {
+                        displayError.textContent = '';
+                    }
+                });
+            }
+        }
+
+        // Toggle payment method visibility
+        function togglePaymentMethod() {
+            const cardSelected = document.getElementById('card').checked;
+            const cardContainer = document.getElementById('cardElementContainer');
+
+            if (cardSelected) {
+                cardContainer.style.display = 'block';
+                initializeStripeElements();
+            } else {
+                cardContainer.style.display = 'none';
+            }
+        }
+
+        // Handle form submission
+        document.querySelector('form').addEventListener('submit', async function(e) {
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+
+            if (paymentMethod === 'card') {
+                e.preventDefault();
+                await handleCardPayment();
+            }
+            // If COD, let the form submit normally
+        });
+
+        async function handleCardPayment() {
+            const submitButton = document.querySelector('button[type="submit"]');
+            const originalButtonContent = submitButton.innerHTML;
+
+            // Disable button and show loading
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري المعالجة...';
+
+            try {
+                // Step 1: Create the order first (to get order number)
+                const formData = new FormData(document.querySelector('form'));
+                formData.set('payment_method', 'card');
+
+                // Calculate total (including discount if applied)
+                const totalAmount = currentTotal;
+
+                // Generate a temporary order number
+                const tempOrderNumber = 'EMP-' + Date.now();
+
+                // Step 2: Create Payment Intent
+                const intentResponse = await fetch('{{ route('payment.create-intent') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        amount: totalAmount,
+                        order_number: tempOrderNumber
+                    })
+                });
+
+                const intentData = await intentResponse.json();
+
+                if (intentData.error) {
+                    throw new Error(intentData.error);
+                }
+
+                paymentIntentClientSecret = intentData.clientSecret;
+
+                // Step 3: Confirm the payment with Stripe
+                const {
+                    error,
+                    paymentIntent
+                } = await stripe.confirmCardPayment(paymentIntentClientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: document.querySelector('[name="customer_name"]').value,
+                            email: document.querySelector('[name="customer_email"]').value,
+                            phone: document.querySelector('[name="customer_phone"]').value,
+                        }
+                    }
+                });
+
+                if (error) {
+                    // Show error
+                    document.getElementById('card-errors').textContent = error.message;
+                    submitButton.disabled = false;
+                    submitButton.innerHTML = originalButtonContent;
+                } else if (paymentIntent.status === 'succeeded') {
+                    // Payment successful! Now submit the actual order
+                    // Update the form with transaction ID
+                    const transactionInput = document.createElement('input');
+                    transactionInput.type = 'hidden';
+                    transactionInput.name = 'transaction_id';
+                    transactionInput.value = paymentIntent.id;
+                    document.querySelector('form').appendChild(transactionInput);
+
+                    // Submit the form to create the order
+                    document.querySelector('form').submit();
+                }
+            } catch (error) {
+                console.error('Payment error:', error);
+                document.getElementById('card-errors').textContent = error.message || 'حدث خطأ أثناء معالجة الدفع';
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonContent;
+            }
+        }
+
+        // Coupon validation function
         function applyCoupon() {
             const code = document.getElementById('couponCode').value.trim();
             const messageDiv = document.getElementById('couponMessage');
@@ -232,6 +410,7 @@
                     if (data.valid) {
                         currentDiscount = data.discount;
                         const newTotal = subtotal + shipping - currentDiscount;
+                        currentTotal = newTotal;
 
                         // Update UI
                         document.getElementById('discountRow').style.display = 'flex';
