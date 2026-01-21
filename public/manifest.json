@@ -1,6 +1,7 @@
 {
     "name": "إمبابي كافيه - Empapy Caffe",
     "short_name": "إمبابي كافيه",
+    "gcm_sender_id": "103953800507",
     "description": "أفضل أنواع القهوة المحمصة بعناية - Premium Roasted Coffee",
     "start_url": "/",
     "scope": "/",

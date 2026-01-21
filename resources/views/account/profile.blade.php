@@ -374,19 +374,38 @@
 
                 fetch('{{ route('account.avatar') }}', {
                         method: 'POST',
-                        body: formData
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        }
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.json().then(err => Promise.reject(err));
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
                             dropzone.innerHTML =
                                 '<i class="bi bi-check-circle text-success"></i><p class="mb-0 text-success">تم رفع الصورة بنجاح!</p>';
+                            if (data.avatar_url) {
+                                previewContainer.innerHTML =
+                                    `<img src="${data.avatar_url}" alt="Avatar" id="avatarPreview">`;
+                            }
                             setTimeout(() => location.reload(), 1500);
+                        } else {
+                            alert(data.message || 'حدث خطأ أثناء رفع الصورة');
+                            location.reload();
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
-                        alert('حدث خطأ أثناء رفع الصورة');
+                        console.error('Upload Error:', error);
+                        const message = error.message || error.errors?.avatar?.[0] ||
+                        'حدث خطأ أثناء رفع الصورة';
+                        alert(message);
+                        location.reload();
                     });
             }
 
