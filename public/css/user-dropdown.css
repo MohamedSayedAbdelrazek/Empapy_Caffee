@@ -379,49 +379,55 @@ body.user-panel-open .announcement-bar {
     transition-delay: 0.45s;
 }
 
-/* Premium items in panel */
-.dropdown-item.premium-item {
-    padding: 16px 20px !important;
-    margin: 4px 10px !important;
-    border-radius: 12px !important;
-    font-size: 1rem !important;
-    color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.03) !important;
-    border: 1px solid transparent !important;
-}
+/* ====================================================================================
+   MOBILE PANEL - PREMIUM ITEMS STYLING
+   These styles are ONLY for mobile panel (dark background)
+   ==================================================================================== */
+@media (max-width: 768px) {
+    /* Premium items in panel */
+    .dropdown-item.premium-item {
+        padding: 16px 20px !important;
+        margin: 4px 10px !important;
+        border-radius: 12px !important;
+        font-size: 1rem !important;
+        color: #ffffff !important;
+        background: rgba(255, 255, 255, 0.03) !important;
+        border: 1px solid transparent !important;
+    }
 
-.dropdown-item.premium-item:hover,
-.dropdown-item.premium-item:active {
-    background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.1)) !important;
-    border-color: rgba(201, 162, 39, 0.3) !important;
-    transform: translateX(-5px) !important;
-}
+    .dropdown-item.premium-item:hover,
+    .dropdown-item.premium-item:active {
+        background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.1)) !important;
+        border-color: rgba(201, 162, 39, 0.3) !important;
+        transform: translateX(-5px) !important;
+    }
 
-/* Icons in panel */
-.item-icon {
-    width: 44px;
-    height: 44px;
-    font-size: 1.2rem;
-    border-radius: 12px;
-}
+    /* Icons in panel */
+    .item-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.2rem;
+        border-radius: 12px;
+    }
 
-/* Dividers */
-.user-dropdown-menu .dropdown-divider {
-    margin: 15px 20px !important;
-    border-color: rgba(201, 162, 39, 0.15) !important;
-}
+    /* Dividers */
+    .user-dropdown-menu .dropdown-divider {
+        margin: 15px 20px !important;
+        border-color: rgba(201, 162, 39, 0.15) !important;
+    }
 
-/* Points badge in panel */
-.points-badge {
-    font-size: 0.85rem !important;
-    padding: 6px 12px !important;
-}
+    /* Points badge in panel */
+    .points-badge {
+        font-size: 0.85rem !important;
+        padding: 6px 12px !important;
+    }
 
-/* Logout item special styling */
-.logout-item {
-    margin-top: auto !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
-    padding-top: 15px !important;
+    /* Logout item special styling */
+    .logout-item {
+        margin-top: auto !important;
+        border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+        padding-top: 15px !important;
+    }
 }
 
 /* Close button area - removed since we have real button now */
