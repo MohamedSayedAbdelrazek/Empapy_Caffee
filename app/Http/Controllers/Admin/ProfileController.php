@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Support\Facades\Log;
 
 class ProfileController extends Controller
 {
@@ -108,7 +109,7 @@ class ProfileController extends Controller
 
             return back()->with('success', 'تم تغيير الصورة بنجاح! 📸');
         } catch (\Exception $e) {
-            \Log::error('Avatar upload error: ' . $e->getMessage());
+            Log::error('Avatar upload error: ' . $e->getMessage());
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
