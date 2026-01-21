@@ -103,42 +103,203 @@
                             <h5 class="mb-4"><i class="bi bi-credit-card me-2"></i>طريقة الدفع</h5>
 
                             <!-- Cash on Delivery Option -->
-                            <div class="form-check glass-card p-3 mb-3">
-                                <input class="form-check-input" type="radio" name="payment_method"
-                                    value="cash_on_delivery" id="cod" checked onchange="togglePaymentMethod()">
-                                <label class="form-check-label d-flex align-items-center gap-3" for="cod">
-                                    <i class="bi bi-cash-coin fs-4 text-success"></i>
-                                    <div>
-                                        <strong>الدفع عند الاستلام</strong>
-                                        <p class="mb-0 small text-muted">ادفع نقداً عند استلام طلبك</p>
+                            <div class="payment-option-card glass-card p-4 mb-3 position-relative" id="cod-option">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                        <div class="payment-icon-wrapper">
+                                            <i class="bi bi-cash-coin fs-3 text-success"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <strong class="d-block mb-1">الدفع عند الاستلام</strong>
+                                            <small class="text-muted">ادفع نقداً عند استلام طلبك</small>
+                                        </div>
                                     </div>
-                                </label>
+                                    <div class="form-check form-check-reverse m-0">
+                                        <input class="form-check-input payment-radio" type="radio" name="payment_method"
+                                            value="cash_on_delivery" id="cod" checked>
+                                        <label class="form-check-label visually-hidden" for="cod">الدفع عند
+                                            الاستلام</label>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Card Payment Option -->
-                            <div class="form-check glass-card p-3">
-                                <input class="form-check-input" type="radio" name="payment_method" value="card"
-                                    id="card" onchange="togglePaymentMethod()">
-                                <label class="form-check-label d-flex align-items-center gap-3" for="card">
-                                    <i class="bi bi-credit-card fs-4 text-primary"></i>
-                                    <div>
-                                        <strong>الدفع بالبطاقة</strong>
-                                        <p class="mb-0 small text-muted">ادفع بأمان باستخدام بطاقتك الائتمانية</p>
+                            <div class="payment-option-card glass-card p-4 position-relative" id="card-option">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                                        <div class="payment-icon-wrapper">
+                                            <i class="bi bi-credit-card fs-3 text-primary"></i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <strong class="d-block mb-1">الدفع بالبطاقة</strong>
+                                            <small class="text-muted">ادفع بأمان باستخدام بطاقتك الائتمانية</small>
+                                        </div>
                                     </div>
-                                </label>
-                            </div>
+                                    <div class="form-check form-check-reverse m-0">
+                                        <input class="form-check-input payment-radio" type="radio"
+                                            name="payment_method" value="card" id="card">
+                                        <label class="form-check-label visually-hidden" for="card">الدفع
+                                            بالبطاقة</label>
+                                    </div>
+                                </div>
 
-                            <!-- Stripe Card Element Container (Hidden by default) -->
-                            <div id="cardElementContainer" class="mt-3" style="display: none;">
-                                <div class="glass-card p-3">
-                                    <label class="form-label mb-2">
-                                        <i class="bi bi-credit-card-2-front me-2"></i>بيانات البطاقة
-                                    </label>
-                                    <div id="card-element" class="form-control p-3" style="height: auto;"></div>
-                                    <div id="card-errors" class="text-danger small mt-2"></div>
+                                <!-- Stripe Card Element Container -->
+                                <div id="cardElementContainer" class="card-input-container mt-3"
+                                    style="max-height: 0; opacity: 0; overflow: hidden;">
+                                    <div class="glass-card p-3">
+                                        <label class="form-label mb-2 d-flex align-items-center">
+                                            <i class="bi bi-credit-card-2-front me-2 text-primary"></i>
+                                            <span>بيانات البطاقة</span>
+                                            <span class="badge bg-success ms-2" style="font-size: 0.65rem;">
+                                                <i class="bi bi-shield-check me-1"></i>آمن
+                                            </span>
+                                        </label>
+                                        <div id="card-element" class="stripe-card-element"></div>
+                                        <div id="card-errors" class="text-danger small mt-2"></div>
+                                        <div class="mt-2">
+                                            <small class="text-muted">
+                                                <i class="bi bi-lock-fill me-1"></i>
+                                                معلوماتك محمية بتقنية Stripe المشفرة
+                                            </small>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
+                        <style>
+                            /* Payment Option Cards */
+                            .payment-option-card {
+                                cursor: pointer;
+                                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                border: 2px solid transparent;
+                                background: rgba(255, 255, 255, 0.05);
+                                backdrop-filter: blur(10px);
+                            }
+
+                            .payment-option-card:hover {
+                                border-color: rgba(201, 169, 97, 0.3);
+                                transform: translateX(-2px);
+                                box-shadow: 0 4px 12px rgba(201, 169, 97, 0.15);
+                            }
+
+                            .payment-option-card.active {
+                                border-color: var(--gold);
+                                background: rgba(201, 169, 97, 0.08);
+                                box-shadow: 0 4px 16px rgba(201, 169, 97, 0.25);
+                            }
+
+                            /* Payment Icon Wrapper */
+                            .payment-icon-wrapper {
+                                width: 50px;
+                                height: 50px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                border-radius: 12px;
+                                background: rgba(255, 255, 255, 0.1);
+                                transition: all 0.3s ease;
+                            }
+
+                            .payment-option-card.active .payment-icon-wrapper {
+                                background: rgba(201, 169, 97, 0.15);
+                                transform: scale(1.05);
+                            }
+
+                            /* Custom Radio Button */
+                            .payment-radio {
+                                width: 24px;
+                                height: 24px;
+                                min-width: 24px;
+                                cursor: pointer;
+                                border: 2px solid #dee2e6;
+                                margin: 0;
+                                flex-shrink: 0;
+                            }
+
+                            .payment-radio:checked {
+                                background-color: var(--gold);
+                                border-color: var(--gold);
+                                box-shadow: 0 0 0 4px rgba(201, 169, 97, 0.2);
+                            }
+
+                            .payment-radio:focus {
+                                box-shadow: 0 0 0 4px rgba(201, 169, 97, 0.25);
+                                border-color: var(--gold);
+                            }
+
+                            .payment-radio:hover {
+                                border-color: var(--gold);
+                            }
+
+                            /* Card Input Container Animation */
+                            .card-input-container {
+                                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                            }
+
+                            .card-input-container.show {
+                                max-height: 500px !important;
+                                opacity: 1 !important;
+                                overflow: visible !important;
+                                margin-top: 1rem !important;
+                            }
+
+                            /* Stripe Card Element Styling */
+                            .stripe-card-element {
+                                background: white;
+                                padding: 14px;
+                                border: 2px solid #e9ecef;
+                                border-radius: 8px;
+                                transition: all 0.3s ease;
+                                min-height: 45px;
+                            }
+
+                            .stripe-card-element:hover {
+                                border-color: var(--gold);
+                            }
+
+                            .stripe-card-element:focus-within {
+                                border-color: var(--gold);
+                                box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15);
+                            }
+
+                            /* Dark mode adjustments */
+                            [data-bs-theme="dark"] .stripe-card-element {
+                                background: rgba(255, 255, 255, 0.05);
+                                border-color: rgba(255, 255, 255, 0.1);
+                            }
+
+                            [data-bs-theme="dark"] .payment-option-card {
+                                background: rgba(255, 255, 255, 0.02);
+                            }
+
+                            /* RTL specific fixes */
+                            [dir="rtl"] .payment-option-card {
+                                direction: rtl;
+                            }
+
+                            [dir="rtl"] .form-check-reverse {
+                                padding-right: 0;
+                                padding-left: 0;
+                            }
+
+                            /* Pulse animation for active card */
+                            @keyframes pulse-border {
+
+                                0%,
+                                100% {
+                                    border-color: var(--gold);
+                                }
+
+                                50% {
+                                    border-color: rgba(201, 169, 97, 0.5);
+                                }
+                            }
+
+                            .payment-option-card.active.pulse {
+                                animation: pulse-border 2s ease-in-out infinite;
+                            }
+                        </style>
                     </div>
 
                     <!-- Order Summary -->
@@ -239,7 +400,32 @@
         let cardElement;
         let paymentIntentClientSecret;
 
-        // Initialize Stripe Elements when card payment is selected
+        // Initialize Stripe Elements immediately on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize Stripe Elements
+            initializeStripeElements();
+
+            // Set initial active state
+            updatePaymentOptionUI();
+
+            // Add click handlers to payment option cards
+            document.getElementById('cod-option').addEventListener('click', function() {
+                document.getElementById('cod').checked = true;
+                togglePaymentMethod();
+            });
+
+            document.getElementById('card-option').addEventListener('click', function() {
+                document.getElementById('card').checked = true;
+                togglePaymentMethod();
+            });
+
+            // Add change handlers to radio buttons
+            document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+                radio.addEventListener('change', togglePaymentMethod);
+            });
+        });
+
+        // Initialize Stripe Elements
         function initializeStripeElements() {
             if (!elements) {
                 elements = stripe.elements({
@@ -250,41 +436,83 @@
                     style: {
                         base: {
                             fontSize: '16px',
-                            color: '#424770',
+                            color: '#212529',
+                            fontFamily: '"Cairo", system-ui, -apple-system, sans-serif',
+                            fontSmoothing: 'antialiased',
                             '::placeholder': {
                                 color: '#aab7c4',
                             },
                         },
                         invalid: {
-                            color: '#9e2146',
+                            color: '#dc3545',
+                            iconColor: '#dc3545'
                         },
                     },
+                    hidePostalCode: true
                 });
 
                 cardElement.mount('#card-element');
 
-                // Handle card errors
+                // Handle card errors with better UX
                 cardElement.on('change', function(event) {
                     const displayError = document.getElementById('card-errors');
                     if (event.error) {
-                        displayError.textContent = event.error.message;
+                        displayError.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>' + event.error
+                            .message;
                     } else {
                         displayError.textContent = '';
                     }
                 });
+
+                // Add focus/blur handlers for better visual feedback
+                cardElement.on('focus', function() {
+                    document.getElementById('card-element').style.borderColor = 'var(--gold)';
+                });
+
+                cardElement.on('blur', function() {
+                    document.getElementById('card-element').style.borderColor = '#e9ecef';
+                });
             }
         }
 
-        // Toggle payment method visibility
+        // Toggle payment method visibility with smooth animation
         function togglePaymentMethod() {
             const cardSelected = document.getElementById('card').checked;
             const cardContainer = document.getElementById('cardElementContainer');
+            const cardOption = document.getElementById('card-option');
+            const codOption = document.getElementById('cod-option');
+
+            // Update UI states
+            updatePaymentOptionUI();
 
             if (cardSelected) {
-                cardContainer.style.display = 'block';
-                initializeStripeElements();
+                // Show card input with smooth animation
+                cardContainer.classList.add('show');
+                cardOption.classList.add('pulse');
+
+                // Focus on card element after animation
+                setTimeout(() => {
+                    cardElement.focus();
+                    cardOption.classList.remove('pulse');
+                }, 500);
             } else {
-                cardContainer.style.display = 'none';
+                // Hide card input
+                cardContainer.classList.remove('show');
+            }
+        }
+
+        // Update payment option card visual states
+        function updatePaymentOptionUI() {
+            const cardSelected = document.getElementById('card').checked;
+            const cardOption = document.getElementById('card-option');
+            const codOption = document.getElementById('cod-option');
+
+            if (cardSelected) {
+                cardOption.classList.add('active');
+                codOption.classList.remove('active');
+            } else {
+                codOption.classList.add('active');
+                cardOption.classList.remove('active');
             }
         }
 
