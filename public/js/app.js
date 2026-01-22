@@ -191,17 +191,17 @@ function loadCartItems() {
                 let html = '';
                 data.items.forEach(item => {
                     html += `
-                    <div class="cart-item d-flex gap-3 mb-3 pb-3 border-bottom border-secondary">
+                    <div class="cart-item d-flex gap-3 mb-3 pb-3 border-bottom">
                         <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name_ar)}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                         <div class="flex-grow-1">
-                            <h6 class="mb-1 small text-white">${escapeHtml(item.name_ar)}</h6>
+                            <h6 class="mb-1 small text-body">${escapeHtml(item.name_ar)}</h6>
                             ${item.options && item.options.length > 0
                             ? `<div class="mb-1">
                                         ${item.options.map(opt => `<span class="badge bg-secondary" style="font-size: 0.65rem;">${escapeHtml(opt.label)}: ${escapeHtml(opt.value)}</span>`).join(' ')}
                                     </div>`
                             : ''
                         }
-                            <small class="text-white-50">الكمية: ${parseInt(item.quantity) || 0}</small>
+                            <small class="text-muted">الكمية: ${parseInt(item.quantity) || 0}</small>
                             <div class="text-warning fw-bold">${(parseFloat(item.subtotal) || 0).toLocaleString()} ج.م</div>
                         </div>
                         <button class="btn btn-sm btn-outline-danger" onclick="removeFromCartDrawer('${escapeHtml(item.key)}')">

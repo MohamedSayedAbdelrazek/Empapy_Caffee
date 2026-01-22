@@ -24,8 +24,8 @@
                     <div class="col-lg-8" data-aos="fade-up">
                         <div class="glass-card">
                             <div class="table-responsive">
-                                <table class="table table-borderless align-middle mb-0">
-                                    <thead class="border-bottom">
+                                <table class="table table-borderless align-middle mb-0 cart-table">
+                                    <thead class="border-bottom d-none d-md-table-header-group">
                                         <tr>
                                             <th style="width: 50%;">المنتج</th>
                                             <th>السعر</th>
@@ -36,8 +36,66 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($cartItems as $item)
-                                            <tr class="cart-item" data-key="{{ $item['key'] }}">
-                                                <td>
+                                            <tr class="cart-item cart-item-mobile" data-key="{{ $item['key'] }}">
+                                                <td colspan="5" class="d-md-none p-3">
+                                                    <!-- Mobile Card Layout -->
+                                                    <div class="d-flex gap-3">
+                                                        <img src="{{ $item['product']->image }}"
+                                                            alt="{{ $item['product']->name }}" class="rounded"
+                                                            style="width: 80px; height: 80px; object-fit: cover; flex-shrink: 0;">
+                                                        <div class="flex-grow-1">
+                                                            <h6 class="mb-1">{{ $item['product']->name }}</h6>
+                                                            <small
+                                                                class="text-muted d-block mb-1">{{ $item['product']->category?->name }}</small>
+
+                                                            @if (!empty($item['options']))
+                                                                <div class="d-flex flex-wrap gap-1 mb-2">
+                                                                    @foreach ($item['options'] as $option)
+                                                                        <span class="badge bg-light text-dark border"
+                                                                            style="font-size: 0.7rem;">
+                                                                            {{ $option['label'] }}: {{ $option['value'] }}
+                                                                        </span>
+                                                                    @endforeach
+                                                                </div>
+                                                            @endif
+
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-center mt-2">
+                                                                <span
+                                                                    class="fw-bold text-warning">{{ number_format($item['price']) }}
+                                                                    ج.م</span>
+                                                                <div class="quantity-controls"
+                                                                    data-key="{{ $item['key'] }}"
+                                                                    style="transform: scale(0.85);">
+                                                                    <button type="button" class="qty-btn-modern"
+                                                                        data-action="decrease">
+                                                                        <i class="bi bi-dash"></i>
+                                                                    </button>
+                                                                    <div class="qty-display">{{ $item['quantity'] }}</div>
+                                                                    <button type="button" class="qty-btn-modern"
+                                                                        data-action="increase">
+                                                                        <i class="bi bi-plus"></i>
+                                                                    </button>
+                                                                    <div class="qty-loading">
+                                                                        <div class="qty-spinner"></div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-center mt-2">
+                                                                <span
+                                                                    class="fw-bold item-subtotal">{{ number_format($item['subtotal']) }}
+                                                                    ج.م</span>
+                                                                <button
+                                                                    class="btn btn-sm btn-outline-danger remove-item-btn">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <!-- Desktop Table Layout -->
+                                                <td class="d-none d-md-table-cell">
                                                     <div class="d-flex align-items-center gap-3">
                                                         <img src="{{ $item['product']->image }}"
                                                             alt="{{ $item['product']->name }}" class="rounded"
@@ -57,13 +115,12 @@
                                                                 </div>
                                                             @endif
                                                         </div>
-                                                    </div>
                                                 </td>
-                                                <td>
+                                                <td class="d-none d-md-table-cell">
                                                     <span class="fw-bold">{{ number_format($item['price']) }}
                                                         ج.م</span>
                                                 </td>
-                                                <td>
+                                                <td class="d-none d-md-table-cell">
                                                     <div class="quantity-controls" data-key="{{ $item['key'] }}">
                                                         <button type="button" class="qty-btn-modern"
                                                             data-action="decrease">
@@ -79,12 +136,12 @@
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td>
+                                                <td class="d-none d-md-table-cell">
                                                     <span
                                                         class="fw-bold item-subtotal">{{ number_format($item['subtotal']) }}
                                                         ج.م</span>
                                                 </td>
-                                                <td>
+                                                <td class="d-none d-md-table-cell">
                                                     <button class="btn btn-sm btn-outline-danger remove-item-btn">
                                                         <i class="bi bi-trash"></i>
                                                     </button>
@@ -363,7 +420,7 @@
                 row.style.transition = 'opacity 0.3s, transform 0.3s';
                 row.style.opacity = '0';
                 row.style.transform = 'translateX(-20px)';
-                
+
                 fetch('/cart/remove', {
                         method: 'POST',
                         headers: {
@@ -381,18 +438,18 @@
                             // Remove row after animation
                             setTimeout(() => {
                                 row.remove();
-                                
+
                                 // Update totals from server response
                                 if (data.cart) {
                                     updateCartDisplay(data.cart);
                                 }
-                                
+
                                 // Reload only if cart is empty
                                 if (document.querySelectorAll('.cart-item').length === 0) {
                                     location.reload();
                                 }
                             }, 300);
-                            
+
                             // Show success toast
                             if (window.Toast) {
                                 window.Toast.success('تم الحذف', 'تم حذف المنتج من السلة');
