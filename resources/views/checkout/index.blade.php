@@ -19,7 +19,35 @@
 
     <section class="py-5">
         <div class="container">
-            <form action="{{ route('checkout.store') }}" method="POST">
+            {{-- Global Messages Display --}}
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                    <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            {{-- Validation Errors Summary --}}
+            @if ($errors->any())
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                    <h6 class="alert-heading"><i class="bi bi-exclamation-octagon me-2"></i>يرجى تصحيح الأخطاء التالية:</h6>
+                    <ul class="mb-0 mt-2">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            @endif
+
+            <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm">
                 @csrf
                 <div class="row g-5">
                     <!-- Checkout Form -->
@@ -115,8 +143,8 @@
                                         </div>
                                     </div>
                                     <div class="form-check form-check-reverse m-0">
-                                        <input class="form-check-input payment-radio" type="radio" name="payment_method"
-                                            value="cash_on_delivery" id="cod" checked>
+                                        <input class="form-check-input payment-radio" type="radio"
+                                            name="payment_method" value="cash_on_delivery" id="cod" checked>
                                         <label class="form-check-label visually-hidden" for="cod">الدفع عند
                                             الاستلام</label>
                                     </div>
@@ -410,24 +438,31 @@
         // دالة التشغيل (مش هتشتغل غير لما Stripe يوصل)
         function initPaymentSystem() {
             stripe = Stripe('{{ config('stripe.key') }}');
-            
+
             // تعريف العناصر
             if (!elements) {
-                elements = stripe.elements({ locale: 'ar' });
+                elements = stripe.elements({
+                    locale: 'ar'
+                });
                 cardElement = elements.create('card', {
                     style: {
                         base: {
                             fontSize: '16px',
                             color: '#212529',
                             fontFamily: '"Cairo", sans-serif',
-                            '::placeholder': { color: '#aab7c4' },
+                            '::placeholder': {
+                                color: '#aab7c4'
+                            },
                         },
-                        invalid: { color: '#dc3545', iconColor: '#dc3545' },
+                        invalid: {
+                            color: '#dc3545',
+                            iconColor: '#dc3545'
+                        },
                     },
                     hidePostalCode: true
                 });
                 cardElement.mount('#card-element');
-                
+
                 // هندلة الأخطاء
                 cardElement.on('change', function(event) {
                     const displayError = document.getElementById('card-errors');
@@ -446,12 +481,12 @@
             const codOption = document.getElementById('cod-option');
             const cardOption = document.getElementById('card-option');
 
-            if(codOption) codOption.addEventListener('click', () => {
+            if (codOption) codOption.addEventListener('click', () => {
                 document.getElementById('cod').checked = true;
                 togglePaymentMethod();
             });
 
-            if(cardOption) cardOption.addEventListener('click', () => {
+            if (cardOption) cardOption.addEventListener('click', () => {
                 document.getElementById('card').checked = true;
                 togglePaymentMethod();
             });
@@ -474,13 +509,15 @@
         function togglePaymentMethod() {
             const isCard = document.getElementById('card').checked;
             const container = document.getElementById('cardElementContainer');
-            
+
             updateUI();
-            
+
             if (isCard) {
                 container.classList.add('show');
                 // محاولة فوكس آمنة
-                setTimeout(() => { if(cardElement) cardElement.focus(); }, 500);
+                setTimeout(() => {
+                    if (cardElement) cardElement.focus();
+                }, 500);
             } else {
                 container.classList.remove('show');
             }
@@ -520,9 +557,9 @@
                         customer_email: document.querySelector('[name="customer_email"]').value
                     })
                 });
-                
+
                 const data = await res.json();
-                if(data.error) throw new Error(data.error);
+                if (data.error) throw new Error(data.error);
 
                 // 2. Stripe Confirm
                 const result = await stripe.confirmCardPayment(data.clientSecret, {
@@ -534,12 +571,18 @@
                     }
                 });
 
-                if(result.error) throw result.error;
+                if (result.error) throw result.error;
 
-                if(result.paymentIntent.status === 'succeeded') {
+                if (result.paymentIntent.status === 'succeeded') {
                     // Success!
-                    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
-                    
+                    confetti({
+                        particleCount: 150,
+                        spread: 70,
+                        origin: {
+                            y: 0.6
+                        }
+                    });
+
                     Swal.fire({
                         title: 'مبروك!',
                         text: 'تم الدفع بنجاح',
@@ -557,7 +600,7 @@
                     document.querySelector('form').submit();
                 }
 
-            } catch(err) {
+            } catch (err) {
                 console.error(err);
                 document.getElementById('card-errors').textContent = err.message;
                 btn.disabled = false;
@@ -565,12 +608,92 @@
                 Swal.fire('خطأ', err.message, 'error');
             }
         }
-        
-        // Coupon Logic (سيبها زي ما هي)
-        function applyCoupon() {
-             // ... الكود القديم بتاع الكوبون
-             const code = document.getElementById('couponCode').value.trim();
-             // ... الخ
+
+        // Coupon Logic - Complete Implementation
+        async function applyCoupon() {
+            const code = document.getElementById('couponCode').value.trim();
+            const btn = document.getElementById('applyCouponBtn');
+            const messageDiv = document.getElementById('couponMessage');
+            const discountRow = document.getElementById('discountRow');
+            const discountAmount = document.getElementById('discountAmount');
+            const totalAmount = document.getElementById('totalAmount');
+            const hiddenInput = document.getElementById('appliedCouponCode');
+
+            // Reset previous state
+            messageDiv.innerHTML = '';
+            messageDiv.className = 'mt-2 small';
+
+            if (!code) {
+                messageDiv.innerHTML =
+                    '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>الرجاء إدخال كود الخصم</span>';
+                return;
+            }
+
+            // Disable button during request
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>جاري التحقق...';
+
+            try {
+                const response = await fetch('/coupon/validate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        code: code,
+                        order_total: subtotal
+                    })
+                });
+
+                const data = await response.json();
+                console.log('Coupon Response:', data);
+
+                if (data.valid) {
+                    // Success - Apply discount
+                    currentDiscount = parseFloat(data.discount) || 0;
+                    hiddenInput.value = code;
+
+                    // Update discount display
+                    if (currentDiscount > 0 || data.reward_type === 'free_shipping') {
+                        discountRow.style.display = 'flex !important';
+                        discountRow.classList.add('d-flex');
+                        discountRow.classList.remove('d-none');
+                        discountAmount.textContent = '-' + currentDiscount.toLocaleString('ar-EG') + ' ج.م';
+                    }
+
+                    // Calculate new total
+                    currentTotal = originalTotal - currentDiscount;
+                    if (currentTotal < 0) currentTotal = 0;
+                    totalAmount.textContent = currentTotal.toLocaleString('ar-EG') + ' ج.م';
+
+                    // Show success message
+                    messageDiv.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>' + data
+                        .message + '</span>';
+
+                    // Disable coupon input after successful apply
+                    document.getElementById('couponCode').disabled = true;
+                    btn.textContent = 'تم التطبيق ✓';
+                    btn.disabled = true;
+                    btn.classList.remove('btn-outline-secondary');
+                    btn.classList.add('btn-success');
+
+                } else {
+                    // Invalid coupon
+                    messageDiv.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>' + data
+                        .message + '</span>';
+                    btn.disabled = false;
+                    btn.innerHTML = 'تطبيق';
+                }
+
+            } catch (error) {
+                console.error('Coupon validation error:', error);
+                messageDiv.innerHTML =
+                    '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>حدث خطأ أثناء التحقق من الكود</span>';
+                btn.disabled = false;
+                btn.innerHTML = 'تطبيق';
+            }
         }
     </script>
 @endpush
