@@ -7,6 +7,29 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'إمبابي كافيه - قهوة فاخرة')</title>
 
+    <script>
+    // 🛑 كود الطوارئ لإيقاف الـ Service Worker وحذف الكاش القديم
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(registrations) {
+            for(let registration of registrations) {
+                registration.unregister().then(function(boolean) {
+                    console.log('💥 Service Worker Unregistered: ', boolean);
+                    // بعد ما نمسحه، نعمل ريفرش إجباري للصفحة عشان تجيب الجديد
+                    // window.location.reload(true); 
+                });
+            }
+        });
+
+        // مسح الكاشات القديمة
+        caches.keys().then(function(names) {
+            for (let name of names) {
+                caches.delete(name);
+                console.log('🧹 Cache Deleted: ', name);
+            }
+        });
+    }
+</script>
+
     <!-- Google Analytics 4 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JWP19DBNZE"></script>
     <script>
