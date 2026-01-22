@@ -263,22 +263,6 @@
         </section>
     @endif
 
-    <!-- CTA Section -->
-    <section class="py-5 my-5">
-        <div class="container">
-            <div class="glass-dark p-5 text-center" style="border-radius: 30px;" data-aos="fade-up">
-                <h2 class="text-white mb-3">انضم إلى عائلة إمبابي كافيه</h2>
-                <p class="text-white-50 mb-4 mx-auto" style="max-width: 500px;">
-                    اشترك في نشرتنا الإخبارية واحصل على خصم 10% على طلبك الأول
-                </p>
-                <form class="d-flex gap-3 flex-wrap justify-content-center" style="max-width: 500px; margin: 0 auto;">
-                    <input type="email" class="form-control" placeholder="بريدك الإلكتروني"
-                        style="flex: 1; min-width: 250px;">
-                    <button type="submit" class="btn btn-golden">اشترك الآن</button>
-                </form>
-            </div>
-        </div>
-    </section>
 @endsection
 
 @push('styles')
@@ -445,8 +429,8 @@
         }
 
         /* =========================================
-                                           CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                           ========================================= */
+                                               CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                               ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;

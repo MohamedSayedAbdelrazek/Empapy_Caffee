@@ -46,12 +46,18 @@
                 <div class="col-lg-2 col-md-4" data-aos="fade-up" data-aos-delay="200">
                     <h5 class="footer-title">الأصناف</h5>
                     <ul class="footer-links">
-                        <li><a href="{{ route('shop.index', ['category' => 'espresso-blends']) }}">خلطات الإسبريسو</a>
-                        </li>
-                        <li><a href="{{ route('shop.index', ['category' => 'single-origin']) }}">قهوة أحادية المصدر</a>
-                        </li>
-                        <li><a href="{{ route('shop.index', ['category' => 'arabic-coffee']) }}">القهوة العربية</a></li>
-                        <li><a href="{{ route('shop.index', ['category' => 'cold-brew']) }}">القهوة الباردة</a></li>
+                        @php
+                            $footerCategories = \App\Models\Category::active()->orderBy('name')->limit(4)->get();
+                        @endphp
+                        @forelse($footerCategories as $category)
+                            <li>
+                                <a href="{{ route('shop.index', ['category' => $category->slug]) }}">
+                                    {{ $category->name }}
+                                </a>
+                            </li>
+                        @empty
+                            <li><a href="{{ route('shop.index') }}">تصفح جميع المنتجات</a></li>
+                        @endforelse
                     </ul>
                 </div>
 

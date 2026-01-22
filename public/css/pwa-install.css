@@ -8,7 +8,7 @@
    ======================================== */
 .pwa-install-banner {
     position: fixed;
-    bottom: -200px;
+    bottom: -450px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 32px);
@@ -349,7 +349,7 @@
 @media (max-width: 480px) {
     .pwa-install-banner {
         width: calc(100% - 24px);
-        bottom: -250px;
+        bottom: -450px;
     }
 
     .pwa-install-banner.show {
