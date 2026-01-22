@@ -125,6 +125,7 @@ function initNavbar() {
  */
 function initCart() {
     const cartToggle = document.getElementById('cartToggle');
+    const cartToggleMobile = document.getElementById('cartToggleMobile');
     const cartDrawer = document.getElementById('cartDrawer');
     const cartClose = document.getElementById('cartClose');
     const cartOverlay = document.querySelector('.cart-drawer-overlay');
@@ -132,13 +133,23 @@ function initCart() {
     // Load cart count on page load
     updateCartBadge();
 
-    // Toggle cart drawer
-    if (cartToggle && cartDrawer) {
-        cartToggle.addEventListener('click', function () {
+    // Function to open cart drawer
+    function openCart() {
+        if (cartDrawer) {
             cartDrawer.classList.add('open');
             document.body.style.overflow = 'hidden';
             loadCartItems(); // Load items when opening
-        });
+        }
+    }
+
+    // Toggle cart drawer - Desktop
+    if (cartToggle && cartDrawer) {
+        cartToggle.addEventListener('click', openCart);
+    }
+
+    // Toggle cart drawer - Mobile
+    if (cartToggleMobile && cartDrawer) {
+        cartToggleMobile.addEventListener('click', openCart);
     }
 
     // Close cart
@@ -236,8 +247,10 @@ function removeFromCartDrawer(key) {
     if (window.Toast) window.Toast.success('تم الحذف', 'تم حذف المنتج من السلة');
 
     const badge = document.getElementById('cartBadge');
+    const badgeMobile = document.getElementById('cartBadgeMobile');
     const oldCount = badge ? parseInt(badge.textContent) || 0 : 0;
     if (badge) { badge.textContent = Math.max(0, oldCount - 1); badge.classList.add('bounce'); setTimeout(() => badge.classList.remove('bounce'), 500); }
+    if (badgeMobile) { badgeMobile.textContent = Math.max(0, oldCount - 1); badgeMobile.classList.add('bounce'); setTimeout(() => badgeMobile.classList.remove('bounce'), 500); }
 
     setTimeout(() => {
         const oldHTML = itemToRemove.outerHTML;
@@ -280,10 +293,20 @@ function updateCartBadge(forceRefresh = false) {
 
 function updateBadgeUI(count) {
     const badge = document.getElementById('cartBadge');
+    const badgeMobile = document.getElementById('cartBadgeMobile');
+
+    // Update desktop badge
     if (badge) {
         badge.textContent = count || 0;
         badge.classList.add('bounce');
         setTimeout(() => badge.classList.remove('bounce'), 500);
+    }
+
+    // Update mobile badge
+    if (badgeMobile) {
+        badgeMobile.textContent = count || 0;
+        badgeMobile.classList.add('bounce');
+        setTimeout(() => badgeMobile.classList.remove('bounce'), 500);
     }
 }
 
@@ -293,12 +316,14 @@ function updateBadgeUI(count) {
 function addToCart(productId, quantity = 1) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
     const badge = document.getElementById('cartBadge');
+    const badgeMobile = document.getElementById('cartBadgeMobile');
     const oldCount = badge ? parseInt(badge.textContent) || 0 : 0;
 
     //INSTANT: Update UI immediately
     if (window.Toast) window.Toast.cart('تمت الإضافة! 🎉', 'تمت إضافة المنتج للسلة');
     if (window.createConfetti) window.createConfetti();
     if (badge) { badge.textContent = oldCount + quantity; badge.classList.add('bounce'); setTimeout(() => badge.classList.remove('bounce'), 500); }
+    if (badgeMobile) { badgeMobile.textContent = oldCount + quantity; badgeMobile.classList.add('bounce'); setTimeout(() => badgeMobile.classList.remove('bounce'), 500); }
 
     // Background server request
     fetch('/cart/add', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: JSON.stringify({ product_id: productId, quantity }) })
@@ -307,16 +332,19 @@ function addToCart(productId, quantity = 1) {
             if (d.success) {
                 // Update with real count from server
                 if (badge) badge.textContent = d.cartCount;
+                if (badgeMobile) badgeMobile.textContent = d.cartCount;
                 updateCartBadge(true);
             } else {
                 // ROLLBACK on error
                 if (badge) badge.textContent = oldCount;
+                if (badgeMobile) badgeMobile.textContent = oldCount;
                 if (window.Toast) window.Toast.error('خطأ', d.message || 'حدث خطأ');
             }
         })
         .catch(() => {
             // ROLLBACK on network error
             if (badge) badge.textContent = oldCount;
+            if (badgeMobile) badgeMobile.textContent = oldCount;
             if (window.Toast) window.Toast.error('خطأ', 'حدث خطأ في الاتصال');
         });
 }
