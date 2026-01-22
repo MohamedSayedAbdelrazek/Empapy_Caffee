@@ -381,233 +381,258 @@
     </section>
 @endsection
 
-@push('head')
-    <!-- Stripe.js -->
-    <script src="https://js.stripe.com/v3/"></script>
-@endpush
-
 @push('scripts')
+    <!-- Load all required libraries FIRST -->
+    <script src="https://js.stripe.com/v3/"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
-        const originalTotal = {{ $total }};
-        const subtotal = {{ $subtotal }};
-        const shipping = {{ $shipping }};
-        let currentDiscount = 0;
-        let currentTotal = {{ $total }};
+        // Safety Check: Ensure Stripe is loaded
+        if (typeof Stripe === 'undefined') {
+            console.error('CRITICAL: Stripe library failed to load.');
+            document.getElementById('cardElementContainer').innerHTML =
+                '<div class="alert alert-danger">حدث خطأ في تحميل نظام الدفع. يرجى تحديث الصفحة.</div>';
+        } else {
+            // Define Variables
+            const originalTotal = {{ $total }};
+            const subtotal = {{ $subtotal }};
+            const shipping = {{ $shipping }};
+            let currentDiscount = 0;
+            let currentTotal = {{ $total }};
 
-        // Initialize Stripe
-        const stripe = Stripe('{{ config('stripe.key') }}');
-        let elements;
-        let cardElement;
-        let paymentIntentClientSecret;
+            // Initialize Stripe with Config Key
+            const stripe = Stripe('{{ config('stripe.key') }}');
+            let elements;
+            let cardElement;
+            let paymentIntentClientSecret;
 
-        // Initialize Stripe Elements immediately on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            // Initialize Stripe Elements
-            initializeStripeElements();
+            document.addEventListener('DOMContentLoaded', function() {
+                initializeStripeElements();
+                updatePaymentOptionUI();
 
-            // Set initial active state
-            updatePaymentOptionUI();
-
-            // Add click handlers to payment option cards
-            document.getElementById('cod-option').addEventListener('click', function() {
-                document.getElementById('cod').checked = true;
-                togglePaymentMethod();
-            });
-
-            document.getElementById('card-option').addEventListener('click', function() {
-                document.getElementById('card').checked = true;
-                togglePaymentMethod();
-            });
-
-            // Add change handlers to radio buttons
-            document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-                radio.addEventListener('change', togglePaymentMethod);
-            });
-        });
-
-        // Initialize Stripe Elements
-        function initializeStripeElements() {
-            if (!elements) {
-                elements = stripe.elements({
-                    locale: 'ar'
+                // Click Handlers for Payment Options
+                document.getElementById('cod-option').addEventListener('click', function() {
+                    document.getElementById('cod').checked = true;
+                    togglePaymentMethod();
                 });
 
-                cardElement = elements.create('card', {
-                    style: {
-                        base: {
-                            fontSize: '16px',
-                            color: '#212529',
-                            fontFamily: '"Cairo", system-ui, -apple-system, sans-serif',
-                            fontSmoothing: 'antialiased',
-                            '::placeholder': {
-                                color: '#aab7c4',
+                document.getElementById('card-option').addEventListener('click', function() {
+                    document.getElementById('card').checked = true;
+                    togglePaymentMethod();
+                });
+
+                document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+                    radio.addEventListener('change', togglePaymentMethod);
+                });
+            });
+
+            function initializeStripeElements() {
+                if (!elements) {
+                    elements = stripe.elements({
+                        locale: 'ar'
+                    });
+                    cardElement = elements.create('card', {
+                        style: {
+                            base: {
+                                fontSize: '16px',
+                                color: '#212529',
+                                fontFamily: '"Cairo", system-ui, -apple-system, sans-serif',
+                                '::placeholder': {
+                                    color: '#aab7c4'
+                                },
+                            },
+                            invalid: {
+                                color: '#dc3545',
+                                iconColor: '#dc3545'
                             },
                         },
-                        invalid: {
-                            color: '#dc3545',
-                            iconColor: '#dc3545'
-                        },
-                    },
-                    hidePostalCode: true
-                });
+                        hidePostalCode: true
+                    });
+                    cardElement.mount('#card-element');
 
-                cardElement.mount('#card-element');
-
-                // Handle card errors with better UX
-                cardElement.on('change', function(event) {
-                    const displayError = document.getElementById('card-errors');
-                    if (event.error) {
-                        displayError.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>' + event.error
-                            .message;
-                    } else {
-                        displayError.textContent = '';
-                    }
-                });
-
-                // Add focus/blur handlers for better visual feedback
-                cardElement.on('focus', function() {
-                    document.getElementById('card-element').style.borderColor = 'var(--gold)';
-                });
-
-                cardElement.on('blur', function() {
-                    document.getElementById('card-element').style.borderColor = '#e9ecef';
-                });
-            }
-        }
-
-        // Toggle payment method visibility with smooth animation
-        function togglePaymentMethod() {
-            const cardSelected = document.getElementById('card').checked;
-            const cardContainer = document.getElementById('cardElementContainer');
-            const cardOption = document.getElementById('card-option');
-            const codOption = document.getElementById('cod-option');
-
-            // Update UI states
-            updatePaymentOptionUI();
-
-            if (cardSelected) {
-                // Show card input with smooth animation
-                cardContainer.classList.add('show');
-                cardOption.classList.add('pulse');
-
-                // Focus on card element after animation
-                setTimeout(() => {
-                    cardElement.focus();
-                    cardOption.classList.remove('pulse');
-                }, 500);
-            } else {
-                // Hide card input
-                cardContainer.classList.remove('show');
-            }
-        }
-
-        // Update payment option card visual states
-        function updatePaymentOptionUI() {
-            const cardSelected = document.getElementById('card').checked;
-            const cardOption = document.getElementById('card-option');
-            const codOption = document.getElementById('cod-option');
-
-            if (cardSelected) {
-                cardOption.classList.add('active');
-                codOption.classList.remove('active');
-            } else {
-                codOption.classList.add('active');
-                cardOption.classList.remove('active');
-            }
-        }
-
-        // Handle form submission
-        document.querySelector('form').addEventListener('submit', async function(e) {
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-
-            if (paymentMethod === 'card') {
-                e.preventDefault();
-                await handleCardPayment();
-            }
-            // If COD, let the form submit normally
-        });
-
-        async function handleCardPayment() {
-            const submitButton = document.querySelector('button[type="submit"]');
-            const originalButtonContent = submitButton.innerHTML;
-
-            // Disable button and show loading
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري المعالجة...';
-
-            try {
-                // Step 1: Create the order first (to get order number)
-                const formData = new FormData(document.querySelector('form'));
-                formData.set('payment_method', 'card');
-
-                // Calculate total (including discount if applied)
-                const totalAmount = currentTotal;
-
-                // Generate a temporary order number
-                const tempOrderNumber = 'EMP-' + Date.now();
-
-                // Step 2: Create Payment Intent
-                const intentResponse = await fetch('{{ route('payment.create-intent') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        amount: totalAmount,
-                        order_number: tempOrderNumber
-                    })
-                });
-
-                const intentData = await intentResponse.json();
-
-                if (intentData.error) {
-                    throw new Error(intentData.error);
-                }
-
-                paymentIntentClientSecret = intentData.clientSecret;
-
-                // Step 3: Confirm the payment with Stripe
-                const {
-                    error,
-                    paymentIntent
-                } = await stripe.confirmCardPayment(paymentIntentClientSecret, {
-                    payment_method: {
-                        card: cardElement,
-                        billing_details: {
-                            name: document.querySelector('[name="customer_name"]').value,
-                            email: document.querySelector('[name="customer_email"]').value,
-                            phone: document.querySelector('[name="customer_phone"]').value,
+                    // Validation Error Handling
+                    cardElement.on('change', function(event) {
+                        const displayError = document.getElementById('card-errors');
+                        if (event.error) {
+                            displayError.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>' + event.error
+                                .message;
+                        } else {
+                            displayError.textContent = '';
                         }
-                    }
-                });
+                    });
 
-                if (error) {
-                    // Show error
+                    // Focus Visual Effects
+                    cardElement.on('focus', function() {
+                        document.querySelector('.stripe-card-element').style.borderColor = 'var(--gold)';
+                        document.querySelector('.stripe-card-element').style.boxShadow =
+                            '0 0 0 3px rgba(201, 169, 97, 0.15)';
+                    });
+                    cardElement.on('blur', function() {
+                        document.querySelector('.stripe-card-element').style.borderColor = '#e9ecef';
+                        document.querySelector('.stripe-card-element').style.boxShadow = 'none';
+                    });
+                }
+            }
+
+            function togglePaymentMethod() {
+                const cardSelected = document.getElementById('card').checked;
+                const cardContainer = document.getElementById('cardElementContainer');
+
+                updatePaymentOptionUI();
+
+                if (cardSelected) {
+                    cardContainer.classList.add('show');
+                    // Focus on card after animation
+                    setTimeout(() => {
+                        if (cardElement) cardElement.focus();
+                    }, 500);
+                } else {
+                    cardContainer.classList.remove('show');
+                }
+            }
+
+            function updatePaymentOptionUI() {
+                const cardSelected = document.getElementById('card').checked;
+                const cardOption = document.getElementById('card-option');
+                const codOption = document.getElementById('cod-option');
+
+                if (cardSelected) {
+                    cardOption.classList.add('active');
+                    codOption.classList.remove('active');
+                } else {
+                    codOption.classList.add('active');
+                    cardOption.classList.remove('active');
+                }
+            }
+
+            // Form Submission Handler
+            document.querySelector('form').addEventListener('submit', async function(e) {
+                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                if (paymentMethod === 'card') {
+                    e.preventDefault();
+                    await handleCardPayment();
+                }
+            });
+
+            async function handleCardPayment() {
+                const submitButton = document.querySelector('button[type="submit"]');
+                const originalButtonContent = submitButton.innerHTML;
+
+                submitButton.disabled = true;
+                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري المعالجة...';
+
+                try {
+                    // 1. Create Payment Intent via Backend
+                    const response = await fetch('{{ route('payment.create-intent') }}', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        },
+                        body: JSON.stringify({
+                            amount: currentTotal,
+                            customer_name: document.querySelector('[name="customer_name"]').value,
+                            customer_email: document.querySelector('[name="customer_email"]').value
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.error) throw new Error(data.error);
+
+                    // 2. Confirm Payment with Stripe
+                    const {
+                        error,
+                        paymentIntent
+                    } = await stripe.confirmCardPayment(data.clientSecret, {
+                        payment_method: {
+                            card: cardElement,
+                            billing_details: {
+                                name: document.querySelector('[name="customer_name"]').value,
+                                email: document.querySelector('[name="customer_email"]').value,
+                                phone: document.querySelector('[name="customer_phone"]').value
+                            }
+                        }
+                    });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    if (paymentIntent.status === 'succeeded') {
+                        // Success! Trigger Confetti Animation
+                        var duration = 3 * 1000;
+                        var animationEnd = Date.now() + duration;
+                        var defaults = {
+                            startVelocity: 30,
+                            spread: 360,
+                            ticks: 60,
+                            zIndex: 9999
+                        };
+
+                        function randomInOut(min, max) {
+                            return Math.random() * (max - min) + min;
+                        }
+
+                        var interval = setInterval(function() {
+                            var timeLeft = animationEnd - Date.now();
+                            if (timeLeft <= 0) {
+                                return clearInterval(interval);
+                            }
+                            var particleCount = 50 * (timeLeft / duration);
+                            confetti(Object.assign({}, defaults, {
+                                particleCount,
+                                origin: {
+                                    x: randomInOut(0.1, 0.3),
+                                    y: Math.random() - 0.2
+                                }
+                            }));
+                            confetti(Object.assign({}, defaults, {
+                                particleCount,
+                                origin: {
+                                    x: randomInOut(0.7, 0.9),
+                                    y: Math.random() - 0.2
+                                }
+                            }));
+                        }, 250);
+
+                        // Show Success Alert
+                        await Swal.fire({
+                            title: 'تم الدفع بنجاح!',
+                            text: 'جاري تسجيل طلبك...',
+                            icon: 'success',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+
+                        // Submit form with transaction ID
+                        const form = document.querySelector('form');
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = 'transaction_id';
+                        input.value = paymentIntent.id;
+                        form.appendChild(input);
+                        form.submit();
+                    }
+
+                } catch (error) {
+                    console.error('Payment Error:', error);
                     document.getElementById('card-errors').textContent = error.message;
                     submitButton.disabled = false;
                     submitButton.innerHTML = originalButtonContent;
-                } else if (paymentIntent.status === 'succeeded') {
-                    // Payment successful! Now submit the actual order
-                    // Update the form with transaction ID
-                    const transactionInput = document.createElement('input');
-                    transactionInput.type = 'hidden';
-                    transactionInput.name = 'transaction_id';
-                    transactionInput.value = paymentIntent.id;
-                    document.querySelector('form').appendChild(transactionInput);
 
-                    // Submit the form to create the order
-                    document.querySelector('form').submit();
+                    Swal.fire({
+                        title: 'فشلت العملية',
+                        text: error.message,
+                        icon: 'error',
+                        confirmButtonText: 'حاول مرة أخرى'
+                    });
                 }
-            } catch (error) {
-                console.error('Payment error:', error);
-                document.getElementById('card-errors').textContent = error.message || 'حدث خطأ أثناء معالجة الدفع';
-                submitButton.disabled = false;
-                submitButton.innerHTML = originalButtonContent;
             }
         }
 
-        // Coupon validation function
+        // Coupon Logic (outside Stripe block - always available)
         function applyCoupon() {
             const code = document.getElementById('couponCode').value.trim();
             const messageDiv = document.getElementById('couponMessage');
@@ -630,31 +655,31 @@
                     },
                     body: JSON.stringify({
                         code: code,
-                        order_total: subtotal
+                        order_total: typeof subtotal !== 'undefined' ? subtotal : {{ $subtotal }}
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.valid) {
-                        currentDiscount = data.discount;
-                        const newTotal = subtotal + shipping - currentDiscount;
-                        currentTotal = newTotal;
+                        if (typeof currentDiscount !== 'undefined') {
+                            currentDiscount = data.discount;
+                            const newTotal = (typeof subtotal !== 'undefined' ? subtotal : {{ $subtotal }}) +
+                                (typeof shipping !== 'undefined' ? shipping : {{ $shipping }}) - currentDiscount;
+                            if (typeof currentTotal !== 'undefined') currentTotal = newTotal;
+                        }
 
-                        // Update UI
-                        document.getElementById('discountRow').style.display = 'flex';
-                        document.getElementById('discountAmount').textContent = '- ' + currentDiscount
-                            .toLocaleString() + ' ج.م';
-                        document.getElementById('totalAmount').textContent = newTotal.toLocaleString() + ' ج.م';
+                        document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
+                        document.getElementById('discountAmount').textContent = '- ' + data.discount.toLocaleString() +
+                            ' ج.م';
+                        document.getElementById('totalAmount').textContent = ({{ $subtotal }} +
+                            {{ $shipping }} - data.discount).toLocaleString() + ' ج.م';
                         document.getElementById('appliedCouponCode').value = code;
 
                         messageDiv.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>' +
                             data.message + '</span>';
-
-                        // Disable input
                         document.getElementById('couponCode').disabled = true;
                         btn.innerHTML = '<i class="bi bi-check-lg"></i>';
-                        btn.classList.remove('btn-outline-secondary');
-                        btn.classList.add('btn-success');
+                        btn.classList.replace('btn-outline-secondary', 'btn-success');
                     } else {
                         messageDiv.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>' + data
                             .message + '</span>';
