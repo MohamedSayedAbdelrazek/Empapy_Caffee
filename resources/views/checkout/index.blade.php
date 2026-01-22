@@ -382,53 +382,123 @@
 @endsection
 
 @push('scripts')
-    <!-- Load all required libraries FIRST -->
     <script src="https://js.stripe.com/v3/"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        // Safety Check: Ensure Stripe is loaded
-        if (typeof Stripe === 'undefined') {
-            console.error('CRITICAL: Stripe library failed to load.');
-            document.getElementById('cardElementContainer').innerHTML =
-                '<div class="alert alert-danger">حدث خطأ في تحميل نظام الدفع. يرجى تحديث الصفحة.</div>';
-        } else {
-            // Define Variables
-            const originalTotal = {{ $total }};
-            const subtotal = {{ $subtotal }};
-            const shipping = {{ $shipping }};
-            let currentDiscount = 0;
-            let currentTotal = {{ $total }};
+        // Global variables (accessible to coupon function)
+        let stripe, elements, cardElement;
+        const originalTotal = {{ $total }};
+        const subtotal = {{ $subtotal }};
+        const shipping = {{ $shipping }};
+        let currentDiscount = 0;
+        let currentTotal = {{ $total }};
 
-            // Initialize Stripe with Config Key
-            const stripe = Stripe('{{ config('stripe.key') }}');
-            let elements;
-            let cardElement;
-            let paymentIntentClientSecret;
+        // --- THE FIX: Wait for Stripe to load using Polling ---
+        let stripeLoadAttempts = 0;
+        const maxAttempts = 50; // Max 5 seconds (50 * 100ms)
 
-            document.addEventListener('DOMContentLoaded', function() {
+        const stripeLoader = setInterval(function() {
+            stripeLoadAttempts++;
+
+            if (typeof Stripe !== 'undefined') {
+                clearInterval(stripeLoader);
+                console.log('✅ Stripe Library Loaded Successfully after', stripeLoadAttempts * 100, 'ms');
+                initPaymentSystem();
+            } else if (stripeLoadAttempts >= maxAttempts) {
+                clearInterval(stripeLoader);
+                console.error('❌ CRITICAL: Stripe failed to load after 5 seconds');
+                const container = document.getElementById('cardElementContainer');
+                if (container) {
+                    container.innerHTML =
+                        '<div class="alert alert-danger mt-3"><i class="bi bi-exclamation-triangle me-2"></i>حدث خطأ في تحميل نظام الدفع. يرجى تحديث الصفحة.</div>';
+                    container.style.display = 'block';
+                }
+            } else {
+                console.log('⏳ Waiting for Stripe... Attempt', stripeLoadAttempts);
+            }
+        }, 100); // Check every 100ms
+
+        // Main Initialization Function
+        function initPaymentSystem() {
+            try {
+                // Initialize Stripe
+                const stripeKey = '{{ config('stripe.key') }}';
+                if (!stripeKey) {
+                    console.error('❌ Stripe Key is missing!');
+                    return;
+                }
+
+                stripe = Stripe(stripeKey);
+                console.log('✅ Stripe instance created');
+
+                // Setup Event Listeners
+                setupEventListeners();
+
+                // Initialize Elements
                 initializeStripeElements();
+
+                // Initial UI State
                 updatePaymentOptionUI();
 
-                // Click Handlers for Payment Options
-                document.getElementById('cod-option').addEventListener('click', function() {
-                    document.getElementById('cod').checked = true;
-                    togglePaymentMethod();
-                });
+            } catch (error) {
+                console.error('❌ Error initializing payment system:', error);
+            }
+        }
 
-                document.getElementById('card-option').addEventListener('click', function() {
-                    document.getElementById('card').checked = true;
-                    togglePaymentMethod();
-                });
+        function setupEventListeners() {
+            // Click Handlers
+            const codOption = document.getElementById('cod-option');
+            const cardOption = document.getElementById('card-option');
 
-                document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-                    radio.addEventListener('change', togglePaymentMethod);
+            if (codOption) {
+                codOption.addEventListener('click', function(e) {
+                    // Don't trigger if clicking on radio itself
+                    if (e.target.type !== 'radio') {
+                        const radio = document.getElementById('cod');
+                        if (radio) {
+                            radio.checked = true;
+                            togglePaymentMethod();
+                        }
+                    }
                 });
+            }
+
+            if (cardOption) {
+                cardOption.addEventListener('click', function(e) {
+                    if (e.target.type !== 'radio') {
+                        const radio = document.getElementById('card');
+                        if (radio) {
+                            radio.checked = true;
+                            togglePaymentMethod();
+                        }
+                    }
+                });
+            }
+
+            document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
+                radio.addEventListener('change', togglePaymentMethod);
             });
 
-            function initializeStripeElements() {
-                if (!elements) {
+            // Form Submit
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', async function(e) {
+                    const checkedPayment = document.querySelector('input[name="payment_method"]:checked');
+                    if (checkedPayment && checkedPayment.value === 'card') {
+                        e.preventDefault();
+                        await handleCardPayment();
+                    }
+                });
+            }
+
+            console.log('✅ Event listeners attached');
+        }
+
+        function initializeStripeElements() {
+            if (!elements && stripe) {
+                try {
                     elements = stripe.elements({
                         locale: 'ar'
                     });
@@ -449,155 +519,179 @@
                         },
                         hidePostalCode: true
                     });
-                    cardElement.mount('#card-element');
 
-                    // Validation Error Handling
-                    cardElement.on('change', function(event) {
-                        const displayError = document.getElementById('card-errors');
-                        if (event.error) {
-                            displayError.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>' + event.error
-                                .message;
-                        } else {
-                            displayError.textContent = '';
-                        }
-                    });
+                    const cardMountPoint = document.getElementById('card-element');
+                    if (cardMountPoint) {
+                        cardElement.mount('#card-element');
+                        console.log('✅ Card Element mounted');
 
-                    // Focus Visual Effects
-                    cardElement.on('focus', function() {
-                        document.querySelector('.stripe-card-element').style.borderColor = 'var(--gold)';
-                        document.querySelector('.stripe-card-element').style.boxShadow =
-                            '0 0 0 3px rgba(201, 169, 97, 0.15)';
-                    });
-                    cardElement.on('blur', function() {
-                        document.querySelector('.stripe-card-element').style.borderColor = '#e9ecef';
-                        document.querySelector('.stripe-card-element').style.boxShadow = 'none';
-                    });
-                }
-            }
-
-            function togglePaymentMethod() {
-                const cardSelected = document.getElementById('card').checked;
-                const cardContainer = document.getElementById('cardElementContainer');
-
-                updatePaymentOptionUI();
-
-                if (cardSelected) {
-                    cardContainer.classList.add('show');
-                    // Focus on card after animation
-                    setTimeout(() => {
-                        if (cardElement) cardElement.focus();
-                    }, 500);
-                } else {
-                    cardContainer.classList.remove('show');
-                }
-            }
-
-            function updatePaymentOptionUI() {
-                const cardSelected = document.getElementById('card').checked;
-                const cardOption = document.getElementById('card-option');
-                const codOption = document.getElementById('cod-option');
-
-                if (cardSelected) {
-                    cardOption.classList.add('active');
-                    codOption.classList.remove('active');
-                } else {
-                    codOption.classList.add('active');
-                    cardOption.classList.remove('active');
-                }
-            }
-
-            // Form Submission Handler
-            document.querySelector('form').addEventListener('submit', async function(e) {
-                const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
-                if (paymentMethod === 'card') {
-                    e.preventDefault();
-                    await handleCardPayment();
-                }
-            });
-
-            async function handleCardPayment() {
-                const submitButton = document.querySelector('button[type="submit"]');
-                const originalButtonContent = submitButton.innerHTML;
-
-                submitButton.disabled = true;
-                submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري المعالجة...';
-
-                try {
-                    // 1. Create Payment Intent via Backend
-                    const response = await fetch('{{ route('payment.create-intent') }}', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                        },
-                        body: JSON.stringify({
-                            amount: currentTotal,
-                            customer_name: document.querySelector('[name="customer_name"]').value,
-                            customer_email: document.querySelector('[name="customer_email"]').value
-                        })
-                    });
-
-                    const data = await response.json();
-
-                    if (data.error) throw new Error(data.error);
-
-                    // 2. Confirm Payment with Stripe
-                    const {
-                        error,
-                        paymentIntent
-                    } = await stripe.confirmCardPayment(data.clientSecret, {
-                        payment_method: {
-                            card: cardElement,
-                            billing_details: {
-                                name: document.querySelector('[name="customer_name"]').value,
-                                email: document.querySelector('[name="customer_email"]').value,
-                                phone: document.querySelector('[name="customer_phone"]').value
+                        // Error handling
+                        cardElement.on('change', function(event) {
+                            const displayError = document.getElementById('card-errors');
+                            if (displayError) {
+                                if (event.error) {
+                                    displayError.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>' + event
+                                        .error.message;
+                                } else {
+                                    displayError.textContent = '';
+                                }
                             }
-                        }
-                    });
+                        });
 
-                    if (error) {
-                        throw error;
+                        // Focus effects
+                        cardElement.on('focus', function() {
+                            const el = document.querySelector('.stripe-card-element');
+                            if (el) {
+                                el.style.borderColor = 'var(--gold)';
+                                el.style.boxShadow = '0 0 0 3px rgba(201, 169, 97, 0.15)';
+                            }
+                        });
+
+                        cardElement.on('blur', function() {
+                            const el = document.querySelector('.stripe-card-element');
+                            if (el) {
+                                el.style.borderColor = '#e9ecef';
+                                el.style.boxShadow = 'none';
+                            }
+                        });
+
+                        // Ready event
+                        cardElement.on('ready', function() {
+                            console.log('✅ Card Element is ready for input');
+                        });
+                    } else {
+                        console.error('❌ #card-element mount point not found');
                     }
+                } catch (error) {
+                    console.error('❌ Error creating Stripe Elements:', error);
+                }
+            }
+        }
 
-                    if (paymentIntent.status === 'succeeded') {
-                        // Success! Trigger Confetti Animation
-                        var duration = 3 * 1000;
-                        var animationEnd = Date.now() + duration;
-                        var defaults = {
+        function togglePaymentMethod() {
+            const cardRadio = document.getElementById('card');
+            const cardContainer = document.getElementById('cardElementContainer');
+
+            if (!cardRadio || !cardContainer) return;
+
+            const cardSelected = cardRadio.checked;
+            updatePaymentOptionUI();
+
+            if (cardSelected) {
+                cardContainer.classList.add('show');
+                // Focus after animation
+                setTimeout(() => {
+                    if (cardElement) {
+                        try {
+                            cardElement.focus();
+                        } catch (e) {}
+                    }
+                }, 500);
+            } else {
+                cardContainer.classList.remove('show');
+            }
+        }
+
+        function updatePaymentOptionUI() {
+            const cardRadio = document.getElementById('card');
+            const cardOption = document.getElementById('card-option');
+            const codOption = document.getElementById('cod-option');
+
+            if (!cardRadio || !cardOption || !codOption) return;
+
+            if (cardRadio.checked) {
+                cardOption.classList.add('active');
+                codOption.classList.remove('active');
+            } else {
+                codOption.classList.add('active');
+                cardOption.classList.remove('active');
+            }
+        }
+
+        async function handleCardPayment() {
+            const submitButton = document.querySelector('button[type="submit"]');
+            if (!submitButton) return;
+
+            const originalButtonContent = submitButton.innerHTML;
+
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>جاري المعالجة...';
+
+            try {
+                // 1. Create Intent
+                const response = await fetch('{{ route('payment.create-intent') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        amount: currentTotal,
+                        customer_name: document.querySelector('[name="customer_name"]')?.value || '',
+                        customer_email: document.querySelector('[name="customer_email"]')?.value || ''
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+
+                // 2. Confirm Payment
+                const {
+                    error,
+                    paymentIntent
+                } = await stripe.confirmCardPayment(data.clientSecret, {
+                    payment_method: {
+                        card: cardElement,
+                        billing_details: {
+                            name: document.querySelector('[name="customer_name"]')?.value || '',
+                            email: document.querySelector('[name="customer_email"]')?.value || '',
+                            phone: document.querySelector('[name="customer_phone"]')?.value || ''
+                        }
+                    }
+                });
+
+                if (error) throw error;
+
+                if (paymentIntent.status === 'succeeded') {
+                    console.log('✅ Payment succeeded!');
+
+                    // Confetti!
+                    if (typeof confetti === 'function') {
+                        const duration = 3000;
+                        const animationEnd = Date.now() + duration;
+                        const defaults = {
                             startVelocity: 30,
                             spread: 360,
                             ticks: 60,
                             zIndex: 9999
                         };
 
-                        function randomInOut(min, max) {
-                            return Math.random() * (max - min) + min;
-                        }
+                        const interval = setInterval(function() {
+                            const timeLeft = animationEnd - Date.now();
+                            if (timeLeft <= 0) return clearInterval(interval);
 
-                        var interval = setInterval(function() {
-                            var timeLeft = animationEnd - Date.now();
-                            if (timeLeft <= 0) {
-                                return clearInterval(interval);
-                            }
-                            var particleCount = 50 * (timeLeft / duration);
-                            confetti(Object.assign({}, defaults, {
+                            const particleCount = 50 * (timeLeft / duration);
+                            confetti({
+                                ...defaults,
                                 particleCount,
                                 origin: {
-                                    x: randomInOut(0.1, 0.3),
+                                    x: Math.random() * 0.3 + 0.1,
                                     y: Math.random() - 0.2
                                 }
-                            }));
-                            confetti(Object.assign({}, defaults, {
+                            });
+                            confetti({
+                                ...defaults,
                                 particleCount,
                                 origin: {
-                                    x: randomInOut(0.7, 0.9),
+                                    x: Math.random() * 0.3 + 0.6,
                                     y: Math.random() - 0.2
                                 }
-                            }));
+                            });
                         }, 250);
+                    }
 
-                        // Show Success Alert
+                    // Alert
+                    if (typeof Swal !== 'undefined') {
                         await Swal.fire({
                             title: 'تم الدفع بنجاح!',
                             text: 'جاري تسجيل طلبك...',
@@ -605,92 +699,113 @@
                             timer: 2000,
                             showConfirmButton: false
                         });
-
-                        // Submit form with transaction ID
-                        const form = document.querySelector('form');
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = 'transaction_id';
-                        input.value = paymentIntent.id;
-                        form.appendChild(input);
-                        form.submit();
                     }
 
-                } catch (error) {
-                    console.error('Payment Error:', error);
-                    document.getElementById('card-errors').textContent = error.message;
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = originalButtonContent;
+                    // Submit Form
+                    const form = document.querySelector('form');
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'transaction_id';
+                    input.value = paymentIntent.id;
+                    form.appendChild(input);
+                    form.submit();
+                }
 
+            } catch (error) {
+                console.error('❌ Payment Error:', error);
+                const errorDiv = document.getElementById('card-errors');
+                if (errorDiv) errorDiv.textContent = error.message || 'حدث خطأ أثناء معالجة الدفع';
+
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalButtonContent;
+
+                if (typeof Swal !== 'undefined') {
                     Swal.fire({
                         title: 'فشلت العملية',
                         text: error.message,
                         icon: 'error',
                         confirmButtonText: 'حاول مرة أخرى'
                     });
+                } else {
+                    alert(error.message);
                 }
             }
         }
 
-        // Coupon Logic (outside Stripe block - always available)
+        // Coupon Logic (always available, uses global variables)
         function applyCoupon() {
-            const code = document.getElementById('couponCode').value.trim();
+            const code = document.getElementById('couponCode')?.value?.trim();
             const messageDiv = document.getElementById('couponMessage');
             const btn = document.getElementById('applyCouponBtn');
 
             if (!code) {
-                messageDiv.innerHTML = '<span class="text-danger">أدخل كود الخصم</span>';
+                if (messageDiv) messageDiv.innerHTML = '<span class="text-danger">أدخل كود الخصم</span>';
                 return;
             }
 
-            btn.disabled = true;
-            btn.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+            }
 
             fetch('/coupon/validate', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                         'Accept': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                     },
                     body: JSON.stringify({
                         code: code,
-                        order_total: typeof subtotal !== 'undefined' ? subtotal : {{ $subtotal }}
+                        order_total: subtotal
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.valid) {
-                        if (typeof currentDiscount !== 'undefined') {
-                            currentDiscount = data.discount;
-                            const newTotal = (typeof subtotal !== 'undefined' ? subtotal : {{ $subtotal }}) +
-                                (typeof shipping !== 'undefined' ? shipping : {{ $shipping }}) - currentDiscount;
-                            if (typeof currentTotal !== 'undefined') currentTotal = newTotal;
-                        }
+                        currentDiscount = data.discount;
+                        const newTotal = subtotal + shipping - currentDiscount;
+                        currentTotal = newTotal;
 
-                        document.getElementById('discountRow').style.setProperty('display', 'flex', 'important');
-                        document.getElementById('discountAmount').textContent = '- ' + data.discount.toLocaleString() +
+                        const discountRow = document.getElementById('discountRow');
+                        if (discountRow) discountRow.style.setProperty('display', 'flex', 'important');
+
+                        const discountAmount = document.getElementById('discountAmount');
+                        if (discountAmount) discountAmount.textContent = '- ' + currentDiscount.toLocaleString() +
                             ' ج.م';
-                        document.getElementById('totalAmount').textContent = ({{ $subtotal }} +
-                            {{ $shipping }} - data.discount).toLocaleString() + ' ج.م';
-                        document.getElementById('appliedCouponCode').value = code;
 
-                        messageDiv.innerHTML = '<span class="text-success"><i class="bi bi-check-circle me-1"></i>' +
-                            data.message + '</span>';
-                        document.getElementById('couponCode').disabled = true;
-                        btn.innerHTML = '<i class="bi bi-check-lg"></i>';
-                        btn.classList.replace('btn-outline-secondary', 'btn-success');
+                        const totalAmount = document.getElementById('totalAmount');
+                        if (totalAmount) totalAmount.textContent = newTotal.toLocaleString() + ' ج.م';
+
+                        const appliedCode = document.getElementById('appliedCouponCode');
+                        if (appliedCode) appliedCode.value = code;
+
+                        if (messageDiv) messageDiv.innerHTML =
+                            '<span class="text-success"><i class="bi bi-check-circle me-1"></i>' + data.message +
+                            '</span>';
+
+                        const couponInput = document.getElementById('couponCode');
+                        if (couponInput) couponInput.disabled = true;
+
+                        if (btn) {
+                            btn.innerHTML = '<i class="bi bi-check-lg"></i>';
+                            btn.classList.replace('btn-outline-secondary', 'btn-success');
+                        }
                     } else {
-                        messageDiv.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>' + data
-                            .message + '</span>';
-                        btn.disabled = false;
-                        btn.innerHTML = 'تطبيق';
+                        if (messageDiv) messageDiv.innerHTML =
+                            '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>' + data.message + '</span>';
+                        if (btn) {
+                            btn.disabled = false;
+                            btn.innerHTML = 'تطبيق';
+                        }
                     }
                 })
                 .catch(error => {
-                    messageDiv.innerHTML = '<span class="text-danger">حدث خطأ. حاول مرة أخرى</span>';
-                    btn.disabled = false;
-                    btn.innerHTML = 'تطبيق';
+                    if (messageDiv) messageDiv.innerHTML = '<span class="text-danger">حدث خطأ. حاول مرة أخرى</span>';
+                    if (btn) {
+                        btn.disabled = false;
+                        btn.innerHTML = 'تطبيق';
+                    }
                 });
         }
     </script>
