@@ -243,6 +243,9 @@ class DatabaseSeeder extends Seeder
             }
         }
 
+        // Seed Permissions
+        $this->call(PermissionSeeder::class);
+
         $this->command->info('✅ Database seeded successfully!');
         $this->command->info('📧 Admin: admin@empapy.com / password');
         $this->command->info('📧 Customer: customer@empapy.com / password');

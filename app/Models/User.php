@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -98,6 +99,78 @@ class User extends Authenticatable
     public function isStaff(): bool
     {
         return in_array($this->role, ['admin', 'cashier']);
+    }
+
+    // ========================================
+    // PERMISSIONS
+    // ========================================
+
+    /**
+     * Get all permissions for this user
+     */
+    public function permissions(): BelongsToMany
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions');
+    }
+
+    /**
+     * Check if user has a specific permission
+     */
+    public function hasPermission(string $permission): bool
+    {
+        // Admins have all permissions
+        if ($this->role === 'admin') {
+            return true;
+        }
+
+        return $this->permissions()->where('name', $permission)->exists();
+    }
+
+    /**
+     * Check if user has any of the given permissions
+     */
+    public function hasAnyPermission(array $permissions): bool
+    {
+        // Admins have all permissions
+        if ($this->role === 'admin') {
+            return true;
+        }
+
+        return $this->permissions()->whereIn('name', $permissions)->exists();
+    }
+
+    /**
+     * Give permission(s) to user
+     */
+    public function givePermissionTo(string|array $permissions): void
+    {
+        $permissions = is_array($permissions) ? $permissions : [$permissions];
+
+        $permissionIds = Permission::whereIn('name', $permissions)->pluck('id');
+
+        $this->permissions()->syncWithoutDetaching($permissionIds);
+    }
+
+    /**
+     * Remove permission(s) from user
+     */
+    public function revokePermissionFrom(string|array $permissions): void
+    {
+        $permissions = is_array($permissions) ? $permissions : [$permissions];
+
+        $permissionIds = Permission::whereIn('name', $permissions)->pluck('id');
+
+        $this->permissions()->detach($permissionIds);
+    }
+
+    /**
+     * Sync user permissions (replaces all existing permissions)
+     */
+    public function syncPermissions(array $permissions): void
+    {
+        $permissionIds = Permission::whereIn('id', $permissions)->pluck('id');
+
+        $this->permissions()->sync($permissionIds);
     }
 
     /**

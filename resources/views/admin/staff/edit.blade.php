@@ -59,7 +59,7 @@
                                 🛡️ مدير - صلاحيات كاملة
                             </option>
                             <option value="cashier" {{ old('role', $staff->role) === 'cashier' ? 'selected' : '' }}>
-                                👤 كاشير - الطلبات والإشعارات فقط
+                                👤 كاشير
                             </option>
                         </select>
                         @if ($staff->id === auth()->id())
@@ -92,29 +92,33 @@
                     </div>
                 </div>
 
-                <hr class="my-4">
-
-                <div class="d-flex justify-content-between">
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-lg me-2"></i>حفظ التغييرات
-                        </button>
-                        <a href="{{ route('admin.staff.index') }}" class="btn btn-outline-secondary">إلغاء</a>
-                    </div>
-
-                    @if ($staff->id !== auth()->id())
-                        <form action="{{ route('admin.staff.destroy', $staff) }}" method="POST"
-                            onsubmit="return confirm('هل أنت متأكد من حذف هذا الموظف؟')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-outline-danger">
-                                <i class="bi bi-trash me-2"></i>حذف الموظف
-                            </button>
-                        </form>
-                    @endif
-                </div>
-            </form>
+                {{-- Permissions Section --}}
+                @include('admin.staff._permissions')
         </div>
+
+        <hr class="my-4">
+
+        <div class="d-flex justify-content-between">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-check-lg me-2"></i>حفظ التغييرات
+                </button>
+                <a href="{{ route('admin.staff.index') }}" class="btn btn-outline-secondary">إلغاء</a>
+            </div>
+
+            @if ($staff->id !== auth()->id())
+                <form action="{{ route('admin.staff.destroy', $staff) }}" method="POST"
+                    onsubmit="return confirm('هل أنت متأكد من حذف هذا الموظف؟')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-outline-danger">
+                        <i class="bi bi-trash me-2"></i>حذف الموظف
+                    </button>
+                </form>
+            @endif
+        </div>
+        </form>
+    </div>
     </div>
 
     {{-- Staff Info Card --}}

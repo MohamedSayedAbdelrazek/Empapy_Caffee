@@ -42,6 +42,8 @@ class StaffController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Password::min(8)],
             'role' => ['required', 'in:admin,cashier'],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['exists:permissions,id'],
         ], [
             'name.required' => 'الاسم مطلوب',
             'email.required' => 'البريد الإلكتروني مطلوب',
@@ -52,13 +54,18 @@ class StaffController extends Controller
             'role.in' => 'الدور غير صحيح',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'password' => Hash::make($validated['password']),
             'role' => $validated['role'],
         ]);
+
+        // Sync permissions for cashiers
+        if ($validated['role'] === 'cashier' && isset($validated['permissions'])) {
+            $user->syncPermissions($validated['permissions']);
+        }
 
         return redirect()->route('admin.staff.index')
             ->with('success', 'تم إضافة الموظف بنجاح! ✨');
@@ -95,6 +102,8 @@ class StaffController extends Controller
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['nullable', 'confirmed', Password::min(8)],
             'role' => ['required', 'in:admin,cashier'],
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['exists:permissions,id'],
         ], [
             'name.required' => 'الاسم مطلوب',
             'email.required' => 'البريد الإلكتروني مطلوب',
@@ -116,6 +125,15 @@ class StaffController extends Controller
         }
 
         $staff->update($data);
+
+        // Sync permissions for cashiers (clear permissions for admins)
+        if ($validated['role'] === 'cashier') {
+            $permissions = $validated['permissions'] ?? [];
+            $staff->syncPermissions($permissions);
+        } else {
+            // Clear all permissions for admins (they bypass permission checks anyway)
+            $staff->permissions()->detach();
+        }
 
         return redirect()->route('admin.staff.index')
             ->with('success', 'تم تحديث بيانات الموظف بنجاح! ✨');

@@ -58,15 +58,14 @@
                                 🛡️ مدير - صلاحيات كاملة
                             </option>
                             <option value="cashier" {{ old('role') === 'cashier' ? 'selected' : '' }}>
-                                👤 كاشير - الطلبات والإشعارات فقط
+                                👤 كاشير
                             </option>
                         </select>
                         @error('role')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                         <div class="form-text">
-                            <strong>المدير:</strong> كل الصلاحيات (المنتجات، الفئات، العملاء، الإعدادات)<br>
-                            <strong>الكاشير:</strong> الطلبات ولوحة الطلبات والإشعارات فقط
+                            يمكنك اختيار صلاحيات مخصصة لهذا الموظف من القسم أدناه
                         </div>
                     </div>
 
@@ -86,6 +85,9 @@
                         <label class="form-label">تأكيد كلمة المرور <span class="text-danger">*</span></label>
                         <input type="password" name="password_confirmation" class="form-control" required>
                     </div>
+
+                    {{-- Permissions Section --}}
+                    @include('admin.staff._permissions')
                 </div>
 
                 <hr class="my-4">
