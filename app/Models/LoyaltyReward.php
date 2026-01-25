@@ -211,10 +211,8 @@ class LoyaltyReward extends Model
                 'sort_order' => 1,
             ],
             [
-                'name' => '30 EGP Discount',
-                'name_ar' => 'خصم 30 ج.م',
-                'description' => 'Get 30 EGP off your next order',
-                'description_ar' => 'احصل على خصم 30 ج.م على طلبك القادم',
+                'name' => 'خصم 30 ج.م',
+                'description' => 'احصل على خصم 30 ج.م على طلبك القادم',
                 'points_required' => 500,
                 'reward_type' => 'discount_fixed',
                 'reward_value' => 30,
