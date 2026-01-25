@@ -381,6 +381,101 @@
     background: #0f0f0f;
 }
 
+/* ========================================
+   Cart Page - Dark Mode with Light Cards
+   Keep text BLACK on white glass-card background
+   ======================================== */
+
+/* Cart Glass Card - Keep light background with dark text */
+[data-theme="dark"] .cart-table,
+[data-theme="dark"] .cart-table * {
+    color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .cart-table h6 {
+    color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .cart-table .text-muted {
+    color: #666666 !important;
+}
+
+[data-theme="dark"] .cart-table .fw-bold {
+    color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .cart-table .text-warning {
+    color: #b8860b !important;
+}
+
+/* Quantity controls text - keep dark */
+[data-theme="dark"] .cart-table .qty-display {
+    color: #1a1a1a !important;
+}
+
+/* Cart item mobile layout */
+[data-theme="dark"] .cart-item h6 {
+    color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .cart-item .text-muted {
+    color: #666666 !important;
+}
+
+[data-theme="dark"] .cart-item .fw-bold {
+    color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .cart-item .text-warning {
+    color: #b8860b !important;
+}
+
+[data-theme="dark"] .cart-item .item-subtotal {
+    color: #1a1a1a !important;
+}
+
+/* Badges in cart */
+[data-theme="dark"] .cart-table .badge.bg-light,
+[data-theme="dark"] .cart-item .badge.bg-light {
+    background: #f0f0f0 !important;
+    color: #1a1a1a !important;
+}
+
+[data-theme="dark"] .cart-table .badge.text-dark,
+[data-theme="dark"] .cart-item .badge.text-dark {
+    color: #1a1a1a !important;
+}
+
+/* Order Summary Glass Card - WHITE text on dark background */
+[data-theme="dark"] .glass-card h5 {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .glass-card .d-flex span {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .glass-card .text-success {
+    color: #86efac !important;
+}
+
+[data-theme="dark"] .glass-card small.text-muted {
+    color: #b0b0b0 !important;
+}
+
+[data-theme="dark"] .glass-card .alert-info {
+    color: #93c5fd !important;
+}
+
+[data-theme="dark"] .glass-card .fs-5,
+[data-theme="dark"] .glass-card .fs-4 {
+    color: #ffffff !important;
+}
+
+[data-theme="dark"] .glass-card hr {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
 /* Page Header */
 [data-theme="dark"] .page-header {
     background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
