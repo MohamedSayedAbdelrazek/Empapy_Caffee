@@ -13,9 +13,7 @@ class LoyaltyReward extends Model
 
     protected $fillable = [
         'name',
-        'name_ar',
         'description',
-        'description_ar',
         'points_required',
         'reward_type',
         'reward_value',
@@ -169,7 +167,7 @@ class LoyaltyReward extends Model
             'discount_fixed' => number_format($this->reward_value) . ' ج.م خصم',
             'discount_percent' => $this->reward_value . '% خصم',
             'free_shipping' => 'شحن مجاني',
-            'free_product' => $this->product?->name_ar ?? 'منتج مجاني',
+            'free_product' => $this->product?->name ?? 'منتج مجاني',
             default => '',
         };
     }
@@ -203,10 +201,8 @@ class LoyaltyReward extends Model
     {
         return [
             [
-                'name' => '5 EGP Discount',
-                'name_ar' => 'خصم 5 ج.م',
-                'description' => 'Get 5 EGP off your next order',
-                'description_ar' => 'احصل على خصم 5 ج.م على طلبك القادم',
+                'name' => 'خصم 5 ج.م',
+                'description' => 'احصل على خصم 5 ج.م على طلبك القادم',
                 'points_required' => 100,
                 'reward_type' => 'discount_fixed',
                 'reward_value' => 5,
@@ -227,10 +223,8 @@ class LoyaltyReward extends Model
                 'sort_order' => 2,
             ],
             [
-                'name' => '70 EGP Discount',
-                'name_ar' => 'خصم 70 ج.م',
-                'description' => 'Get 70 EGP off your next order',
-                'description_ar' => 'احصل على خصم 70 ج.م على طلبك القادم',
+                'name' => 'خصم 70 ج.م',
+                'description' => 'احصل على خصم 70 ج.م على طلبك القادم',
                 'points_required' => 1000,
                 'reward_type' => 'discount_fixed',
                 'reward_value' => 70,
@@ -240,10 +234,8 @@ class LoyaltyReward extends Model
                 'sort_order' => 3,
             ],
             [
-                'name' => 'Free Shipping',
-                'name_ar' => 'شحن مجاني',
-                'description' => 'Free shipping on your next order',
-                'description_ar' => 'شحن مجاني على طلبك القادم',
+                'name' => 'شحن مجاني',
+                'description' => 'شحن مجاني على طلبك القادم',
                 'points_required' => 300,
                 'reward_type' => 'free_shipping',
                 'icon' => '🚚',
@@ -251,10 +243,8 @@ class LoyaltyReward extends Model
                 'sort_order' => 4,
             ],
             [
-                'name' => '15% Discount',
-                'name_ar' => 'خصم 15%',
-                'description' => 'Get 15% off your next order',
-                'description_ar' => 'احصل على خصم 15% على طلبك القادم',
+                'name' => 'خصم 15%',
+                'description' => 'احصل على خصم 15% على طلبك القادم',
                 'points_required' => 800,
                 'reward_type' => 'discount_percent',
                 'reward_value' => 15,
@@ -264,10 +254,8 @@ class LoyaltyReward extends Model
                 'sort_order' => 5,
             ],
             [
-                'name' => '25% Discount',
-                'name_ar' => 'خصم 25%',
-                'description' => 'Get 25% off your next order - VIP only!',
-                'description_ar' => 'احصل على خصم 25% على طلبك القادم - لأعضاء VIP فقط!',
+                'name' => 'خصم 25%',
+                'description' => 'احصل على خصم 25% على طلبك القادم - لأعضاء VIP فقط!',
                 'points_required' => 1500,
                 'reward_type' => 'discount_percent',
                 'reward_value' => 25,
