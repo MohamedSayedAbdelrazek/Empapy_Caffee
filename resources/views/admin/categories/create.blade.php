@@ -41,7 +41,7 @@
                         @error('image')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">اختر صورة من جهازك (JPG, PNG, GIF - حد أقصى 2MB)</div>
+                        <div class="form-text" style="color:gray;">اختر صورة من جهازك (JPG, PNG, GIF - حد أقصى 2MB)</div>
                         <div id="imagePreview" class="mt-3" style="display: none;">
                             <img src="" alt="معاينة الصورة" class="img-thumbnail" style="max-height: 200px;">
                         </div>

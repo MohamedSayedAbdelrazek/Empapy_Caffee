@@ -282,7 +282,8 @@ img {
 .btn-icon {
     width: 48px;
     height: 48px;
-    min-width: 48px; /* Ensure minimum touch target */
+    min-width: 48px;
+    /* Ensure minimum touch target */
     min-height: 48px;
     display: flex;
     align-items: center;
@@ -929,12 +930,12 @@ img {
 }
 
 /* ========================================
-   Footer Styles
+   Footer Styles (Fixed - Same in Light & Dark Mode)
    ======================================== */
 .footer-main {
     position: relative;
-    background: var(--gray-900);
-    color: var(--white);
+    background: #1a1a1a !important;
+    color: #ffffff !important;
 }
 
 .footer-wave {
@@ -960,6 +961,7 @@ img {
     gap: 12px;
     font-size: 1.5rem;
     font-weight: 800;
+    color: #ffffff !important;
 }
 
 .footer-brand .brand-icon {
@@ -975,7 +977,7 @@ img {
 }
 
 .footer-about {
-    color: var(--gray-400);
+    color: #9ca3af !important;
     line-height: 1.8;
 }
 
@@ -991,21 +993,21 @@ img {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.1) !important;
     border-radius: var(--radius-full);
-    color: var(--white);
+    color: #ffffff !important;
     font-size: 1.2rem;
     transition: all var(--transition-normal);
 }
 
 .social-link:hover {
-    background: var(--gold);
-    color: var(--espresso);
+    background: var(--gold) !important;
+    color: #ffffff !important;
     transform: translateY(-3px);
 }
 
 .footer-title {
-    color: var(--white);
+    color: #ffffff !important;
     font-size: 1.1rem;
     font-weight: 700;
     margin-bottom: 25px;
@@ -1035,14 +1037,14 @@ img {
 }
 
 .footer-links a {
-    color: var(--gray-400);
+    color: #9ca3af !important;
     transition: all var(--transition-fast);
     display: inline-flex;
     align-items: center;
 }
 
 .footer-links a:hover {
-    color: var(--gold);
+    color: var(--gold) !important;
     padding-right: 8px;
 }
 
@@ -1057,11 +1059,11 @@ img {
     align-items: flex-start;
     gap: 15px;
     margin-bottom: 18px;
-    color: var(--gray-400);
+    color: #9ca3af !important;
 }
 
 .footer-contact i {
-    color: var(--gold);
+    color: var(--gold) !important;
     font-size: 1.1rem;
     margin-top: 3px;
 }
@@ -1073,10 +1075,11 @@ img {
 .footer-bottom {
     padding: 25px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: #1a1a1a !important;
 }
 
 .footer-bottom p {
-    color: var(--gray-500);
+    color: #6b7280 !important;
     font-size: 0.9rem;
 }
 

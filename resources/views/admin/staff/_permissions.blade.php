@@ -5,10 +5,28 @@
     $userPermissions = isset($staff) ? $staff->permissions->pluck('id')->toArray() : [];
 @endphp
 
+@push('styles')
+<style>
+    #permissionsSection .form-check-input {
+        border: 2px solid #333333e3 !important;
+        width: 1em;
+        height: 1em;
+    }
+    #permissionsSection .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd !important;
+    }
+    #permissionsSection .form-check-input:focus {
+        border-color: #333 !important;
+        box-shadow: 0 0 0 0.2rem rgba(0, 0, 0, 0.15);
+    }
+</style>
+@endpush
+
 <div class="col-12" id="permissionsSection">
     <div class="card bg-light">
         <div class="card-body">
-            <h5 class="card-title mb-3">
+            <h5 class="card-title mb-3 text-dark">
                 <i class="bi bi-shield-lock me-2"></i>الصلاحيات
             </h5>
             <p class="text-muted small mb-3">
@@ -20,7 +38,7 @@
                     <div class="col-md-6 col-lg-4">
                         <div class="border rounded p-3 bg-white h-100">
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <h6 class="mb-0">{{ $groupLabels[$group] ?? $group }}</h6>
+                                <h6 class="mb-0 text-dark">{{ $groupLabels[$group] ?? $group }}</h6>
                                 <button type="button" class="btn btn-sm btn-outline-secondary select-all-btn"
                                     data-group="{{ $group }}">
                                     <i class="bi bi-check-all"></i> الكل
@@ -33,7 +51,7 @@
                                         name="permissions[]" value="{{ $permission->id }}"
                                         id="perm_{{ $permission->id }}" data-group="{{ $group }}"
                                         {{ in_array($permission->id, $userPermissions) ? 'checked' : '' }}>
-                                    <label class="form-check-label small" for="perm_{{ $permission->id }}">
+                                    <label class="form-check-label small text-dark" for="perm_{{ $permission->id }}">
                                         {{ $permission->display_name_ar }}
                                     </label>
                                 </div>
