@@ -50,13 +50,13 @@
     <meta name="apple-mobile-web-app-title" content="إمبابي كافيه">
 
     <!-- Favicon & App Icons -->
-    <link rel="icon" type="image/png" href="{{ asset('icons/ios/32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('icons/ios/16.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('icons/ios/32.png') }}">
-    <link rel="apple-touch-icon" href="{{ asset('icons/ios/180.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16x16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="120x120" href="{{ asset('icons/ios/120.png') }}">
+    <link rel="apple-touch-icon" sizes="128x128" href="{{ asset('icons/ios/128.png') }}">
     <link rel="apple-touch-icon" sizes="152x152" href="{{ asset('icons/ios/152.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icons/ios/180.png') }}">
-    <link rel="apple-touch-icon" sizes="167x167" href="{{ asset('icons/ios/167.png') }}">
+    <link rel="apple-touch-icon" sizes="256x256" href="{{ asset('icons/ios/256.png') }}">
 
     <!-- SEO Meta Tags -->
     <meta name="description" content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
