@@ -48,9 +48,9 @@
                 </div>
                 <div class="col-lg-6 d-none d-lg-block" data-aos="fade-up" data-aos-delay="200">
                     <div class="hero-image text-center" style="position: relative; z-index: 100;">
-                        <img src="{{ asset('images/hero-coffee.jpg') }}" alt="Premium Coffee" loading="lazy"
+                        <img src="{{ asset('images/hero-coffee-new.png') }}" alt="Premium Coffee" loading="lazy"
                             decoding="async"
-                            style="border-radius: 30px; max-height: 450px; width: auto; object-fit: cover;">
+                            style="border-radius: 30px; max-height: 450px; width: auto; object-fit: cover; box-shadow: 0 25px 60px rgba(0,0,0,0.4);">
                     </div>
                 </div>
             </div>
@@ -429,8 +429,8 @@
         }
 
         /* =========================================
-                                               CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                               ========================================= */
+                                                       CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                                       ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
