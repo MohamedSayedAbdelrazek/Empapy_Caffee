@@ -57,70 +57,34 @@
         </div>
     </section>
 
-    <!-- Categories Section - WOW Edition -->
-    <section class="categories-section-premium py-5">
-        <!-- Animated Background Decorations -->
-        <div class="categories-bg-decorations">
-            <div class="floating-bean bean-1">☕</div>
-            <div class="floating-bean bean-2">🫘</div>
-            <div class="floating-bean bean-3">☕</div>
-            <div class="floating-bean bean-4">🫘</div>
-            <div class="glow-orb orb-1"></div>
-            <div class="glow-orb orb-2"></div>
-        </div>
-
-        <div class="container position-relative">
-            <!-- Premium Section Header -->
-            <div class="section-header-premium text-center mb-5" data-aos="fade-up">
-                <span class="section-tag">
-                    <i class="bi bi-stars"></i>
-                    اختيارات مميزة
-                </span>
-                <h2 class="section-title-glow">
-                    تصفح <span class="gold-highlight">الأصناف</span>
-                </h2>
-                <p class="section-subtitle">اختر من مجموعتنا المتنوعة من أفضل أنواع القهوة الفاخرة</p>
-                <div class="title-underline">
-                    <span class="underline-dot"></span>
-                </div>
+    <!-- Categories Section -->
+    <section class="categories-section py-5">
+        <div class="container">
+            <div class="section-title text-center mb-5" data-aos="fade-up">
+                <h2>تصفح الأصناف</h2>
+                <p>اختر من مجموعتنا المتنوعة من أفضل أنواع القهوة</p>
             </div>
 
-            <!-- Premium Cards Grid -->
             <div class="row g-4 justify-content-center">
                 @foreach ($categories as $category)
-                    <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $loop->index * 150 }}">
-                        <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="category-card-3d"
-                            data-tilt data-tilt-max="8" data-tilt-speed="400" data-tilt-glare data-tilt-max-glare="0.2">
-                            <!-- Card Glow Effect -->
-                            <div class="card-glow-effect"></div>
-
-                            <!-- Card Image -->
-                            <div class="card-image-premium">
+                    <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
+                        <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="category-card-vertical">
+                            <div class="card-image">
                                 <img src="{{ $category->image }}" alt="{{ $category->name }}" loading="lazy"
                                     decoding="async">
-                                <div class="image-overlay-gradient"></div>
-                                <div class="hover-shine"></div>
-
-                                <!-- Product Count Badge -->
-                                <div class="count-badge-floating">
-                                    <i class="bi bi-cup-hot-fill"></i>
-                                    <span>{{ $category->products_count }}</span>
-                                </div>
+                                <div class="card-overlay"></div>
+                                <div class="card-shine"></div>
                             </div>
-
-                            <!-- Card Content -->
-                            <div class="card-content-premium">
-                                <div class="content-inner">
-                                    <h3 class="category-name">{{ $category->name }}</h3>
-                                    <p class="category-desc">اكتشف أفضل منتجات {{ $category->name }}</p>
-                                    <div class="explore-cta">
-                                        <span>استكشف الآن</span>
-                                        <i class="bi bi-arrow-left-circle-fill"></i>
-                                    </div>
-                                </div>
-
-                                <!-- Animated Border -->
-                                <div class="animated-border"></div>
+                            <div class="card-content">
+                                <h3>{{ $category->name }}</h3>
+                                <p class="products-count">
+                                    <i class="bi bi-cup-hot-fill"></i>
+                                    {{ $category->products_count }} منتج
+                                </p>
+                                <span class="explore-btn">
+                                    اكتشف المزيد
+                                    <i class="bi bi-arrow-left"></i>
+                                </span>
                             </div>
                         </a>
                     </div>
@@ -307,429 +271,166 @@
             color: var(--gold) !important;
         }
 
-        /* =========================================
-                   PREMIUM CATEGORIES SECTION - WOW EDITION
-                   ========================================= */
-        .categories-section-premium {
-            position: relative;
-            background: linear-gradient(135deg, #1a0f0a 0%, #2c1810 50%, #1a0f0a 100%);
-            overflow: hidden;
-            padding: 80px 0 !important;
+        /* Categories Section Styles */
+        .categories-section {
+            background: linear-gradient(135deg, #faf8f5 0%, #f5f0e8 100%);
         }
 
-        /* Animated Background Decorations */
-        .categories-bg-decorations {
+        .section-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold), #e6c547);
+            color: var(--espresso);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Vertical Card Styles */
+        .category-card-vertical {
+            display: block;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            height: 100%;
+        }
+
+        .category-card-vertical:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(201, 162, 39, 0.2);
+        }
+
+        .card-image {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .category-card-vertical:hover .card-image img {
+            transform: scale(1.1);
+        }
+
+        .card-overlay {
             position: absolute;
             inset: 0;
-            pointer-events: none;
-            overflow: hidden;
+            background: linear-gradient(to top, rgba(44, 24, 16, 0.7) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .floating-bean {
+        .category-card-vertical:hover .card-overlay {
+            opacity: 1;
+        }
+
+        .card-shine {
             position: absolute;
-            font-size: 2rem;
-            opacity: 0.15;
-            animation: floatBean 15s ease-in-out infinite;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: skewX(-25deg);
+            transition: left 0.6s ease;
         }
 
-        .bean-1 {
-            top: 10%;
-            left: 5%;
-            animation-delay: 0s;
+        .category-card-vertical:hover .card-shine {
+            left: 150%;
         }
 
-        .bean-2 {
-            top: 60%;
-            left: 10%;
-            animation-delay: 3s;
+        .card-content {
+            padding: 25px;
+            text-align: center;
         }
 
-        .bean-3 {
-            top: 20%;
-            right: 8%;
-            animation-delay: 6s;
+        .card-content h3 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 0 0 10px 0;
+            color: var(--espresso, #2c1810);
+            transition: color 0.3s ease;
         }
 
-        .bean-4 {
-            bottom: 15%;
-            right: 5%;
-            animation-delay: 9s;
+        .category-card-vertical:hover .card-content h3 {
+            color: var(--gold, #c9a227);
         }
 
-        @keyframes floatBean {
-
-            0%,
-            100% {
-                transform: translateY(0) rotate(0deg);
-            }
-
-            50% {
-                transform: translateY(-30px) rotate(15deg);
-            }
+        .card-content .products-count {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            color: #888;
+            margin-bottom: 15px;
         }
 
-        .glow-orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            animation: orbPulse 8s ease-in-out infinite;
+        .card-content .products-count i {
+            color: var(--gold, #c9a227);
+            font-size: 1rem;
         }
 
-        .orb-1 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(201, 162, 39, 0.2) 0%, transparent 70%);
-            top: -100px;
-            left: -100px;
-        }
-
-        .orb-2 {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(201, 162, 39, 0.15) 0%, transparent 70%);
-            bottom: -50px;
-            right: -50px;
-            animation-delay: 4s;
-        }
-
-        @keyframes orbPulse {
-
-            0%,
-            100% {
-                opacity: 0.5;
-                transform: scale(1);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
-        }
-
-        /* Premium Section Header */
-        .section-header-premium {
-            position: relative;
-            z-index: 10;
-        }
-
-        .section-tag {
+        .explore-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.1));
-            border: 1px solid rgba(201, 162, 39, 0.3);
-            color: var(--gold, #c9a227);
+            background: linear-gradient(135deg, var(--gold, #c9a227), #d4a84b);
+            color: white;
             padding: 10px 25px;
             border-radius: 50px;
             font-size: 0.9rem;
             font-weight: 600;
-            margin-bottom: 20px;
-            backdrop-filter: blur(10px);
-            animation: tagGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes tagGlow {
-
-            0%,
-            100% {
-                box-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
-            }
-
-            50% {
-                box-shadow: 0 0 40px rgba(201, 162, 39, 0.4);
-            }
-        }
-
-        .section-title-glow {
-            font-size: 3rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 15px;
-            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .gold-highlight {
-            color: var(--gold, #c9a227);
-            position: relative;
-            display: inline-block;
-        }
-
-        .gold-highlight::after {
-            content: '';
-            position: absolute;
-            bottom: 5px;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            animation: shimmer 2s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                opacity: 0.5;
-                transform: scaleX(0.8);
-            }
-
-            50% {
-                opacity: 1;
-                transform: scaleX(1);
-            }
-        }
-
-        .section-subtitle {
-            font-size: 1.1rem;
-            color: rgba(255, 255, 255, 0.7);
-            max-width: 500px;
-            margin: 0 auto 20px;
-        }
-
-        .title-underline {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .title-underline::before,
-        .title-underline::after {
-            content: '';
-            width: 80px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold, #c9a227));
-        }
-
-        .title-underline::after {
-            background: linear-gradient(90deg, var(--gold, #c9a227), transparent);
-        }
-
-        .underline-dot {
-            width: 12px;
-            height: 12px;
-            background: var(--gold, #c9a227);
-            border-radius: 50%;
-            animation: dotPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes dotPulse {
-
-            0%,
-            100% {
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(201, 162, 39, 0.4);
-            }
-
-            50% {
-                transform: scale(1.2);
-                box-shadow: 0 0 20px 5px rgba(201, 162, 39, 0.2);
-            }
-        }
-
-        /* 3D Category Cards */
-        .category-card-3d {
-            display: block;
-            position: relative;
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            overflow: hidden;
-            text-decoration: none;
-            color: inherit;
-            transform-style: preserve-3d;
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            height: 100%;
-        }
-
-        .category-card-3d:hover {
-            transform: translateY(-15px) scale(1.02);
-            border-color: rgba(201, 162, 39, 0.3);
-        }
-
-        .card-glow-effect {
-            position: absolute;
-            inset: -2px;
-            border-radius: 26px;
-            background: linear-gradient(135deg, var(--gold), transparent, var(--gold));
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            z-index: -1;
-            filter: blur(15px);
-        }
-
-        .category-card-3d:hover .card-glow-effect {
-            opacity: 0.5;
-        }
-
-        /* Card Image Premium */
-        .card-image-premium {
-            position: relative;
-            height: 220px;
-            overflow: hidden;
-        }
-
-        .card-image-premium img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .category-card-3d:hover .card-image-premium img {
-            transform: scale(1.15);
-        }
-
-        .image-overlay-gradient {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to top,
-                    rgba(26, 15, 10, 0.95) 0%,
-                    rgba(26, 15, 10, 0.5) 40%,
-                    transparent 100%);
-        }
-
-        .hover-shine {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 60%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transform: skewX(-25deg);
-            transition: left 0.8s ease;
-        }
-
-        .category-card-3d:hover .hover-shine {
-            left: 200%;
-        }
-
-        /* Floating Count Badge */
-        .count-badge-floating {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: linear-gradient(135deg, var(--gold), #d4a84b);
-            color: #1a0f0a;
-            padding: 8px 15px;
-            border-radius: 50px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            box-shadow: 0 8px 25px rgba(201, 162, 39, 0.4);
-            transform: translateY(-5px);
-            opacity: 0;
-            transition: all 0.4s ease 0.1s;
-        }
-
-        .category-card-3d:hover .count-badge-floating {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .count-badge-floating i {
-            font-size: 0.9rem;
-        }
-
-        /* Card Content Premium */
-        .card-content-premium {
-            position: relative;
-            padding: 30px;
-        }
-
-        .content-inner {
-            position: relative;
-            z-index: 2;
-        }
-
-        .category-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: white;
-            margin-bottom: 10px;
-            transition: color 0.3s ease;
-        }
-
-        .category-card-3d:hover .category-name {
-            color: var(--gold, #c9a227);
-        }
-
-        .category-desc {
-            font-size: 0.95rem;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 20px;
-            line-height: 1.6;
-        }
-
-        .explore-cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            color: var(--gold, #c9a227);
-            font-weight: 600;
-            font-size: 1rem;
             transition: all 0.3s ease;
         }
 
-        .explore-cta i {
-            font-size: 1.3rem;
+        .explore-btn i {
             transition: transform 0.3s ease;
         }
 
-        .category-card-3d:hover .explore-cta {
-            color: white;
+        .category-card-vertical:hover .explore-btn {
+            background: linear-gradient(135deg, var(--espresso, #2c1810), #3d2419);
+            transform: scale(1.05);
         }
 
-        .category-card-3d:hover .explore-cta i {
-            transform: translateX(-8px);
+        .category-card-vertical:hover .explore-btn i {
+            transform: translateX(-5px);
         }
 
-        /* Animated Border */
-        .animated-border {
-            position: absolute;
-            bottom: 0;
-            left: 30px;
-            right: 30px;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, var(--gold), transparent);
-            transform: scaleX(0);
-            transition: transform 0.5s ease;
-        }
-
-        .category-card-3d:hover .animated-border {
-            transform: scaleX(1);
-        }
-
-        /* Responsive */
         @media (max-width: 768px) {
-            .section-title-glow {
-                font-size: 2rem;
+            .card-image {
+                height: 160px;
             }
 
-            .card-image-premium {
-                height: 180px;
-            }
-
-            .card-content-premium {
+            .card-content {
                 padding: 20px;
             }
 
-            .category-name {
-                font-size: 1.2rem;
+            .card-content h3 {
+                font-size: 1.1rem;
             }
 
-            .floating-bean {
-                display: none;
+            .explore-btn {
+                padding: 8px 20px;
+                font-size: 0.85rem;
             }
         }
 
         /* =========================================
-                                                                   CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                                                   ========================================= */
+                                                           CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                                           ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
@@ -1222,22 +923,6 @@
 @endpush
 
 @push('scripts')
-    <!-- VanillaTilt.js for 3D Card Effects -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
-    <script>
-        // Initialize VanillaTilt for 3D category cards
-        document.addEventListener('DOMContentLoaded', function() {
-            VanillaTilt.init(document.querySelectorAll(".category-card-3d"), {
-                max: 8,
-                speed: 400,
-                glare: true,
-                "max-glare": 0.2,
-                perspective: 1000,
-                scale: 1.02
-            });
-        });
-    </script>
-
     <script>
         // Video Play/Pause Toggle
         document.addEventListener('DOMContentLoaded', function() {
