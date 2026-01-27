@@ -117,6 +117,7 @@
     <div class="announcement-bar" id="announcementBar">
         <div class="announcement-track">
             <div class="announcement-content">
+                <!-- First Set -->
                 <span class="announcement-item">
                     <i class="bi bi-truck"></i>
                     توصيل مجاني للطلبات أكثر من 500 ج.م
@@ -128,48 +129,37 @@
                 </span>
                 <span class="announcement-divider">☕</span>
                 <span class="announcement-item">
-                    <span class="announcement-item">
-                        <i class="bi bi-star-fill"></i>
-                        قهوة طازجة محمصة يومياً
-                    </span>
-                    <span class="announcement-divider">☕</span>
-                    <span class="announcement-item">
-                        <i class="bi bi-clock"></i>
-                        توصيل سريع خلال 24 ساعة
-                    </span>
-                    <span class="announcement-divider">☕</span>
-                    <span class="announcement-item">
-                        <i class="bi bi-truck"></i>
-                        توصيل مجاني للطلبات أكثر من 500 ج.م
-                    </span>
-                    <span class="announcement-divider">☕</span>
-                    <span class="announcement-item">
-                        <i class="bi bi-gift"></i>
-                        خصم 15% على طلبك الأول - كود: WELCOME15
-                    </span>
-                    <span class="announcement-divider">☕</span>
+                    <i class="bi bi-star-fill"></i>
+                    قهوة طازجة محمصة يومياً
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-clock"></i>
+                    توصيل سريع خلال 24 ساعة
+                </span>
+                <span class="announcement-divider">☕</span>
 
-                    <!-- DUPLICATE SET FOR SEAMLESS LOOP -->
-                    <span class="announcement-item">
-                        <i class="bi bi-star-fill"></i>
-                        قهوة طازجة محمصة يومياً
-                    </span>
-                    <span class="announcement-divider">☕</span>
-                    <span class="announcement-item">
-                        <i class="bi bi-clock"></i>
-                        توصيل سريع خلال 24 ساعة
-                    </span>
-                    <span class="announcement-divider">☕</span>
-                    <span class="announcement-item">
-                        <i class="bi bi-truck"></i>
-                        توصيل مجاني للطلبات أكثر من 500 ج.م
-                    </span>
-                    <span class="announcement-divider">☕</span>
-                    <span class="announcement-item">
-                        <i class="bi bi-gift"></i>
-                        خصم 15% على طلبك الأول - كود: WELCOME15
-                    </span>
-                    <span class="announcement-divider">☕</span>
+                <!-- Duplicate Set for Seamless Loop -->
+                <span class="announcement-item">
+                    <i class="bi bi-truck"></i>
+                    توصيل مجاني للطلبات أكثر من 500 ج.م
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-gift"></i>
+                    خصم 15% على طلبك الأول - كود: WELCOME15
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-star-fill"></i>
+                    قهوة طازجة محمصة يومياً
+                </span>
+                <span class="announcement-divider">☕</span>
+                <span class="announcement-item">
+                    <i class="bi bi-clock"></i>
+                    توصيل سريع خلال 24 ساعة
+                </span>
+                <span class="announcement-divider">☕</span>
             </div>
         </div>
         <button class="announcement-close" id="announcementCloseBtn" aria-label="إخفاء شريط الإعلانات">
