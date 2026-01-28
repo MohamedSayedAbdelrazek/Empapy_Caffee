@@ -238,7 +238,10 @@ class ProductService
 
         // Process each value
         foreach ($values as $index => $valueData) {
-            if (empty($valueData['value_ar'])) {
+            // Accept both 'value' (from form) and 'value_ar' (for compatibility)
+            $valueText = $valueData['value'] ?? $valueData['value_ar'] ?? null;
+
+            if (empty($valueText)) {
                 continue;
             }
 
@@ -247,8 +250,8 @@ class ProductService
             if ($valueId && in_array($valueId, $existingValueIds)) {
                 // Update existing value
                 ProductOptionValue::where('id', $valueId)->update([
-                    'value' => $valueData['value'] ?? $valueData['value_ar'],
-                    'value_ar' => $valueData['value_ar'],
+                    'value' => $valueText,
+                    'value_ar' => $valueText,
                     'price_modifier' => floatval($valueData['price_modifier'] ?? 0),
                     'is_default' => isset($valueData['is_default']) && $valueData['is_default'],
                     'sort_order' => $index,
@@ -258,8 +261,8 @@ class ProductService
                 // Create new value
                 $newValue = ProductOptionValue::create([
                     'product_option_id' => $option->id,
-                    'value' => $valueData['value'] ?? $valueData['value_ar'],
-                    'value_ar' => $valueData['value_ar'],
+                    'value' => $valueText,
+                    'value_ar' => $valueText,
                     'price_modifier' => floatval($valueData['price_modifier'] ?? 0),
                     'is_default' => isset($valueData['is_default']) && $valueData['is_default'],
                     'sort_order' => $index,
