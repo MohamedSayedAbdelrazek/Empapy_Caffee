@@ -76,8 +76,8 @@ class LoyaltyService
         $transaction = $loyalty->addPoints(
             $totalPoints,
             'order',
-            "Points earned from order #{$order->id}",
-            'نقاط مكتسبة من الطلب #' . $order->id,
+            "Points earned from order #{$order->order_number}",
+            'نقاط مكتسبة من الطلب #' . $order->order_number,
             $order
         );
 

@@ -107,11 +107,14 @@ class AuthController extends Controller
             'role' => 'customer'
         ]);
 
-        // Create loyalty points record for new user
-        $loyaltyPoint = $user->loyaltyPoints()->create([
-            'referral_code' => \App\Models\LoyaltyPoint::generateReferralCode($user),
-            'current_tier' => 'bronze',
-        ]);
+        // Create loyalty points record for new user (or get existing if somehow already exists)
+        $loyaltyPoint = $user->loyaltyPoints()->firstOrCreate(
+            ['user_id' => $user->id],
+            [
+                'referral_code' => \App\Models\LoyaltyPoint::generateReferralCode($user),
+                'current_tier' => 'bronze',
+            ]
+        );
 
         // Process signup bonus
         $loyaltyService = app(\App\Services\LoyaltyService::class);

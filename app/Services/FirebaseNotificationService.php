@@ -175,7 +175,7 @@ class FirebaseNotificationService
     public function notifyNewOrder($order): array
     {
         return $this->sendToStaff(
-            '🛒 طلب جديد #' . $order->id,
+            '🛒 طلب جديد #' . $order->order_number,
             "طلب جديد من {$order->customer_name} - " . number_format($order->total, 2) . ' ج.م',
             [
                 'type' => 'new_order',
@@ -207,7 +207,7 @@ class FirebaseNotificationService
 
         return $this->sendToUsers(
             [$order->user_id],
-            '📦 تحديث طلبك #' . $order->id,
+            '📦 تحديث طلبك #' . $order->order_number,
             "حالة طلبك أصبحت: {$newStatusLabel}",
             [
                 'type' => 'order_status_change',
@@ -235,7 +235,7 @@ class FirebaseNotificationService
     public function notifyOrderCancelled($order): array
     {
         return $this->sendToStaff(
-            '❌ طلب ملغي #' . $order->id,
+            '❌ طلب ملغي #' . $order->order_number,
             "تم إلغاء الطلب من {$order->customer_name}",
             [
                 'type' => 'order_cancelled',
