@@ -9,7 +9,7 @@ try {
 }
 
 // 2. PWA Caching Strategy (Cache First, Network Fallback)
-const CACHE_NAME = 'empapy-v2';
+const CACHE_NAME = 'empapy-v3';
 const urlsToCache = [
   '/',
   '/css/app.css',
@@ -48,9 +48,28 @@ self.addEventListener('fetch', event => {
   // Ignore non-GET requests (like POST)
   if (event.request.method !== 'GET') return;
 
-  // Ignore admin/api routes from caching to ensure fresh data
   const url = new URL(event.request.url);
-  if (url.pathname.startsWith('/admin') || url.pathname.startsWith('/api')) {
+
+  // CRITICAL: Never cache these routes (authentication, checkout, Stripe)
+  // These need fresh CSRF tokens every time
+  const neverCacheRoutes = [
+    '/login',
+    '/register',
+    '/logout',
+    '/password',
+    '/checkout',
+    '/cart',
+    '/admin',
+    '/api',
+    '/sanctum'
+  ];
+
+  // Check if URL should never be cached
+  const shouldNotCache = neverCacheRoutes.some(route => url.pathname.startsWith(route))
+    || url.href.includes('stripe.com');
+
+  if (shouldNotCache) {
+    // Network only - no caching
     return;
   }
 
