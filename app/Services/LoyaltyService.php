@@ -409,17 +409,23 @@ class LoyaltyService
 
                 $referral->markRewarded((int) $rule->value, $referral->referred_points_awarded);
 
-                // Send notification to referrer about completed referral
-                $referrer->notifications()->create([
-                    'title' => '🎊 مبروك! حصلت على نقاط الإحالة!',
-                    'body' => "{$user->name} أكمل أول طلب! حصلت على {$rule->value} نقطة مكافأة.",
-                    'type' => 'referral_completed',
-                    'data' => json_encode([
-                        'referred_name' => $user->name,
-                        'points_earned' => (int) $rule->value,
-                        'referral_id' => $referral->id,
-                    ]),
-                ]);
+                // Send push notification to referrer about completed referral
+                try {
+                    $firebaseService = app(FirebaseNotificationService::class);
+                    $firebaseService->sendToUsers(
+                        [$referrer->id],
+                        '🎊 مبروك! حصلت على نقاط الإحالة!',
+                        "{$user->name} أكمل أول طلب! حصلت على {$rule->value} نقطة مكافأة.",
+                        [
+                            'type' => 'referral_completed',
+                            'referred_name' => $user->name,
+                            'points_earned' => (int) $rule->value,
+                            'url' => route('loyalty.index'),
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    Log::warning('Failed to send referral completion notification: ' . $e->getMessage());
+                }
             }
         }
     }

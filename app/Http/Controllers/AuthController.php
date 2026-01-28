@@ -125,20 +125,24 @@ class AuthController extends Controller
         if ($referralCode) {
             $referral = $loyaltyService->processReferralSignup($user, $referralCode);
 
-            // Notify referrer about new signup
+            // Notify referrer about new signup (via Firebase push notification)
             if ($referral && $referral->referrer) {
-                $referrer = $referral->referrer;
-
-                // Send notification to referrer
-                $referrer->notifications()->create([
-                    'title' => '🎉 إحالة جديدة!',
-                    'body' => "{$user->name} سجّل باستخدام رابط الإحالة الخاص بك! سيتم منحك النقاط عند أول طلب.",
-                    'type' => 'referral',
-                    'data' => json_encode([
-                        'referred_name' => $user->name,
-                        'referral_id' => $referral->id,
-                    ]),
-                ]);
+                try {
+                    $firebaseService = app(\App\Services\FirebaseNotificationService::class);
+                    $firebaseService->sendToUsers(
+                        [$referral->referrer->id],
+                        '🎉 إحالة جديدة!',
+                        "{$user->name} سجّل باستخدام رابط الإحالة الخاص بك! سيتم منحك النقاط عند أول طلب.",
+                        [
+                            'type' => 'referral_signup',
+                            'referred_name' => $user->name,
+                            'url' => route('loyalty.referral'),
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    // Notification failure should not break registration
+                    \Illuminate\Support\Facades\Log::warning('Failed to send referral notification: ' . $e->getMessage());
+                }
             }
 
             // Clear session
