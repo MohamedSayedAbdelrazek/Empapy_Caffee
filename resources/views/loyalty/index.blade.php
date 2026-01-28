@@ -270,21 +270,40 @@
                     <div class="p-4 bg-warning bg-opacity-10 rounded-3">
                         <i class="bi bi-cart-check fs-1 text-warning d-block mb-2"></i>
                         <h6>اشترِ أكثر</h6>
-                        <p class="small text-muted mb-0">احصل على 1 نقطة لكل 1 ج.م</p>
+                        <p class="small text-muted mb-0">
+                            @if (isset($pointRules['order']) && $pointRules['order'])
+                                احصل على {{ $pointRules['order']->value }} نقطة لكل
+                                {{ $pointRules['order']->threshold ?? 1 }} ج.م
+                            @else
+                                احصل على نقاط مع كل طلب
+                            @endif
+                        </p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="p-4 bg-info bg-opacity-10 rounded-3">
                         <i class="bi bi-star fs-1 text-info d-block mb-2"></i>
                         <h6>قيّم المنتجات</h6>
-                        <p class="small text-muted mb-0">10 نقاط لكل تقييم</p>
+                        <p class="small text-muted mb-0">
+                            @if (isset($pointRules['review']) && $pointRules['review'])
+                                {{ $pointRules['review']->value }} نقطة لكل تقييم
+                            @else
+                                احصل على نقاط مقابل التقييمات
+                            @endif
+                        </p>
                     </div>
                 </div>
                 <div class="col-md-4">
                     <div class="p-4 bg-success bg-opacity-10 rounded-3">
                         <i class="bi bi-people fs-1 text-success d-block mb-2"></i>
                         <h6>ادعُ أصدقاءك</h6>
-                        <p class="small text-muted mb-0">200 نقطة لكل إحالة ناجحة</p>
+                        <p class="small text-muted mb-0">
+                            @if (isset($pointRules['referral']) && $pointRules['referral'])
+                                {{ $pointRules['referral']->value }} نقطة لكل إحالة ناجحة
+                            @else
+                                احصل على نقاط مقابل الإحالات
+                            @endif
+                        </p>
                     </div>
                 </div>
             </div>

@@ -408,6 +408,18 @@ class LoyaltyService
                 );
 
                 $referral->markRewarded((int) $rule->value, $referral->referred_points_awarded);
+
+                // Send notification to referrer about completed referral
+                $referrer->notifications()->create([
+                    'title' => '🎊 مبروك! حصلت على نقاط الإحالة!',
+                    'body' => "{$user->name} أكمل أول طلب! حصلت على {$rule->value} نقطة مكافأة.",
+                    'type' => 'referral_completed',
+                    'data' => json_encode([
+                        'referred_name' => $user->name,
+                        'points_earned' => (int) $rule->value,
+                        'referral_id' => $referral->id,
+                    ]),
+                ]);
             }
         }
     }

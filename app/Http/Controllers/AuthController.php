@@ -74,9 +74,16 @@ class AuthController extends Controller
     /**
      * Show registration form
      */
-    public function showRegister()
+    public function showRegister(Request $request)
     {
-        return view('auth.register');
+        // Capture referral code from URL if present
+        if ($request->has('ref')) {
+            session(['referral_code' => $request->get('ref')]);
+        }
+
+        return view('auth.register', [
+            'referralCode' => session('referral_code')
+        ]);
     }
 
     /**
@@ -88,7 +95,8 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'phone' => 'nullable|string|max:20',
-            'password' => ['required', 'string', 'min:8', 'confirmed', Password::defaults()]
+            'password' => ['required', 'string', 'min:8', 'confirmed', Password::defaults()],
+            'referral_code' => 'nullable|string|max:20'
         ]);
 
         $user = User::create([
@@ -99,9 +107,52 @@ class AuthController extends Controller
             'role' => 'customer'
         ]);
 
+        // Create loyalty points record for new user
+        $loyaltyPoint = $user->loyaltyPoints()->create([
+            'referral_code' => \App\Models\LoyaltyPoint::generateReferralCode($user),
+            'current_tier' => 'bronze',
+        ]);
+
+        // Process signup bonus
+        $loyaltyService = app(\App\Services\LoyaltyService::class);
+        $loyaltyService->processSignupBonus($user);
+
+        // Process referral if code is present (from form or session)
+        $referralCode = $validated['referral_code'] ?? session('referral_code');
+        if ($referralCode) {
+            $referral = $loyaltyService->processReferralSignup($user, $referralCode);
+
+            // Notify referrer about new signup
+            if ($referral && $referral->referrer) {
+                $referrer = $referral->referrer;
+
+                // Send notification to referrer
+                $referrer->notifications()->create([
+                    'title' => '🎉 إحالة جديدة!',
+                    'body' => "{$user->name} سجّل باستخدام رابط الإحالة الخاص بك! سيتم منحك النقاط عند أول طلب.",
+                    'type' => 'referral',
+                    'data' => json_encode([
+                        'referred_name' => $user->name,
+                        'referral_id' => $referral->id,
+                    ]),
+                ]);
+            }
+
+            // Clear session
+            session()->forget('referral_code');
+        }
+
         Auth::login($user);
 
-        return redirect()->route('home')->with('success', 'تم إنشاء حسابك بنجاح!');
+        $successMessage = 'تم إنشاء حسابك بنجاح!';
+        if ($referralCode && isset($referral)) {
+            $rule = \App\Models\PointRule::active()->forTrigger('referral_signup')->first();
+            if ($rule) {
+                $successMessage .= " 🎁 حصلت على {$rule->value} نقطة مكافأة للتسجيل بإحالة!";
+            }
+        }
+
+        return redirect()->route('home')->with('success', $successMessage);
     }
 
     /**

@@ -31,6 +31,14 @@
                         <form action="{{ route('register') }}" method="POST">
                             @csrf
 
+                            @if (isset($referralCode) && $referralCode)
+                                <input type="hidden" name="referral_code" value="{{ $referralCode }}">
+                                <div class="alert alert-success mb-3">
+                                    <i class="bi bi-gift me-2"></i>
+                                    🎁 لديك رابط إحالة! سجّل الآن واحصل على نقاط مكافأة مجانية!
+                                </div>
+                            @endif
+
                             <div class="mb-3">
                                 <label class="form-label">الاسم الكامل *</label>
                                 <div class="input-group">

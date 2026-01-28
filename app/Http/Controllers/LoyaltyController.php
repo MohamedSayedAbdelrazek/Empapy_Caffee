@@ -64,6 +64,13 @@ class LoyaltyController extends Controller
             'referrals' => $user->successful_referrals_count,
         ];
 
+        // Get point rules for dynamic display
+        $pointRules = [
+            'order' => \App\Models\PointRule::active()->forTrigger('order_complete')->first(),
+            'review' => \App\Models\PointRule::active()->forTrigger('review')->first(),
+            'referral' => \App\Models\PointRule::active()->forTrigger('referral_made')->first(),
+        ];
+
         return view('loyalty.index', compact(
             'loyalty',
             'currentTier',
@@ -72,7 +79,8 @@ class LoyaltyController extends Controller
             'transactions',
             'pendingRedemptions',
             'featuredRewards',
-            'stats'
+            'stats',
+            'pointRules'
         ));
     }
 
