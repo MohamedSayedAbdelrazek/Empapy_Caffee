@@ -9,7 +9,7 @@ try {
 }
 
 // 2. PWA Caching Strategy (Cache First, Network Fallback)
-const CACHE_NAME = 'empapy-v3';
+const CACHE_NAME = 'empapy-v4';
 const urlsToCache = [
   '/',
   '/css/app.css',
@@ -43,7 +43,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - Smart caching strategy
 self.addEventListener('fetch', event => {
   // Ignore non-GET requests (like POST)
   if (event.request.method !== 'GET') return;
@@ -61,7 +61,8 @@ self.addEventListener('fetch', event => {
     '/cart',
     '/admin',
     '/api',
-    '/sanctum'
+    '/sanctum',
+    '/account'
   ];
 
   // Check if URL should never be cached
@@ -69,27 +70,56 @@ self.addEventListener('fetch', event => {
     || url.href.includes('stripe.com');
 
   if (shouldNotCache) {
-    // Network only - no caching
+    // Network only - no caching at all
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request).then(response => {
-          if (!response || response.status !== 200 || response.type !== 'basic') {
-            return response;
-          }
-          const responseToCache = response.clone();
-          caches.open(CACHE_NAME)
-            .then(cache => {
+  // Check if this is a navigation request (HTML page)
+  const isNavigationRequest = event.request.mode === 'navigate'
+    || (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html'));
+
+  // Check if this is a static asset
+  const isStaticAsset = /\.(css|js|png|jpg|jpeg|gif|svg|woff|woff2|ttf|ico|webp)$/i.test(url.pathname);
+
+  if (isNavigationRequest) {
+    // NETWORK FIRST for HTML pages - ensures fresh content after login/logout
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          // Cache the fresh response for offline use
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
               cache.put(event.request, responseToCache);
             });
+          }
           return response;
-        });
-      })
-  );
+        })
+        .catch(() => {
+          // If network fails, try cache (offline mode)
+          return caches.match(event.request);
+        })
+    );
+  } else if (isStaticAsset) {
+    // CACHE FIRST for static assets (CSS, JS, images)
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => {
+          if (response) {
+            return response;
+          }
+          return fetch(event.request).then(response => {
+            if (!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+            return response;
+          });
+        })
+    );
+  }
+  // For other requests, let browser handle normally (no caching)
 });
