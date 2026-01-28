@@ -251,7 +251,6 @@ class ProductService
                 // Update existing value
                 ProductOptionValue::where('id', $valueId)->update([
                     'value' => $valueText,
-                    'value_ar' => $valueText,
                     'price_modifier' => floatval($valueData['price_modifier'] ?? 0),
                     'is_default' => isset($valueData['is_default']) && $valueData['is_default'],
                     'sort_order' => $index,
@@ -262,7 +261,6 @@ class ProductService
                 $newValue = ProductOptionValue::create([
                     'product_option_id' => $option->id,
                     'value' => $valueText,
-                    'value_ar' => $valueText,
                     'price_modifier' => floatval($valueData['price_modifier'] ?? 0),
                     'is_default' => isset($valueData['is_default']) && $valueData['is_default'],
                     'sort_order' => $index,
