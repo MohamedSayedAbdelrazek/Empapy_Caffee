@@ -45,7 +45,16 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         $order->load('items.product', 'user');
-        return view('admin.orders.show', compact('order'));
+
+        // Load reward redemption if coupon code starts with RWD-
+        $rewardRedemption = null;
+        if ($order->coupon_code && str_starts_with($order->coupon_code, 'RWD-')) {
+            $rewardRedemption = \App\Models\RewardRedemption::with('reward.product')
+                ->where('redemption_code', $order->coupon_code)
+                ->first();
+        }
+
+        return view('admin.orders.show', compact('order', 'rewardRedemption'));
     }
 
     /**

@@ -102,6 +102,43 @@
                                     <td>- {{ number_format($order->discount) }} ج.م</td>
                                 </tr>
                             @endif
+
+                            {{-- Free Product Reward Alert --}}
+                            @if (isset($rewardRedemption) &&
+                                    $rewardRedemption &&
+                                    $rewardRedemption->reward &&
+                                    $rewardRedemption->reward->reward_type === 'free_product')
+                                <tr class="table-warning" style="background: rgba(245, 158, 11, 0.15);">
+                                    <td colspan="4" class="text-start">
+                                        <div class="d-flex align-items-center gap-3 py-2">
+                                            <div class="bg-warning bg-opacity-25 rounded-circle p-2">
+                                                <i class="bi bi-gift text-warning" style="font-size: 1.5rem;"></i>
+                                            </div>
+                                            <div class="flex-grow-1">
+                                                <strong class="text-warning d-block">
+                                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                                    مطلوب تجهيز منتج مجاني - مكافأة الولاء
+                                                </strong>
+                                                <div class="d-flex align-items-center gap-2 mt-1">
+                                                    @if ($rewardRedemption->reward->product)
+                                                        @if ($rewardRedemption->reward->product->image)
+                                                            <img src="{{ $rewardRedemption->reward->product->image }}"
+                                                                class="rounded"
+                                                                style="width: 40px; height: 40px; object-fit: cover;">
+                                                        @endif
+                                                        <span
+                                                            class="fw-bold">{{ $rewardRedemption->reward->product->name }}</span>
+                                                        <span class="badge bg-success">كمية: 1</span>
+                                                        <span class="badge bg-info">مجاني</span>
+                                                    @else
+                                                        <span class="text-muted">منتج غير متوفر</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
                             <tr>
                                 <td colspan="3" class="text-start"><strong>الإجمالي</strong></td>
                                 <td><strong
