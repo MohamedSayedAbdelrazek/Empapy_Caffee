@@ -70,8 +70,11 @@
                                 <label class="form-label">كلمة المرور *</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                    <input type="password" name="password" class="form-control" required
-                                        placeholder="••••••••" minlength="8">
+                                    <input type="password" name="password" id="password" class="form-control" required
+                                        placeholder="كلمة المرور" minlength="8">
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
                                 </div>
                                 <small class="text-muted">8 أحرف على الأقل</small>
                             </div>
@@ -80,8 +83,11 @@
                                 <label class="form-label">تأكيد كلمة المرور *</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
-                                    <input type="password" name="password_confirmation" class="form-control" required
-                                        placeholder="••••••••">
+                                    <input type="password" name="password_confirmation" id="password_confirmation"
+                                        class="form-control" required placeholder="تأكيد كلمة المرور">
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
                                 </div>
                             </div>
 
@@ -106,6 +112,33 @@
         </div>
     </section>
 @endsection
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function setupPasswordToggle(toggleId, inputId) {
+            const toggle = document.getElementById(toggleId);
+            const input = document.getElementById(inputId);
+
+            if (toggle && input) {
+                toggle.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.classList.remove('bi-eye');
+                        icon.classList.add('bi-eye-slash');
+                    } else {
+                        input.type = 'password';
+                        icon.classList.remove('bi-eye-slash');
+                        icon.classList.add('bi-eye');
+                    }
+                });
+            }
+        }
+
+        setupPasswordToggle('togglePassword', 'password');
+        setupPasswordToggle('toggleConfirmPassword', 'password_confirmation');
+    });
+</script>
 
 @push('styles')
     <style>

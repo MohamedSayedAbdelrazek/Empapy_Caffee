@@ -41,8 +41,11 @@
                                 <label class="form-label">كلمة المرور</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                                    <input type="password" name="password" class="form-control" required
-                                        placeholder="••••••••">
+                                    <input type="password" name="password" id="password" class="form-control" required
+                                        placeholder="كلمة المرور">
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword">
+                                        <i class="bi bi-eye"></i>
+                                    </button>
                                 </div>
                             </div>
 
@@ -68,13 +71,29 @@
                             </a>
                         </div>
                     </div>
-
-                    <div class="text-center mt-4 text-white-50 small">
-                        <p class="mb-1">بيانات الدخول للتجربة:</p>
-                        <p class="mb-0">admin@empapy.com / password</p>
-                    </div>
                 </div>
             </div>
         </div>
+    </section>
+
+    <script>
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const passwordInput = document.getElementById('password');
+            const icon = this.querySelector('i');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        });
+    </script>
+    </div>
+    </div>
+    </div>
     </section>
 @endsection
