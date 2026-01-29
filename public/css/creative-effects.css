@@ -219,6 +219,8 @@ body.announcement-hidden .navbar-main {
 .coffee-loader.loaded {
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
+    /* CRITICAL: Prevent touch blocking when hidden */
 }
 
 .coffee-loader-content {

@@ -861,12 +861,16 @@ img {
     z-index: 9999;
     visibility: hidden;
     opacity: 0;
+    pointer-events: none;
+    /* CRITICAL: Prevent touch blocking when hidden */
     transition: all var(--transition-normal);
 }
 
 .cart-drawer.open {
     visibility: visible;
     opacity: 1;
+    pointer-events: auto;
+    /* Enable interaction when open */
 }
 
 .cart-drawer-overlay {

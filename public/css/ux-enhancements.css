@@ -736,6 +736,8 @@ html[dir="rtl"] .toast-container {
     justify-content: center;
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
+    /* CRITICAL: Prevent touch blocking when hidden */
     transition: all 0.4s ease;
     backdrop-filter: blur(10px);
 }
@@ -743,6 +745,8 @@ html[dir="rtl"] .toast-container {
 .lightbox.active {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
+    /* Enable interaction when active */
 }
 
 /* Lightbox Content */

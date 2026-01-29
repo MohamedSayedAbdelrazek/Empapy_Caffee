@@ -1,10 +1,10 @@
 /**
  * Mobile Scroll Performance Optimizations
- * FIXED: Removed transform on body that was blocking scroll
+ * AGGRESSIVE version for older/slower devices
  */
 
 /* ========================================
-   1. SMOOTH SCROLL OPTIMIZATION
+   1. BASE SCROLL OPTIMIZATION
    ======================================== */
 
 html {
@@ -12,80 +12,130 @@ html {
     overscroll-behavior: contain;
 }
 
-/* Mobile-specific scroll optimizations */
-@media (max-width: 768px) {
-    html {
-        /* Prevent overscroll bounce that causes lag */
-        overscroll-behavior-y: contain;
-    }
-    
-    /* Remove smooth scroll on mobile - it causes perceived lag */
-    * {
-        scroll-behavior: auto !important;
-    }
-}
-
 /* ========================================
-   2. REDUCE PAINT DURING SCROLL
+   2. DISABLE EXPENSIVE EFFECTS ON MOBILE
    ======================================== */
 
-/* Fixed/sticky elements should be GPU accelerated */
-.navbar-main,
-.main-navbar,
-#mainNavbar,
-.bottom-nav,
-.scroll-indicator,
-.back-to-top {
-    will-change: transform;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-}
-
-/* ========================================
-   3. DISABLE HEAVY EFFECTS DURING SCROLL
-   ======================================== */
-
-/* Reduce animation complexity on mobile */
 @media (max-width: 768px) {
-    /* Disable backdrop blur during scroll (very expensive) */
-    .scroll-active .navbar-main {
+
+    /* DISABLE backdrop-filter completely on mobile - VERY expensive */
+    .navbar-main,
+    .main-navbar,
+    #mainNavbar,
+    .glass-card,
+    .cart-drawer,
+    .pwa-install-card,
+    .user-dropdown-menu,
+    [class*="glass"],
+    [class*="blur"] {
         backdrop-filter: none !important;
         -webkit-backdrop-filter: none !important;
     }
-    
-    /* Pause floating animations during scroll */
-    .scroll-active .floating-beans,
-    .scroll-active .particles-container,
-    .scroll-active .particle {
-        animation-play-state: paused !important;
+
+    /* Disable smooth scroll - causes lag on older devices */
+    * {
+        scroll-behavior: auto !important;
+    }
+
+    /* Disable box-shadow animations */
+    .product-card,
+    .category-card,
+    .btn {
+        transition: none !important;
+    }
+
+    /* Simplify shadows on mobile */
+    .product-card,
+    .category-card {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
     }
 }
 
 /* ========================================
-   4. OPTIMIZE TOUCH TARGETS
+   3. DISABLE ANIMATIONS ON SCROLL
    ======================================== */
 
 @media (max-width: 768px) {
-    /* Ensure clickable elements have fast touch response */
-    a, button, .btn {
+
+    /* When scrolling, pause ALL animations */
+    .scroll-active * {
+        animation-play-state: paused !important;
+        transition: none !important;
+    }
+
+    /* Completely disable floating beans on mobile */
+    .floating-beans,
+    .particles-container,
+    .particle,
+    .bean {
+        display: none !important;
+    }
+}
+
+/* ========================================
+   4. REDUCE MOTION FOR ACCESSIBILITY
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* ========================================
+   5. TOUCH OPTIMIZATION
+   ======================================== */
+
+@media (max-width: 768px) {
+
+    /* Fast touch response */
+    a,
+    button,
+    .btn,
+    .clickable {
         touch-action: manipulation;
-        /* Removes 300ms tap delay */
         -webkit-tap-highlight-color: transparent;
     }
 }
 
 /* ========================================
-   5. DISABLE HOVER ON TOUCH DEVICES
+   6. DISABLE HOVER EFFECTS ON TOUCH
    ======================================== */
 
 @media (hover: none) and (pointer: coarse) {
-    /* Disable hover states that cause repaints */
-    .product-card:hover {
+
+    .product-card:hover,
+    .category-card:hover,
+    .btn:hover {
         transform: none !important;
+        box-shadow: inherit !important;
     }
-    
-    /* Disable 3D card effects completely on touch */
+
+    /* Disable 3D effects */
     .product-card-3d .product-card {
         transform: none !important;
     }
+}
+
+/* ========================================
+   7. GPU HINTS FOR FIXED ELEMENTS ONLY
+   ======================================== */
+
+.navbar-main,
+#mainNavbar,
+.bottom-nav,
+.back-to-top,
+.cart-drawer {
+    will-change: transform;
+    backface-visibility: hidden;
+}
+
+/* ========================================
+   8. CONTAIN LAYOUT FOR CARDS
+   ======================================== */
+
+.product-card,
+.category-card {
+    contain: layout style paint;
 }

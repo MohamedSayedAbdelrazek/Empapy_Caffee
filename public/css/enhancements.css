@@ -986,12 +986,16 @@
     justify-content: center;
     opacity: 0;
     visibility: hidden;
+    pointer-events: none;
+    /* CRITICAL: Prevent touch blocking when hidden */
     transition: all 0.3s ease;
 }
 
 .quick-view-modal.open {
     opacity: 1;
     visibility: visible;
+    pointer-events: auto;
+    /* Enable interaction when open */
 }
 
 .quick-view-overlay {
