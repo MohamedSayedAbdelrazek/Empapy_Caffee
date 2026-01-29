@@ -1,0 +1,140 @@
+/**
+ * Mobile Scroll Performance Optimizations
+ * Fixes lag and improves touch responsiveness on mobile devices
+ */
+
+/* ========================================
+   1. GPU ACCELERATION FOR SCROLL
+   ======================================== */
+
+/* Enable hardware acceleration for main scrollable areas */
+html, body {
+    -webkit-overflow-scrolling: touch !important;
+    overscroll-behavior: contain;
+    scroll-behavior: auto; /* Disable smooth scroll on mobile for snappier feel */
+}
+
+/* Mobile-specific scroll optimizations */
+@media (max-width: 768px) {
+    html, body {
+        /* Prevent overscroll bounce that causes lag */
+        overscroll-behavior-y: contain;
+        /* Force GPU layer for smoother scroll */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+    }
+    
+    /* Remove smooth scroll on mobile - it causes perceived lag */
+    * {
+        scroll-behavior: auto !important;
+    }
+}
+
+/* ========================================
+   2. REDUCE PAINT DURING SCROLL
+   ======================================== */
+
+/* Fixed/sticky elements should be GPU accelerated */
+.navbar-main,
+.main-navbar,
+#mainNavbar,
+.bottom-nav,
+.scroll-indicator,
+.back-to-top {
+    will-change: transform;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+}
+
+/* ========================================
+   3. DISABLE HEAVY EFFECTS DURING SCROLL
+   ======================================== */
+
+/* Reduce animation complexity on mobile */
+@media (max-width: 768px) {
+    /* Disable backdrop blur during scroll (very expensive) */
+    .scroll-active .navbar-main,
+    .scroll-active .glass-card {
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+    
+    /* Simplify shadows during scroll */
+    .scroll-active .product-card,
+    .scroll-active .category-card {
+        box-shadow: none !important;
+    }
+    
+    /* Pause floating animations during scroll */
+    .scroll-active .floating-beans,
+    .scroll-active .particles-container,
+    .scroll-active .particle {
+        animation-play-state: paused !important;
+    }
+}
+
+/* ========================================
+   4. OPTIMIZE TOUCH TARGETS
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Ensure all touch targets have proper touch handling */
+    a, button, .btn, 
+    .product-card, 
+    .category-card,
+    .clickable {
+        touch-action: manipulation;
+        /* Removes 300ms tap delay */
+        -webkit-tap-highlight-color: transparent;
+    }
+    
+    /* For scrollable containers */
+    .products-grid,
+    .categories-scroll,
+    .container,
+    main {
+        touch-action: pan-y;
+        /* Allow vertical scroll, prevent horizontal */
+    }
+}
+
+/* ========================================
+   5. REDUCE LAYOUT THRASHING
+   ======================================== */
+
+/* Pre-define sizes to avoid layout recalculation */
+.product-card {
+    contain: layout style;
+}
+
+.product-card img {
+    aspect-ratio: 1 / 1;
+    /* Prevents layout shift when images load */
+}
+
+.category-card-vertical .card-image {
+    contain: strict;
+}
+
+/* ========================================
+   6. DISABLE HOVER ON TOUCH DEVICES
+   ======================================== */
+
+@media (hover: none) and (pointer: coarse) {
+    /* Disable hover states that cause repaints */
+    .product-card:hover {
+        transform: none !important;
+        box-shadow: inherit !important;
+    }
+    
+    .btn:hover {
+        transform: none !important;
+    }
+    
+    /* Disable 3D card effects completely on touch */
+    .product-card-3d .product-card {
+        transform: none !important;
+    }
+}

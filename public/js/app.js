@@ -58,6 +58,16 @@ function initScrollGuard() {
     enforceBodyScroll();
     window.addEventListener('scroll', enforceBodyScroll, { passive: true });
     window.addEventListener('touchmove', enforceBodyScroll, { passive: true });
+
+    // Scroll Performance: Add scroll-active class to disable heavy effects during scroll
+    let scrollTimeout;
+    window.addEventListener('scroll', function() {
+        document.body.classList.add('scroll-active');
+        clearTimeout(scrollTimeout);
+        scrollTimeout = setTimeout(function() {
+            document.body.classList.remove('scroll-active');
+        }, 150); // Remove class 150ms after scroll stops
+    }, { passive: true });
 }
 
 /**
