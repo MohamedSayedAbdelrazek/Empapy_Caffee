@@ -352,6 +352,11 @@
     </style>
 
     @stack('styles')
+
+<script>
+    window.firebaseVapidKey = "{{ env('VITE_FIREBASE_VAPID_KEY') }}";
+</script>
+
 </head>
 
 <body class="admin-body">

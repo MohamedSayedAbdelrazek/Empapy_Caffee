@@ -110,6 +110,11 @@
     <link rel="stylesheet" href="{{ asset('css/product-card.css') }}">
 
     @stack('styles')
+<script>
+    // بنسحب المفتاح من السيرفر ونحطه في شباك المتصفح عشان الجافاسكريبت تشوفه
+    window.firebaseVapidKey = "{{ env('VITE_FIREBASE_VAPID_KEY') }}";
+</script>
+
 </head>
 
 <body>

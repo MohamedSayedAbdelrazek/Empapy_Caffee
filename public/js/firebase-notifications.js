@@ -131,7 +131,7 @@
 
             // Pass serviceWorkerRegistration for Firebase v10
             const token = await messaging.getToken({
-                vapidKey: VAPID_KEY,
+                vapidKey: window.firebaseVapidKey,
                 serviceWorkerRegistration: swRegistration
             });
 

@@ -18,6 +18,7 @@ services:
       # Persist storage folder
       - ./.env:/var/www/html/.env            # 👈 مفاتيح الإشعارات
       - ./public:/var/www/html/public        # 👈 الصور تظهر بره
+      - ./resources:/var/www/html/resources
       - ./storage/app:/var/www/html/storage/app
       - ./storage/logs:/var/www/html/storage/logs
     environment:
