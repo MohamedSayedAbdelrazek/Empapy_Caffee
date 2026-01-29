@@ -209,7 +209,51 @@ class ProductService
             } else {
                 $this->deleteOptionType($product, ProductOption::TYPE_ADDITIVE);
             }
+
+            // Sync additive weight prices matrix
+            if (isset($optionsData['additive_weight_prices']) && $product->has_weight_options && $product->has_additive_options) {
+                $this->syncAdditiveWeightPrices($product, $optionsData['additive_weight_prices']);
+            }
         });
+    }
+
+    /**
+     * Sync additive weight pricing matrix
+     */
+    protected function syncAdditiveWeightPrices(Product $product, array $matrixData): void
+    {
+        // Get weight and additive option values in order
+        $weightValues = $product->weight_values;
+        $additiveValues = $product->additive_values;
+
+        if ($weightValues->isEmpty() || $additiveValues->isEmpty()) {
+            return;
+        }
+
+        // Delete existing matrix entries for this product's additives
+        $additiveValueIds = $additiveValues->pluck('id')->toArray();
+        \App\Models\AdditiveWeightPrice::whereIn('additive_option_value_id', $additiveValueIds)->delete();
+
+        // Create new matrix entries
+        foreach ($matrixData as $additiveIndex => $weightPrices) {
+            $additiveValue = $additiveValues->get($additiveIndex);
+            if (!$additiveValue) continue;
+
+            foreach ($weightPrices as $weightIndex => $priceModifier) {
+                $weightValue = $weightValues->get($weightIndex);
+                if (!$weightValue) continue;
+
+                // Only create entry if price is set and not zero
+                $price = floatval($priceModifier);
+                if ($price != 0) {
+                    \App\Models\AdditiveWeightPrice::create([
+                        'additive_option_value_id' => $additiveValue->id,
+                        'weight_option_value_id' => $weightValue->id,
+                        'price_modifier' => $price,
+                    ]);
+                }
+            }
+        }
     }
 
     /**

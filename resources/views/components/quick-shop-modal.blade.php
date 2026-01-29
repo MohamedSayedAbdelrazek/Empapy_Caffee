@@ -583,25 +583,44 @@
         if (!currentProductData) return;
 
         const optionValueIds = Object.values(selectedOptions);
-        const basePrice = currentProductData.current_price;
+        // If we have a weight selected, the base price is usually overridden by the weight price
+        // But we start with calculatedPrice = 0 and build it up
+        let calculatedPrice = 0;
 
-        // Calculate price based on selected options
-        let calculatedPrice = basePrice;
-
-        // For weight options, the price_modifier is the absolute price
+        // 1. Determine Base Price (Weight or Default Product Price)
         if (selectedOptions.weight) {
             const weightOption = currentProductData.options.find(opt => opt.id === selectedOptions.weight);
             if (weightOption) {
                 calculatedPrice = weightOption.price_modifier;
+            } else {
+                calculatedPrice = currentProductData.current_price;
             }
+        } else {
+            // No weight selected (or product has no weight options), use base price
+            calculatedPrice = currentProductData.current_price;
         }
 
-        // Add roast and additive modifiers
+        // 2. Add Modifiers (Roast & Additive)
         ['roast', 'additive'].forEach(type => {
             if (selectedOptions[type]) {
-                const option = currentProductData.options.find(opt => opt.id === selectedOptions[type]);
-                if (option && option.price_modifier) {
-                    calculatedPrice += parseFloat(option.price_modifier);
+                const optionId = selectedOptions[type];
+
+                // Special check for Additives with Matrix Pricing
+                if (type === 'additive' && selectedOptions.weight &&
+                    currentProductData.pricing_matrix &&
+                    currentProductData.pricing_matrix[optionId] &&
+                    currentProductData.pricing_matrix[optionId][selectedOptions.weight]) {
+
+                    // Found a specific price for this additive at this weight
+                    calculatedPrice += parseFloat(currentProductData.pricing_matrix[optionId][selectedOptions
+                        .weight
+                    ]);
+                } else {
+                    // Standard Modifier Look up
+                    const option = currentProductData.options.find(opt => opt.id === optionId);
+                    if (option && option.price_modifier) {
+                        calculatedPrice += parseFloat(option.price_modifier);
+                    }
                 }
             }
         });

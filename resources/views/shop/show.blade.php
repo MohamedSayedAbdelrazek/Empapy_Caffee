@@ -1314,6 +1314,19 @@
             // ====== Product Options Dynamic Pricing ======
             const optionsSection = document.getElementById('productOptionsSection');
 
+            // Inject Pricing Matrix Data
+            @php
+                $pricingMatrix = [];
+                if (isset($product) && $product->has_additive_options && $product->has_weight_options) {
+                    $additives = $product->additive_values->pluck('id');
+                    $prices = \App\Models\AdditiveWeightPrice::whereIn('additive_option_value_id', $additives)->get();
+                    foreach ($prices as $price) {
+                        $pricingMatrix[$price->additive_option_value_id][$price->weight_option_value_id] = $price->price_modifier;
+                    }
+                }
+            @endphp
+            const pricingMatrix = @json($pricingMatrix);
+
             if (optionsSection) {
                 const optionPills = document.querySelectorAll('.option-pill');
                 const dynamicPriceEl = document.getElementById('dynamicPrice');
@@ -1347,31 +1360,44 @@
                 });
 
                 // Calculate and update dynamic price
-                // NEW LOGIC:
-                // - Weight option: its price IS the base price (not added to product base)
-                // - Roast/Additive: modifiers added to weight price
                 function updateDynamicPrice() {
                     let weightPrice = basePrice; // Default to product base if no weight option
                     let additionalModifiers = 0;
                     const breakdown = [];
 
-                    // Get all active options
-                    document.querySelectorAll('.option-pill.active').forEach(pill => {
-                        const modifier = parseFloat(pill.dataset.priceModifier || 0);
-                        const value = pill.dataset.value;
-                        const type = pill.dataset.optionType;
+                    // 1. Find selected weight first to support matrix lookups
+                    const activeWeightPill = document.querySelector(
+                        '.option-pill.active[data-option-type="weight"]');
+                    let selectedWeightId = null;
 
-                        if (type === 'weight') {
-                            // Weight: the price_modifier IS the full price
-                            weightPrice = modifier;
-                            breakdown.push(`${value}: ${formatNumber(modifier)} ج.م`);
-                        } else {
-                            // Roast/Additive: these are modifiers
-                            additionalModifiers += modifier;
-                            if (modifier !== 0) {
-                                const sign = modifier > 0 ? '+' : '';
-                                breakdown.push(`${value}: ${sign}${formatNumber(modifier)}`);
-                            }
+                    if (activeWeightPill) {
+                        // Weight: the price_modifier IS the full price
+                        weightPrice = parseFloat(activeWeightPill.dataset.priceModifier || 0);
+                        selectedWeightId = activeWeightPill.dataset.optionId;
+                        breakdown.push(`${activeWeightPill.dataset.value}: ${formatNumber(weightPrice)} ج.م`);
+                    }
+
+                    // 2. Process other options
+                    document.querySelectorAll('.option-pill.active').forEach(pill => {
+                        const type = pill.dataset.optionType;
+                        if (type === 'weight') return; // Handled above
+
+                        let modifier = parseFloat(pill.dataset.priceModifier || 0);
+                        const value = pill.dataset.value;
+                        const optionId = pill.dataset.optionId;
+
+                        // Check for matrix price override for additives
+                        if (type === 'additive' && selectedWeightId &&
+                            pricingMatrix[optionId] &&
+                            pricingMatrix[optionId][selectedWeightId] !== undefined) {
+
+                            modifier = parseFloat(pricingMatrix[optionId][selectedWeightId]);
+                        }
+
+                        additionalModifiers += modifier;
+                        if (modifier !== 0) {
+                            const sign = modifier > 0 ? '+' : '';
+                            breakdown.push(`${value}: ${sign}${formatNumber(modifier)}`);
                         }
                     });
 

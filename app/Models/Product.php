@@ -312,18 +312,40 @@ class Product extends Model
         $values = ProductOptionValue::with('option')->whereIn('id', $selectedOptionValueIds)->get();
 
         $finalPrice = $this->current_price;
-        $additionalModifiers = 0;
+        $weightValueId = null;
 
+        // 1. Find the weight first (it sets the base price)
         foreach ($values as $value) {
             if ($value->option->type === ProductOption::TYPE_WEIGHT) {
                 // Weight: the price_modifier IS the full price
                 $finalPrice = $value->price_modifier;
-            } else {
-                // Roast/Additive: add the modifier
-                $additionalModifiers += $value->price_modifier;
+                $weightValueId = $value->id;
+                break; // Assuming only one weight can be selected
             }
         }
 
-        return $finalPrice + $additionalModifiers;
+        // 2. Add modifiers
+        foreach ($values as $value) {
+            if ($value->option->type === ProductOption::TYPE_WEIGHT) {
+                continue; // Already handled
+            }
+
+            if ($value->option->type === ProductOption::TYPE_ADDITIVE && $weightValueId) {
+                // Check matrix for specific price implementation
+                $matrixPrice = \App\Models\AdditiveWeightPrice::where('additive_option_value_id', $value->id)
+                    ->where('weight_option_value_id', $weightValueId)
+                    ->value('price_modifier');
+
+                if ($matrixPrice !== null) {
+                    $finalPrice += $matrixPrice;
+                    continue;
+                }
+            }
+
+            // Default behavior for Roast or Additive (if no matrix match)
+            $finalPrice += $value->price_modifier;
+        }
+
+        return $finalPrice;
     }
 }

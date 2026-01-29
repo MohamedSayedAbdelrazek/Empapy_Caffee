@@ -78,6 +78,7 @@ class ProductController extends Controller
             'weight_values' => $request->input('weight_values', []),
             'roast_values' => $request->input('roast_values', []),
             'additive_values' => $request->input('additive_values', []),
+            'additive_weight_prices' => $request->input('additive_weight_prices', []),
         ]);
 
         // Clear product caches so the new product appears immediately
@@ -159,6 +160,7 @@ class ProductController extends Controller
             'weight_values' => $request->input('weight_values', []),
             'roast_values' => $request->input('roast_values', []),
             'additive_values' => $request->input('additive_values', []),
+            'additive_weight_prices' => $request->input('additive_weight_prices', []),
         ]);
 
         // Clear product caches

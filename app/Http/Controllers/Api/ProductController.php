@@ -32,6 +32,17 @@ class ProductController extends Controller
             }
         }
 
+        // Pricing Matrix
+        $pricingMatrix = [];
+        if ($product->has_additive_options && $product->has_weight_options) {
+            $additiveValueIds = $product->additive_values->pluck('id');
+            $prices = \App\Models\AdditiveWeightPrice::whereIn('additive_option_value_id', $additiveValueIds)->get();
+
+            foreach ($prices as $price) {
+                $pricingMatrix[$price->additive_option_value_id][$price->weight_option_value_id] = floatval($price->price_modifier);
+            }
+        }
+
         return response()->json([
             'id' => $product->id,
             'name' => $product->name,
@@ -47,6 +58,7 @@ class ProductController extends Controller
                 'name' => $product->category->name,
             ] : null,
             'options' => $formattedOptions,
+            'pricing_matrix' => $pricingMatrix,
         ]);
     }
 }

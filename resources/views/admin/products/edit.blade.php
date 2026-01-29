@@ -46,6 +46,9 @@
                             <label class="form-label">السعر (ج.م) *</label>
                             <input type="number" name="price" class="form-control @error('price') is-invalid @enderror"
                                 value="{{ old('price', $product->price) }}" step="0.01" min="0" required>
+                            <div class="form-text text-muted">
+                                في حالة وجود خيارات (مثل الوزن)، ضع سعر أقل خيار هنا كـ "سعر يبدأ من".
+                            </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">سعر التخفيض</label>
@@ -282,6 +285,37 @@
                                 <i class="bi bi-plus-lg me-1"></i>إضافة إضافة جديدة
                             </button>
                         </div>
+                    </div>
+
+                    {{-- Additive Weight Pricing Matrix --}}
+                    <div class="option-section p-3 rounded mt-4" id="pricing_matrix_section"
+                        style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); display: none;">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-grid-3x3-gap-fill text-primary"></i>
+                            <h6 class="fw-bold mb-0">مصفوفة أسعار الإضافات حسب الوزن</h6>
+                        </div>
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-info-circle me-1"></i>
+                            حدد سعر كل إضافة لكل وزن. الأسعار هنا هي فروقات تضاف على سعر الوزن.
+                        </p>
+
+                        <div class="table-responsive">
+                            <table class="table table-dark table-bordered text-center mb-0" id="pricing_matrix_table">
+                                <thead id="pricing_matrix_head">
+                                    <tr>
+                                        <th class="text-end" style="width: 150px;">الإضافة \ الوزن</th>
+                                        <!-- Weight columns will be added dynamically -->
+                                    </tr>
+                                </thead>
+                                <tbody id="pricing_matrix_body">
+                                    <!-- Additive rows will be added dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-lightbulb me-1"></i>
+                            اترك الخانة فارغة أو 0 إذا كانت الإضافة مجانية لهذا الوزن
+                        </small>
                     </div>
                 </div>
             </div>
@@ -635,10 +669,167 @@
             });
 
             optionCounters[type] = rows.length;
+
+            // Update pricing matrix when weight or additive changes
+            if (type === 'weight' || type === 'additive') {
+                updatePricingMatrix();
+            }
         }
 
+        // ====== Pricing Matrix Management ======
+
+        // Prepare existing matrix data
+        @php
+            $matrixPrices = [];
+            if ($product->has_additive_options && $product->has_weight_options) {
+                $additiveIds = $product->additive_values->pluck('id');
+                $prices = \App\Models\AdditiveWeightPrice::whereIn('additive_option_value_id', $additiveIds)->get();
+                foreach ($prices as $price) {
+                    $matrixPrices[$price->additive_option_value_id][$price->weight_option_value_id] = $price->price_modifier;
+                }
+            }
+        @endphp
+
+        const existingMatrixPrices = @json($matrixPrices);
+
+        // Check if pricing matrix should be visible
+        function shouldShowMatrix() {
+            const hasWeights = document.getElementById('has_weight_options').checked;
+            const hasAdditives = document.getElementById('has_additive_options').checked;
+            const weightRows = document.getElementById('weight_values_body').querySelectorAll('tr');
+            const additiveRows = document.getElementById('additive_values_body').querySelectorAll('tr');
+
+            return hasWeights && hasAdditives && weightRows.length > 0 && additiveRows.length > 0;
+        }
+
+        // Update pricing matrix visibility and content
+        function updatePricingMatrix() {
+            const matrixSection = document.getElementById('pricing_matrix_section');
+
+            if (shouldShowMatrix()) {
+                matrixSection.style.display = 'block';
+                rebuildMatrix();
+            } else {
+                matrixSection.style.display = 'none';
+            }
+        }
+
+        // Rebuild the matrix table
+        function rebuildMatrix() {
+            const thead = document.getElementById('pricing_matrix_head');
+            const tbody = document.getElementById('pricing_matrix_body');
+
+            // Get current weights and additives
+            const weights = getOptionValues('weight');
+            const additives = getOptionValues('additive');
+
+            // Build header row
+            let headerHtml = '<tr><th class="text-end" style="min-width: 120px;">الإضافة \\ الوزن</th>';
+            weights.forEach((weight, wIdx) => {
+                headerHtml += `<th style="min-width: 100px;">${weight.name || 'الوزن ' + (wIdx + 1)}</th>`;
+            });
+            headerHtml += '</tr>';
+            thead.innerHTML = headerHtml;
+
+            // Build body rows
+            let bodyHtml = '';
+            additives.forEach((additive, aIdx) => {
+                bodyHtml += `<tr>
+                    <td class="text-end fw-bold">${additive.name || 'الإضافة ' + (aIdx + 1)}</td>`;
+
+                weights.forEach((weight, wIdx) => {
+                    const inputName = `additive_weight_prices[${aIdx}][${wIdx}]`;
+                    const existingValue = getExistingMatrixValue(aIdx, wIdx, additive.id, weight.id);
+                    bodyHtml += `
+                        <td>
+                            <input type="number" name="${inputName}"
+                                class="form-control form-control-sm text-center"
+                                value="${existingValue}"
+                                step="0.01"
+                                placeholder="0"
+                                style="width: 80px; margin: 0 auto;">
+                        </td>`;
+                });
+
+                bodyHtml += '</tr>';
+            });
+            tbody.innerHTML = bodyHtml;
+        }
+
+        // Get option values from a table (including IDs)
+        function getOptionValues(type) {
+            const tbody = document.getElementById(`${type}_values_body`);
+            const rows = tbody.querySelectorAll('tr');
+            const values = [];
+
+            rows.forEach((row, index) => {
+                const nameInput = row.querySelector('input[type="text"]');
+                // Try to find the hidden ID input. It might be name="type_values[index][id]"
+                // We use querySelector with endsWith selector
+                const idInput = row.querySelector(`input[name$="[id]"]`);
+
+                values.push({
+                    index: index,
+                    name: nameInput ? nameInput.value : '',
+                    id: idInput ? idInput.value : null
+                });
+            });
+
+            return values;
+        }
+
+        // Get existing matrix value
+        function getExistingMatrixValue(additiveIdx, weightIdx, additiveId, weightId) {
+            // 1. Check for dirty (unsaved) value in the DOM first (if rebuilding triggered by text change)
+            const input = document.querySelector(`input[name="additive_weight_prices[${additiveIdx}][${weightIdx}]"]`);
+            if (input) return input.value;
+
+            // 2. Check in backend data using IDs if available
+            if (additiveId && weightId && existingMatrixPrices[additiveId] && existingMatrixPrices[additiveId][weightId] !==
+                undefined) {
+                return existingMatrixPrices[additiveId][weightId];
+            }
+
+            return '0';
+        }
+
+        // Listen for changes in inputs
+        document.addEventListener('input', function(e) {
+            if (e.target.matches(
+                    '#weight_values_body input[type="text"], #additive_values_body input[type="text"]')) {
+                updatePricingMatrix();
+            }
+        });
+
+        // Override toggleOptionSection logic
+        const originalToggleOptionSection = toggleOptionSection;
+
+        function toggleOptionSectionWithMatrix(type) {
+            const container = document.getElementById(`${type}_options_container`);
+            const checkbox = document.getElementById(`has_${type}_options`);
+
+            if (checkbox.checked) {
+                container.style.display = 'block';
+                // Add first row if empty
+                const tbody = document.getElementById(`${type}_values_body`);
+                if (tbody.children.length === 0) {
+                    addOptionRow(type);
+                }
+            } else {
+                container.style.display = 'none';
+            }
+
+            updatePricingMatrix();
+        }
+        toggleOptionSection = toggleOptionSectionWithMatrix;
+
+        // Initialize matrix on load
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePricingMatrix();
+        });
+
         // Make functions global
-        window.toggleOptionSection = toggleOptionSection;
+        window.toggleOptionSection = toggleOptionSectionWithMatrix;
         window.addOptionRow = addOptionRow;
         window.removeOptionRow = removeOptionRow;
         window.setDefaultValue = setDefaultValue;

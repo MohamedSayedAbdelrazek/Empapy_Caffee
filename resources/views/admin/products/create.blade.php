@@ -44,6 +44,9 @@
                             <label class="form-label">السعر (ج.م) *</label>
                             <input type="number" name="price" class="form-control @error('price') is-invalid @enderror"
                                 value="{{ old('price') }}" step="0.01" min="0" required>
+                            <div class="form-text text-muted">
+                                في حالة وجود خيارات (مثل الوزن)، ضع سعر أقل خيار هنا كـ "سعر يبدأ من".
+                            </div>
                             @error('price')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -165,39 +168,38 @@
                         <div id="roast_options_container" class="option-values-container"
                             style="{{ old('has_roast_options') ? '' : 'display: none;' }}">
                             <table class="table table-dark table-hover mb-2">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 50%">درجة التحميص</th>
-                                            <th style="width: 30%">السعر الإضافي (ج.م)</th>
-                                            <th style="width: 10%">افتراضي</th>
-                                            <th style="width: 10%"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="roast_values_body">
-                                        @if (old('roast_values'))
-                                            @foreach (old('roast_values') as $index => $value)
-                                                <tr>
-                                                    <td><input type="text"
-                                                            name="roast_values[{{ $index }}][value]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['value'] ?? '' }}" placeholder="مثال: فاتح">
-                                                    </td>
-                                                    <td><input type="number"
-                                                            name="roast_values[{{ $index }}][price_modifier]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
-                                                    </td>
-                                                    <td class="text-center"><input type="radio" name="roast_default"
-                                                            value="{{ $index }}" class="form-check-input"
-                                                            {{ $value['is_default'] ?? false ? 'checked' : '' }}
-                                                            onchange="setDefaultValue('roast', {{ $index }})"></td>
-                                                    <td><button type="button" class="btn btn-sm btn-outline-danger"
-                                                            onclick="removeOptionRow(this)"><i
-                                                                class="bi bi-trash"></i></button></td>
-                                                </tr>
-                                            @endforeach
-                                        @endif
-                                    </tbody>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50%">درجة التحميص</th>
+                                        <th style="width: 30%">السعر الإضافي (ج.م)</th>
+                                        <th style="width: 10%">افتراضي</th>
+                                        <th style="width: 10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="roast_values_body">
+                                    @if (old('roast_values'))
+                                        @foreach (old('roast_values') as $index => $value)
+                                            <tr>
+                                                <td><input type="text" name="roast_values[{{ $index }}][value]"
+                                                        class="form-control form-control-sm"
+                                                        value="{{ $value['value'] ?? '' }}" placeholder="مثال: فاتح">
+                                                </td>
+                                                <td><input type="number"
+                                                        name="roast_values[{{ $index }}][price_modifier]"
+                                                        class="form-control form-control-sm"
+                                                        value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
+                                                </td>
+                                                <td class="text-center"><input type="radio" name="roast_default"
+                                                        value="{{ $index }}" class="form-check-input"
+                                                        {{ $value['is_default'] ?? false ? 'checked' : '' }}
+                                                        onchange="setDefaultValue('roast', {{ $index }})"></td>
+                                                <td><button type="button" class="btn btn-sm btn-outline-danger"
+                                                        onclick="removeOptionRow(this)"><i
+                                                            class="bi bi-trash"></i></button></td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                </tbody>
                             </table>
                             <button type="button" class="btn btn-sm btn-outline-danger" onclick="addOptionRow('roast')">
                                 <i class="bi bi-plus-lg me-1"></i>إضافة درجة تحميص
@@ -222,46 +224,77 @@
                         <div id="additive_options_container" class="option-values-container"
                             style="{{ old('has_additive_options') ? '' : 'display: none;' }}">
                             <table class="table table-dark table-hover mb-2">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 50%">الإضافة</th>
-                                            <th style="width: 30%">السعر الإضافي (ج.م)</th>
-                                            <th style="width: 10%">افتراضي</th>
-                                            <th style="width: 10%"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="additive_values_body">
-                                        @if (old('additive_values'))
-                                            @foreach (old('additive_values') as $index => $value)
-                                                <tr>
-                                                    <td><input type="text"
-                                                            name="additive_values[{{ $index }}][value]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['value'] ?? '' }}"
-                                                            placeholder="مثال: بالهيل"></td>
-                                                    <td><input type="number"
-                                                            name="additive_values[{{ $index }}][price_modifier]"
-                                                            class="form-control form-control-sm"
-                                                            value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
-                                                    </td>
-                                                    <td class="text-center"><input type="radio" name="additive_default"
-                                                            value="{{ $index }}" class="form-check-input"
-                                                            {{ $value['is_default'] ?? false ? 'checked' : '' }}
-                                                            onchange="setDefaultValue('additive', {{ $index }})">
-                                                    </td>
-                                                    <td><button type="button" class="btn btn-sm btn-outline-danger"
-                                                            onclick="removeOptionRow(this)"><i
-                                                                class="bi bi-trash"></i></button></td>
-                                                </tr>
-                                            @endforeach
-                                        @endif
-                                    </tbody>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 50%">الإضافة</th>
+                                        <th style="width: 30%">السعر الإضافي (ج.م)</th>
+                                        <th style="width: 10%">افتراضي</th>
+                                        <th style="width: 10%"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="additive_values_body">
+                                    @if (old('additive_values'))
+                                        @foreach (old('additive_values') as $index => $value)
+                                            <tr>
+                                                <td><input type="text"
+                                                        name="additive_values[{{ $index }}][value]"
+                                                        class="form-control form-control-sm"
+                                                        value="{{ $value['value'] ?? '' }}" placeholder="مثال: بالهيل">
+                                                </td>
+                                                <td><input type="number"
+                                                        name="additive_values[{{ $index }}][price_modifier]"
+                                                        class="form-control form-control-sm"
+                                                        value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
+                                                </td>
+                                                <td class="text-center"><input type="radio" name="additive_default"
+                                                        value="{{ $index }}" class="form-check-input"
+                                                        {{ $value['is_default'] ?? false ? 'checked' : '' }}
+                                                        onchange="setDefaultValue('additive', {{ $index }})">
+                                                </td>
+                                                <td><button type="button" class="btn btn-sm btn-outline-danger"
+                                                        onclick="removeOptionRow(this)"><i
+                                                            class="bi bi-trash"></i></button></td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
+                                </tbody>
                             </table>
                             <button type="button" class="btn btn-sm btn-outline-success"
                                 onclick="addOptionRow('additive')">
                                 <i class="bi bi-plus-lg me-1"></i>إضافة إضافة جديدة
                             </button>
                         </div>
+                    </div>
+
+                    {{-- Additive Weight Pricing Matrix --}}
+                    <div class="option-section p-3 rounded mt-4" id="pricing_matrix_section"
+                        style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); display: none;">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <i class="bi bi-grid-3x3-gap-fill text-primary"></i>
+                            <h6 class="fw-bold mb-0">مصفوفة أسعار الإضافات حسب الوزن</h6>
+                        </div>
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-info-circle me-1"></i>
+                            حدد سعر كل إضافة لكل وزن. مثلاً: "بالهيل" قد يكلف +15 ج.م للوزن 125 جم و +30 ج.م للوزن 250 جم
+                        </p>
+
+                        <div class="table-responsive">
+                            <table class="table table-dark table-bordered text-center mb-0" id="pricing_matrix_table">
+                                <thead id="pricing_matrix_head">
+                                    <tr>
+                                        <th class="text-end" style="width: 150px;">الإضافة \ الوزن</th>
+                                        <!-- Weight columns will be added dynamically -->
+                                    </tr>
+                                </thead>
+                                <tbody id="pricing_matrix_body">
+                                    <!-- Additive rows will be added dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <small class="text-muted d-block mt-2">
+                            <i class="bi bi-lightbulb me-1"></i>
+                            اترك الخانة فارغة أو 0 إذا كانت الإضافة مجانية لهذا الوزن
+                        </small>
                     </div>
                 </div>
             </div>
@@ -638,12 +671,138 @@
             });
 
             optionCounters[type] = rows.length;
+
+            // Update pricing matrix when weight or additive changes
+            if (type === 'weight' || type === 'additive') {
+                updatePricingMatrix();
+            }
         }
 
+        // ====== Pricing Matrix Management ======
+
+        // Check if pricing matrix should be visible
+        function shouldShowMatrix() {
+            const hasWeights = document.getElementById('has_weight_options').checked;
+            const hasAdditives = document.getElementById('has_additive_options').checked;
+            const weightRows = document.getElementById('weight_values_body').querySelectorAll('tr');
+            const additiveRows = document.getElementById('additive_values_body').querySelectorAll('tr');
+
+            return hasWeights && hasAdditives && weightRows.length > 0 && additiveRows.length > 0;
+        }
+
+        // Update pricing matrix visibility and content
+        function updatePricingMatrix() {
+            const matrixSection = document.getElementById('pricing_matrix_section');
+
+            if (shouldShowMatrix()) {
+                matrixSection.style.display = 'block';
+                rebuildMatrix();
+            } else {
+                matrixSection.style.display = 'none';
+            }
+        }
+
+        // Rebuild the matrix table
+        function rebuildMatrix() {
+            const thead = document.getElementById('pricing_matrix_head');
+            const tbody = document.getElementById('pricing_matrix_body');
+
+            // Get current weights and additives
+            const weights = getOptionValues('weight');
+            const additives = getOptionValues('additive');
+
+            // Build header row
+            let headerHtml = '<tr><th class="text-end" style="min-width: 120px;">الإضافة \\ الوزن</th>';
+            weights.forEach((weight, wIdx) => {
+                headerHtml += `<th style="min-width: 100px;">${weight.name || 'الوزن ' + (wIdx + 1)}</th>`;
+            });
+            headerHtml += '</tr>';
+            thead.innerHTML = headerHtml;
+
+            // Build body rows
+            let bodyHtml = '';
+            additives.forEach((additive, aIdx) => {
+                bodyHtml += `<tr>
+                    <td class="text-end fw-bold">${additive.name || 'الإضافة ' + (aIdx + 1)}</td>`;
+
+                weights.forEach((weight, wIdx) => {
+                    const inputName = `additive_weight_prices[${aIdx}][${wIdx}]`;
+                    const existingValue = getExistingMatrixValue(aIdx, wIdx);
+                    bodyHtml += `
+                        <td>
+                            <input type="number" name="${inputName}" 
+                                class="form-control form-control-sm text-center" 
+                                value="${existingValue}" 
+                                step="0.01" 
+                                placeholder="0"
+                                style="width: 80px; margin: 0 auto;">
+                        </td>`;
+                });
+
+                bodyHtml += '</tr>';
+            });
+            tbody.innerHTML = bodyHtml;
+        }
+
+        // Get option values from a table
+        function getOptionValues(type) {
+            const tbody = document.getElementById(`${type}_values_body`);
+            const rows = tbody.querySelectorAll('tr');
+            const values = [];
+
+            rows.forEach((row, index) => {
+                const nameInput = row.querySelector('input[type="text"]');
+                values.push({
+                    index: index,
+                    name: nameInput ? nameInput.value : ''
+                });
+            });
+
+            return values;
+        }
+
+        // Get existing matrix value (for preservation during rebuild)
+        function getExistingMatrixValue(additiveIdx, weightIdx) {
+            const input = document.querySelector(`input[name="additive_weight_prices[${additiveIdx}][${weightIdx}]"]`);
+            return input ? input.value : '0';
+        }
+
+        // Listen for changes in option values
+        document.addEventListener('input', function(e) {
+            if (e.target.matches(
+                    '#weight_values_body input[type="text"], #additive_values_body input[type="text"]')) {
+                updatePricingMatrix();
+            }
+        });
+
+        // Override toggleOptionSection to also update matrix
+        const originalToggleOptionSection = toggleOptionSection;
+
+        function toggleOptionSectionWithMatrix(type) {
+            const container = document.getElementById(`${type}_options_container`);
+            const checkbox = document.getElementById(`has_${type}_options`);
+
+            if (checkbox.checked) {
+                container.style.display = 'block';
+                // Add first row if empty
+                const tbody = document.getElementById(`${type}_values_body`);
+                if (tbody.children.length === 0) {
+                    addOptionRow(type);
+                }
+            } else {
+                container.style.display = 'none';
+            }
+
+            // Update matrix visibility
+            updatePricingMatrix();
+        }
+        toggleOptionSection = toggleOptionSectionWithMatrix;
+
         // Make functions global
-        window.toggleOptionSection = toggleOptionSection;
+        window.toggleOptionSection = toggleOptionSectionWithMatrix;
         window.addOptionRow = addOptionRow;
         window.removeOptionRow = removeOptionRow;
         window.setDefaultValue = setDefaultValue;
+        window.updatePricingMatrix = updatePricingMatrix;
     </script>
 @endpush

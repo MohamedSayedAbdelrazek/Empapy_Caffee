@@ -90,4 +90,33 @@ class ProductOptionValue extends Model
     {
         return $query->where('is_default', true);
     }
+
+    /**
+     * Get weight-specific prices for this additive
+     * (Only applicable for additive type options)
+     */
+    public function weightPrices()
+    {
+        return $this->hasMany(AdditiveWeightPrice::class, 'additive_option_value_id');
+    }
+
+    /**
+     * Get additive prices for this weight
+     * (Only applicable for weight type options)
+     */
+    public function additivePrices()
+    {
+        return $this->hasMany(AdditiveWeightPrice::class, 'weight_option_value_id');
+    }
+
+    /**
+     * Get the price modifier for a specific weight
+     * Falls back to default price_modifier if no matrix entry exists
+     */
+    public function getPriceForWeight(int $weightValueId): float
+    {
+        $matrixPrice = AdditiveWeightPrice::getPriceFor($this->id, $weightValueId);
+
+        return $matrixPrice ?? $this->price_modifier;
+    }
 }
