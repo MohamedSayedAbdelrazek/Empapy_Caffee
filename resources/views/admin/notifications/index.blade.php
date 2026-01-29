@@ -163,6 +163,7 @@
 
 @push('scripts')
     <script>
+        // Mark Single items as Read (No Reload needed)
         async function markAsReadOnly(id, btn) {
             try {
                 const response = await fetch(`/admin/notifications/${id}/read`, {
@@ -189,6 +190,26 @@
             }
         }
 
+        // Mark ALL as Read (Reloads Page)
+        async function markAllAsRead() {
+            try {
+                const response = await fetch('/admin/notifications/mark-all-read', {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    }
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Delete Single Notification
         async function deleteNotification(id, btn) {
             if (!confirm('هل أنت متأكد من حذف هذا الإشعار؟')) return;
 
@@ -217,6 +238,7 @@
             }
         }
 
+        // Clear All Read Notifications (Reloads Page)
         async function clearAllRead() {
             if (!confirm('هل أنت متأكد من حذف جميع الإشعارات المقروءة؟')) return;
 
@@ -230,16 +252,7 @@
                 });
 
                 if (response.ok) {
-                    document.querySelectorAll('.notification-item-page:not(.unread)').forEach(item => {
-                        item.style.animation = 'fadeOut 0.3s ease forwards';
-                        setTimeout(() => item.remove(), 300);
-                    });
-
-                    NotificationSystem.showToast({
-                        title: 'تم ✓',
-                        message: 'تم حذف جميع الإشعارات المقروءة',
-                        type: 'info'
-                    });
+                    window.location.reload();
                 }
             } catch (error) {
                 console.error('Error:', error);
