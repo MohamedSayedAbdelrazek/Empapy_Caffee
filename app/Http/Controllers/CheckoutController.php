@@ -140,6 +140,24 @@ class CheckoutController extends Controller
                             case 'free_shipping':
                                 $shipping = 0;
                                 break;
+                            case 'free_product':
+                                // Add free product to order items
+                                if ($reward->product_id) {
+                                    $freeProduct = Product::find($reward->product_id);
+                                    if ($freeProduct) {
+                                        $orderItems[] = [
+                                            'product_id' => $freeProduct->id,
+                                            'product_name' => $freeProduct->name,
+                                            'price' => 0,
+                                            'quantity' => 1,
+                                            'total' => 0,
+                                            'is_reward_item' => true,
+                                            'reward_note' => 'منتج مجاني - مكافأة الولاء',
+                                            'options' => []
+                                        ];
+                                    }
+                                }
+                                break;
                         }
 
                         $couponCode = $code; // Store the redemption code

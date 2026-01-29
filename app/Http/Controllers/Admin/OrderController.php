@@ -91,8 +91,31 @@ class OrderController extends Controller
             'payment_status' => 'required|in:pending,paid,failed,refunded'
         ]);
 
+        $oldStatus = $order->payment_status;
+        $newStatus = $request->payment_status;
+
+        // If refunding, handle redemption restoration
+        if ($newStatus === 'refunded' && $oldStatus !== 'refunded') {
+            // Find and restore any reward redemption used on this order
+            $redemption = \App\Models\RewardRedemption::where('order_id', $order->id)
+                ->where('status', 'applied')
+                ->first();
+
+            if ($redemption) {
+                $redemption->cancel(); // This restores points to user
+            }
+
+            // Also update order status to cancelled
+            $order->update([
+                'status' => 'cancelled',
+                'payment_status' => $newStatus
+            ]);
+
+            return back()->with('success', 'تم استرداد المبلغ وإلغاء الطلب. تم إرجاع نقاط الولاء للعميل.');
+        }
+
         $order->update([
-            'payment_status' => $request->payment_status
+            'payment_status' => $newStatus
         ]);
 
         return back()->with('success', 'تم تحديث حالة الدفع');
@@ -105,6 +128,11 @@ class OrderController extends Controller
     {
         if ($order->status === 'cancelled') {
             return back()->with('error', 'هذا الطلب ملغي بالفعل');
+        }
+
+        // Prevent cancelling orders that are already shipped or delivered
+        if (in_array($order->status, ['shipped', 'delivered'])) {
+            return back()->with('error', 'لا يمكن إلغاء طلب تم شحنه أو تسليمه. يرجى استخدام عملية الاسترداد بدلاً من ذلك.');
         }
 
         $order->update([

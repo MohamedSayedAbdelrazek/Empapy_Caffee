@@ -30,7 +30,8 @@
                         </thead>
                         <tbody>
                             @foreach ($order->items as $item)
-                                <tr>
+                                <tr
+                                    @if ($item->is_reward_item) class="table-success" style="background: rgba(16, 185, 129, 0.15);" @endif>
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
                                             @if ($item->product)
@@ -39,7 +40,15 @@
                                             @endif
                                             <div>
                                                 <strong>{{ $item->product_name }}</strong>
-                                                <br><small class="text-muted">{{ $item->product_name }}</small>
+                                                @if ($item->is_reward_item)
+                                                    <span class="badge bg-success ms-2">
+                                                        <i class="bi bi-gift me-1"></i>مكافأة مجانية
+                                                    </span>
+                                                @endif
+                                                @if ($item->reward_note)
+                                                    <br><small class="text-success"><i
+                                                            class="bi bi-star-fill me-1"></i>{{ $item->reward_note }}</small>
+                                                @endif
                                                 @if ($item->selectedOptions->count() > 0)
                                                     <div class="mt-1">
                                                         @foreach ($item->selectedOptions as $option)
@@ -55,9 +64,21 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td>{{ number_format($item->price) }} ج.م</td>
+                                    <td>
+                                        @if ($item->is_reward_item)
+                                            <span class="text-success fw-bold">مجاني</span>
+                                        @else
+                                            {{ number_format($item->price) }} ج.م
+                                        @endif
+                                    </td>
                                     <td>{{ $item->quantity }}</td>
-                                    <td><strong>{{ number_format($item->total) }} ج.م</strong></td>
+                                    <td>
+                                        @if ($item->is_reward_item)
+                                            <strong class="text-success">0 ج.م</strong>
+                                        @else
+                                            <strong>{{ number_format($item->total) }} ج.م</strong>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

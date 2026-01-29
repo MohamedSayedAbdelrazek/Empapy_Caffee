@@ -28,13 +28,15 @@ class DashboardController extends Controller
         $totalProducts = Product::count();
         $totalUsers = User::where('role', 'customer')->count();
 
-        // Orders by month (last 6 months)
+        // Orders by month (last 6 months) - Only delivered & paid orders
         $ordersPerMonth = Order::select(
             DB::raw('MONTH(created_at) as month'),
             DB::raw('YEAR(created_at) as year'),
             DB::raw('COUNT(*) as count'),
             DB::raw('SUM(total) as revenue')
         )
+            ->where('status', 'delivered')
+            ->where('payment_status', 'paid')
             ->where('created_at', '>=', Carbon::now()->subMonths(6))
             ->groupBy('year', 'month')
             ->orderBy('year')

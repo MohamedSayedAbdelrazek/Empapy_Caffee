@@ -18,11 +18,14 @@ class OrderItem extends Model
         'price',
         'quantity',
         'total',
+        'is_reward_item',
+        'reward_note',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'total' => 'decimal:2',
+        'is_reward_item' => 'boolean',
     ];
 
     /**

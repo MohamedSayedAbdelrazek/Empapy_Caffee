@@ -179,7 +179,7 @@ class FirebaseNotificationService
             "طلب جديد من {$order->customer_name} - " . number_format($order->total, 2) . ' ج.م',
             [
                 'type' => 'new_order',
-                'order_id' => (string) $order->id,
+                'order_number' => $order->order_number,
                 'url' => route('admin.orders.show', $order->id),
             ]
         );
@@ -211,7 +211,7 @@ class FirebaseNotificationService
             "حالة طلبك أصبحت: {$newStatusLabel}",
             [
                 'type' => 'order_status_change',
-                'order_id' => (string) $order->id,
+                'order_number' => $order->order_number,
                 'old_status' => $oldStatus,
                 'new_status' => $newStatus,
                 'url' => url('/my-orders/' . $order->id),
@@ -239,7 +239,7 @@ class FirebaseNotificationService
             "تم إلغاء الطلب من {$order->customer_name}",
             [
                 'type' => 'order_cancelled',
-                'order_id' => (string) $order->id,
+                'order_number' => $order->order_number,
                 'url' => route('admin.orders.show', $order->id),
             ]
         );
