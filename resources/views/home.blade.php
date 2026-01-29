@@ -309,7 +309,7 @@
 
         .card-image {
             position: relative;
-            height: 200px;
+            height: 350px;
             overflow: hidden;
         }
 
@@ -411,7 +411,7 @@
 
         @media (max-width: 768px) {
             .card-image {
-                height: 160px;
+                height: 250px;
             }
 
             .card-content {
@@ -429,8 +429,8 @@
         }
 
         /* =========================================
-                                                           CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                                           ========================================= */
+                                                               CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                                               ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
