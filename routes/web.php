@@ -113,6 +113,7 @@ Route::prefix('admin')->name('admin.')->middleware(['staff'])->group(function ()
     Route::post('/orders/{order}/status-ajax', [OrderController::class, 'updateStatusAjax'])->name('orders.status-ajax');
     Route::patch('/orders/{order}/payment-status', [OrderController::class, 'updatePaymentStatus'])->name('orders.payment-status');
     Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel'])->name('orders.cancel');
+    Route::post('/orders/{order}/gift-note', [OrderController::class, 'updateGiftNote'])->name('orders.gift-note');
     Route::get('/orders/{order}/details-ajax', [OrderController::class, 'getOrderDetails'])->name('orders.details-ajax');
 
     // Notifications (accessible by all staff)

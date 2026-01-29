@@ -31,8 +31,8 @@
                         @foreach ($order->items as $item)
                             <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom">
                                 @if ($item->product)
-                                    <img src="{{ $item->product->image }}" alt="{{ $item->product_name }}"
-                                        class="rounded" style="width: 70px; height: 70px; object-fit: cover;">
+                                    <img src="{{ $item->product->image }}" alt="{{ $item->product_name }}" class="rounded"
+                                        style="width: 70px; height: 70px; object-fit: cover;">
                                 @endif
                                 <div class="flex-grow-1">
                                     <h6 class="mb-1">{{ $item->product_name }}</h6>
@@ -88,6 +88,36 @@
                                 <span><i class="bi bi-tag me-1"></i>الخصم
                                     {{ $order->coupon_code ? '(' . $order->coupon_code . ')' : '' }}</span>
                                 <span>- {{ number_format($order->discount) }} ج.م</span>
+                            </div>
+                        @endif
+
+                        {{-- Free Product Gift Display --}}
+                        @if (isset($rewardRedemption) &&
+                                $rewardRedemption &&
+                                $rewardRedemption->reward &&
+                                $rewardRedemption->reward->reward_type === 'free_product' &&
+                                $rewardRedemption->gift_fulfilled &&
+                                $rewardRedemption->gift_note)
+                            <div class="alert alert-success py-2 px-3 mb-2"
+                                style="background: rgba(16, 185, 129, 0.15); border: none;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-gift text-success" style="font-size: 1.2rem;"></i>
+                                    <div>
+                                        <small class="d-block text-success fw-bold">🎁 هدية مجانية</small>
+                                        <span>{{ $rewardRedemption->gift_note }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif (isset($rewardRedemption) &&
+                                $rewardRedemption &&
+                                $rewardRedemption->reward &&
+                                $rewardRedemption->reward->reward_type === 'free_product')
+                            <div class="alert alert-warning py-2 px-3 mb-2"
+                                style="background: rgba(245, 158, 11, 0.15); border: none;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-gift text-warning" style="font-size: 1.2rem;"></i>
+                                    <span class="text-warning">🎁 هديتك المجانية قيد التجهيز...</span>
+                                </div>
                             </div>
                         @endif
 

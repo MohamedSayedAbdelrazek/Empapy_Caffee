@@ -102,39 +102,66 @@
                                     <td>- {{ number_format($order->discount) }} ج.م</td>
                                 </tr>
                             @endif
-
                             {{-- Free Product Reward Alert --}}
                             @if (isset($rewardRedemption) &&
                                     $rewardRedemption &&
                                     $rewardRedemption->reward &&
                                     $rewardRedemption->reward->reward_type === 'free_product')
-                                <tr class="table-warning" style="background: rgba(245, 158, 11, 0.15);">
+                                <tr class="{{ $rewardRedemption->gift_fulfilled ? 'table-success' : 'table-warning' }}"
+                                    style="background: rgba({{ $rewardRedemption->gift_fulfilled ? '16, 185, 129' : '245, 158, 11' }}, 0.15);">
                                     <td colspan="4" class="text-start">
-                                        <div class="d-flex align-items-center gap-3 py-2">
-                                            <div class="bg-warning bg-opacity-25 rounded-circle p-2">
-                                                <i class="bi bi-gift text-warning" style="font-size: 1.5rem;"></i>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <strong class="text-warning d-block">
-                                                    <i class="bi bi-exclamation-triangle me-1"></i>
-                                                    مطلوب تجهيز منتج مجاني - مكافأة الولاء
-                                                </strong>
-                                                <div class="d-flex align-items-center gap-2 mt-1">
-                                                    @if ($rewardRedemption->reward->product)
-                                                        @if ($rewardRedemption->reward->product->image)
-                                                            <img src="{{ $rewardRedemption->reward->product->image }}"
-                                                                class="rounded"
-                                                                style="width: 40px; height: 40px; object-fit: cover;">
-                                                        @endif
-                                                        <span
-                                                            class="fw-bold">{{ $rewardRedemption->reward->product->name }}</span>
-                                                        <span class="badge bg-success">كمية: 1</span>
-                                                        <span class="badge bg-info">مجاني</span>
+                                        <div class="py-2">
+                                            <div class="d-flex align-items-center gap-3 mb-2">
+                                                <div
+                                                    class="bg-{{ $rewardRedemption->gift_fulfilled ? 'success' : 'warning' }} bg-opacity-25 rounded-circle p-2">
+                                                    <i class="bi bi-gift text-{{ $rewardRedemption->gift_fulfilled ? 'success' : 'warning' }}"
+                                                        style="font-size: 1.5rem;"></i>
+                                                </div>
+                                                <div>
+                                                    @if ($rewardRedemption->gift_fulfilled)
+                                                        <strong class="text-success d-block">
+                                                            <i class="bi bi-check-circle me-1"></i>
+                                                            تم تجهيز الهدية المجانية ✓
+                                                        </strong>
                                                     @else
-                                                        <span class="text-muted">منتج غير متوفر</span>
+                                                        <strong class="text-warning d-block">
+                                                            <i class="bi bi-exclamation-triangle me-1"></i>
+                                                            مطلوب تجهيز هدية مجانية - مكافأة الولاء
+                                                        </strong>
                                                     @endif
+                                                    <small class="text-muted">كود المكافأة:
+                                                        {{ $rewardRedemption->redemption_code }}</small>
                                                 </div>
                                             </div>
+
+                                            @if ($rewardRedemption->gift_fulfilled && $rewardRedemption->gift_note)
+                                                {{-- Show the gift note --}}
+                                                <div class="alert alert-success mb-0 py-2">
+                                                    <i class="bi bi-box-seam me-1"></i>
+                                                    <strong>الهدية:</strong> {{ $rewardRedemption->gift_note }}
+                                                </div>
+                                            @else
+                                                {{-- Show gift note input form --}}
+                                                <form action="{{ route('admin.orders.gift-note', $order) }}" method="POST"
+                                                    class="mt-2">
+                                                    @csrf
+                                                    <div class="input-group">
+                                                        <span class="input-group-text bg-warning text-dark">
+                                                            <i class="bi bi-pencil"></i>
+                                                        </span>
+                                                        <input type="text" name="gift_note" class="form-control"
+                                                            placeholder="اكتب اسم الهدية المجانية (مثال: كيس قهوة 100 جرام)"
+                                                            required value="{{ $rewardRedemption->gift_note }}">
+                                                        <button type="submit" class="btn btn-success">
+                                                            <i class="bi bi-check-lg me-1"></i>
+                                                            تم التجهيز
+                                                        </button>
+                                                    </div>
+                                                    <small class="text-muted mt-1 d-block">
+                                                        💡 اكتب اسم المنتج الذي ستضيفه كهدية مجانية للعميل
+                                                    </small>
+                                                </form>
+                                            @endif
                                         </div>
                                     </td>
                                 </tr>

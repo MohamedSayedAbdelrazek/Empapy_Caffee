@@ -131,6 +131,30 @@ class OrderController extends Controller
     }
 
     /**
+     * Update gift note for free product reward
+     */
+    public function updateGiftNote(Request $request, Order $order)
+    {
+        $request->validate([
+            'gift_note' => 'required|string|max:500',
+        ]);
+
+        // Find the redemption for this order
+        $redemption = \App\Models\RewardRedemption::where('order_id', $order->id)->first();
+
+        if (!$redemption) {
+            return back()->with('error', 'لم يتم العثور على مكافأة لهذا الطلب');
+        }
+
+        $redemption->update([
+            'gift_note' => $request->gift_note,
+            'gift_fulfilled' => true,
+        ]);
+
+        return back()->with('success', 'تم حفظ ملاحظة الهدية بنجاح');
+    }
+
+    /**
      * Cancel order
      */
     public function cancel(Order $order)
@@ -274,6 +298,23 @@ class OrderController extends Controller
             'cancelled' => 'ملغي',
         ];
 
+        // Load reward redemption if coupon code starts with RWD-
+        $giftData = null;
+        if ($order->coupon_code && str_starts_with($order->coupon_code, 'RWD-')) {
+            $redemption = \App\Models\RewardRedemption::with('reward')
+                ->where('redemption_code', $order->coupon_code)
+                ->first();
+
+            if ($redemption && $redemption->reward && $redemption->reward->reward_type === 'free_product') {
+                $giftData = [
+                    'redemption_id' => $redemption->id,
+                    'code' => $redemption->redemption_code,
+                    'fulfilled' => (bool) $redemption->gift_fulfilled,
+                    'note' => $redemption->gift_note,
+                ];
+            }
+        }
+
         return response()->json([
             'success' => true,
             'order' => [
@@ -297,6 +338,7 @@ class OrderController extends Controller
                 'total' => number_format($order->total),
                 'created_at' => $order->created_at->format('Y/m/d H:i'),
                 'created_at_human' => $order->created_at->diffForHumans(),
+                'gift' => $giftData,
                 'items' => $order->items->map(fn($item) => [
                     'name' => $item->product_name,
                     'quantity' => $item->quantity,

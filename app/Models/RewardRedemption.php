@@ -20,6 +20,8 @@ class RewardRedemption extends Model
         'order_id',
         'expires_at',
         'applied_at',
+        'gift_note',
+        'gift_fulfilled',
     ];
 
     protected $casts = [

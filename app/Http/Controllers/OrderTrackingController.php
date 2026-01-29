@@ -59,6 +59,14 @@ class OrderTrackingController extends Controller
 
         $order->load('items.product');
 
-        return view('orders.show', compact('order'));
+        // Load reward redemption if coupon code starts with RWD-
+        $rewardRedemption = null;
+        if ($order->coupon_code && str_starts_with($order->coupon_code, 'RWD-')) {
+            $rewardRedemption = \App\Models\RewardRedemption::with('reward')
+                ->where('redemption_code', $order->coupon_code)
+                ->first();
+        }
+
+        return view('orders.show', compact('order', 'rewardRedemption'));
     }
 }

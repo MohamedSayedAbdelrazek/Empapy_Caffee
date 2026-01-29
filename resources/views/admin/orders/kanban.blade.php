@@ -5,9 +5,9 @@
 @push('styles')
     <style>
         /* ==========================================
-                                                               🎨 PREMIUM KANBAN BOARD STYLES
-                                                               WOW-Factor Design with Glassmorphism
-                                                               ========================================== */
+                                                                           🎨 PREMIUM KANBAN BOARD STYLES
+                                                                           WOW-Factor Design with Glassmorphism
+                                                                           ========================================== */
 
         /* Main Container */
         .kanban-container {
@@ -516,8 +516,8 @@
         }
 
         /* ==========================================
-                                                               🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
-                                                               ========================================== */
+                                                                           🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
+                                                                           ========================================== */
 
         .order-modal-overlay {
             position: fixed;
@@ -850,6 +850,72 @@
 
         .order-notes i {
             margin-left: 8px;
+        }
+
+        /* Gift Box Styles */
+        .gift-box {
+            border-radius: 12px;
+            padding: 15px;
+        }
+
+        .gift-box.pending {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .gift-box.fulfilled {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .gift-box .gift-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .gift-box .gift-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .gift-box .gift-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 10px 15px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .gift-box .gift-input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        .gift-box .gift-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            color: #fff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .gift-box .gift-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(16, 185, 129, 0.4);
+        }
+
+        .gift-box .gift-note-display {
+            background: rgba(16, 185, 129, 0.2);
+            border-radius: 8px;
+            padding: 12px 15px;
+            color: #10b981;
+            font-weight: 500;
         }
 
         /* Order Summary */
@@ -1211,6 +1277,17 @@
                         </div>
                         <div class="modal-items-list" id="modalItemsList">
                             <!-- Items will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Gift Section (Hidden initially) -->
+                    <div class="modal-section" id="modalGiftSection" style="display: none;">
+                        <div class="modal-section-title" style="color: #f59e0b;">
+                            <i class="bi bi-gift-fill"></i>
+                            <span>هدية مجانية - مكافأة ولاء</span>
+                        </div>
+                        <div id="modalGiftContent">
+                            <!-- Gift content will be injected here -->
                         </div>
                     </div>
 
@@ -1707,15 +1784,15 @@
                     <div class="modal-item-info">
                         <div class="modal-item-name">${item.name}</div>
                         ${item.options && item.options.length > 0 ? `
-                                        <div class="modal-item-options">
-                                            ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
+                                                    <div class="modal-item-options">
+                                                        ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
                                     <span class="option-badge">
                                         ${opt.label}: ${opt.value}
                                         ${opt.price ? ` <small class="text-success">(${opt.price})</small>` : ''}
                                     </span>
                                 `).join('')}
-                                        </div>
-                                    ` : ''}
+                                                    </div>
+                                                ` : ''}
                     </div>
                     <div class="modal-item-quantity">×${item.quantity}</div>
                     <div class="modal-item-price">
@@ -1775,6 +1852,95 @@
                     btn.classList.remove('active');
                 }
             });
+
+            // Gift Section
+            const giftSection = document.getElementById('modalGiftSection');
+            const giftContent = document.getElementById('modalGiftContent');
+
+            if (order.gift) {
+                giftSection.style.display = 'block';
+
+                if (order.gift.fulfilled && order.gift.note) {
+                    giftContent.innerHTML = `
+                        <div class="gift-box fulfilled">
+                            <div class="gift-status">
+                                <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 1.2rem;"></i>
+                                <span style="color: #10b981; font-weight: 600;">تم تجهيز الهدية ✓</span>
+                            </div>
+                            <div class="gift-note-display">
+                                <i class="bi bi-box-seam"></i> ${order.gift.note}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    giftContent.innerHTML = `
+                        <div class="gift-box pending">
+                            <div class="gift-status">
+                                <i class="bi bi-exclamation-triangle-fill" style="color: #f59e0b; font-size: 1.2rem;"></i>
+                                <span style="color: #f59e0b; font-weight: 600;">مطلوب تجهيز هدية مجانية</span>
+                            </div>
+                            <div class="gift-form">
+                                <input type="text" class="gift-input" id="giftNoteInput" 
+                                    placeholder="اكتب اسم الهدية (مثال: كيس قهوة 100 جرام)">
+                                <button type="button" class="gift-btn" onclick="saveGiftNote()">
+                                    <i class="bi bi-check-lg"></i> تم التجهيز
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            } else {
+                giftSection.style.display = 'none';
+            }
+        }
+
+        // Save gift note
+        async function saveGiftNote() {
+            const giftNote = document.getElementById('giftNoteInput').value.trim();
+
+            if (!giftNote) {
+                showKanbanToast('يرجى كتابة اسم الهدية', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/admin/orders/${currentModalOrderId}/gift-note`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    body: JSON.stringify({
+                        gift_note: giftNote
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Update UI
+                    const giftContent = document.getElementById('modalGiftContent');
+                    giftContent.innerHTML = `
+                        <div class="gift-box fulfilled">
+                            <div class="gift-status">
+                                <i class="bi bi-check-circle-fill" style="color: #10b981; font-size: 1.2rem;"></i>
+                                <span style="color: #10b981; font-weight: 600;">تم تجهيز الهدية ✓</span>
+                            </div>
+                            <div class="gift-note-display">
+                                <i class="bi bi-box-seam"></i> ${giftNote}
+                            </div>
+                        </div>
+                    `;
+                    playSound('success');
+                    showKanbanToast('تم حفظ ملاحظة الهدية بنجاح', 'success');
+                } else {
+                    showKanbanToast(data.message || 'حدث خطأ', 'error');
+                }
+            } catch (error) {
+                console.error('Error saving gift note:', error);
+                showKanbanToast('حدث خطأ في الاتصال', 'error');
+            }
         }
 
         // Quick status change from modal
