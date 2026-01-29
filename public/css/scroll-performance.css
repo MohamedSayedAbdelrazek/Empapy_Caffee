@@ -139,3 +139,25 @@ html {
 .category-card {
     contain: layout style paint;
 }
+
+/* ========================================
+   9. TOUCH SAFETY GUARDS (GLOBAL)
+   ======================================== */
+
+/* قاعدة عامة: أي حاجة واخدة opacity 0 لازم تموت تماماً */
+[style*="opacity: 0"],
+.fade-out,
+.modal:not(.show),
+.drawer:not(.open),
+.overlay:not(.active) {
+    pointer-events: none !important;
+    /* ممنوع اللمس */
+    visibility: hidden !important;
+    /* المتصفح يشيلها من حساباته */
+}
+
+/* تأمين الـ Body عشان ميعلقش */
+body:not(.modal-open):not([style*="overflow: hidden"]) {
+    overflow-y: auto !important;
+    position: static !important;
+}
