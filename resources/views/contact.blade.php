@@ -32,7 +32,12 @@
                         </div>
                         <div>
                             <h6>العنوان</h6>
-                            <p class="text-muted mb-0">القاهرة، مصر</p>
+                            <a href="https://www.google.com/maps/place/%D8%A8%D9%86+%D8%A7%D9%85%D8%A8%D8%A7%D8%A8%D9%8A%E2%80%AD/@30.0879583,31.2502435,15.75z/data=!4m6!3m5!1s0x145841006b879969:0x1d2dfd8c57ec5e89!8m2!3d30.0887951!4d31.2528785!16s%2Fg%2F11lz66c2wf"
+                                target="_blank" class="text-muted mb-0 text-decoration-none hover-gold"
+                                style="display: block;">
+                                القاهرة، مصر - بن امبابي
+                                <i class="bi bi-box-arrow-up-right ms-1" style="font-size: 0.8rem;"></i>
+                            </a>
                         </div>
                     </div>
 
@@ -42,7 +47,10 @@
                         </div>
                         <div>
                             <h6>الهاتف</h6>
-                            <p class="text-muted mb-0" dir="ltr">+20 100 123 4567</p>
+                            <a href="tel:+201151579225" class="text-muted mb-0 text-decoration-none" style="display: block;"
+                                dir="ltr">
+                                +20 1151579225
+                            </a>
                         </div>
                     </div>
 
@@ -62,7 +70,7 @@
                         </div>
                         <div>
                             <h6>ساعات العمل</h6>
-                            <p class="text-muted mb-0">السبت - الخميس: 9 ص - 11 م</p>
+                            <p class="text-muted mb-0">طوال أيام الأسبوع: 9 ص - 2 ص</p>
                         </div>
                     </div>
                 </div>
@@ -137,6 +145,36 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Google Maps Section -->
+            <div class="row mt-5" data-aos="fade-up">
+                <div class="col-12">
+                    <div class="glass-card overflow-hidden" style="padding: 0;">
+                        <div class="map-header"
+                            style="padding: 1.5rem; background: linear-gradient(135deg, var(--espresso) 0%, var(--dark-brown) 100%); color: white;">
+                            <h4 class="mb-1">
+                                <i class="bi bi-geo-alt-fill me-2"></i>
+                                موقعنا على الخريطة
+                            </h4>
+                            <p class="mb-0 opacity-75">بن امبابي - القاهرة، مصر</p>
+                        </div>
+                        <div class="map-container" style="height: 450px; position: relative;">
+                            <iframe
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3453.238326!2d31.2502435!3d30.0887951!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x145841006b879969%3A0x1d2dfd8c57ec5e89!2z2KjZhiDYp9mF2KjYp9io2Yo!5e0!3m2!1sar!2seg!4v1706624000000!5m2!1sar!2seg"
+                                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade">
+                            </iframe>
+                            <!-- Overlay button -->
+                            <a href="https://www.google.com/maps/place/%D8%A8%D9%86+%D8%A7%D9%85%D8%A8%D8%A7%D8%A8%D9%8A%E2%80%AD/@30.0879583,31.2502435,15.75z/data=!4m6!3m5!1s0x145841006b879969:0x1d2dfd8c57ec5e89!8m2!3d30.0887951!4d31.2528785!16s%2Fg%2F11lz66c2wf"
+                                target="_blank" class="btn btn-golden"
+                                style="position: absolute; bottom: 20px; left: 20px; z-index: 10; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                                <i class="bi bi-pin-map-fill me-2"></i>
+                                افتح في Google Maps
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 @endsection
@@ -153,6 +191,27 @@
             border-radius: 12px;
             color: var(--espresso);
             font-size: 1.2rem;
+        }
+
+        /* Hover effects for contact links */
+        .hover-gold:hover {
+            color: var(--gold) !important;
+        }
+
+        .location-link:hover,
+        .footer-contact a:hover {
+            color: var(--gold) !important;
+            text-decoration: underline !important;
+        }
+
+        /* Map container styling */
+        .map-container {
+            filter: grayscale(0.2);
+            transition: filter 0.3s ease;
+        }
+
+        .map-container:hover {
+            filter: grayscale(0);
         }
     </style>
 @endpush

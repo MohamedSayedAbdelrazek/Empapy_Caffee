@@ -9,10 +9,20 @@ class OrderTrackingController extends Controller
 {
     /**
      * Display order tracking page
+     * Auto-search if order_number is provided in query string
      */
     public function track(Request $request)
     {
-        return view('orders.track');
+        $order = null;
+
+        // Auto-search if order_number is in URL
+        if ($request->has('order_number')) {
+            $order = Order::where('order_number', $request->order_number)
+                ->with('items.product')
+                ->first();
+        }
+
+        return view('orders.track', compact('order'));
     }
 
     /**

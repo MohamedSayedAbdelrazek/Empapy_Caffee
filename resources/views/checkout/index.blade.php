@@ -4,7 +4,7 @@
 
 @section('content')
     <!-- Page Header -->
-    <div class="page-header" style="padding: 140px 0 60px;">
+    <div class="page-header" style="padding: 40px 0 4/track0px;">
         <div class="container">
             <h1 class="page-title" data-aos="fade-up">إتمام الطلب</h1>
             <nav aria-label="breadcrumb" data-aos="fade-up" data-aos-delay="100">
