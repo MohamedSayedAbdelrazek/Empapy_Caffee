@@ -1,163 +1,30 @@
 /**
- * Mobile Scroll Performance Optimizations
- * AGGRESSIVE version for older/slower devices
+ * Mobile Scroll Performance - Minimal Safe Version
+ * Only non-blocking optimizations
  */
 
-/* ========================================
-   1. BASE SCROLL OPTIMIZATION
-   ======================================== */
-
-html {
+/* Force vertical scroll and native behavior on touch devices */
+html,
+body {
+    touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
+    overscroll-behavior-y: none;
+    /* Prevent pull-to-refresh if causing issues */
 }
 
-/* ========================================
-   2. DISABLE EXPENSIVE EFFECTS ON MOBILE
-   ======================================== */
-
-@media (max-width: 768px) {
-
-    /* DISABLE backdrop-filter completely on mobile - VERY expensive */
-    .navbar-main,
-    .main-navbar,
-    #mainNavbar,
-    .glass-card,
-    .cart-drawer,
-    .pwa-install-card,
-    .user-dropdown-menu,
-    [class*="glass"],
-    [class*="blur"] {
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-
-    /* Disable smooth scroll - causes lag on older devices */
-    * {
-        scroll-behavior: auto !important;
-    }
-
-    /* Disable box-shadow animations */
-    .product-card,
-    .category-card,
-    .btn {
-        transition: none !important;
-    }
-
-    /* Simplify shadows on mobile */
-    .product-card,
-    .category-card {
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+/* Smooth scroll on non-touch devices only */
+@media (hover: hover) and (pointer: fine) {
+    html {
+        scroll-behavior: smooth;
     }
 }
 
-/* ========================================
-   3. DISABLE ANIMATIONS ON SCROLL
-   ======================================== */
-
-@media (max-width: 768px) {
-
-    /* When scrolling, pause ALL animations */
-    .scroll-active * {
-        animation-play-state: paused !important;
-        transition: none !important;
-    }
-
-    /* Completely disable floating beans on mobile */
-    .floating-beans,
-    .particles-container,
-    .particle,
-    .bean {
-        display: none !important;
-    }
-}
-
-/* ========================================
-   4. REDUCE MOTION FOR ACCESSIBILITY
-   ======================================== */
-
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation: none !important;
-        transition: none !important;
-    }
-}
-
-/* ========================================
-   5. TOUCH OPTIMIZATION
-   ======================================== */
-
-@media (max-width: 768px) {
-
-    /* Fast touch response */
-    a,
-    button,
-    .btn,
-    .clickable {
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-    }
-}
-
-/* ========================================
-   6. DISABLE HOVER EFFECTS ON TOUCH
-   ======================================== */
-
-@media (hover: none) and (pointer: coarse) {
-
-    .product-card:hover,
-    .category-card:hover,
-    .btn:hover {
-        transform: none !important;
-        box-shadow: inherit !important;
-    }
-
-    /* Disable 3D effects */
-    .product-card-3d .product-card {
-        transform: none !important;
-    }
-}
-
-/* ========================================
-   7. GPU HINTS FOR FIXED ELEMENTS ONLY
-   ======================================== */
-
-.navbar-main,
-#mainNavbar,
-.bottom-nav,
-.back-to-top,
-.cart-drawer {
-    will-change: transform;
-    backface-visibility: hidden;
-}
-
-/* ========================================
-   8. CONTAIN LAYOUT FOR CARDS
-   ======================================== */
-
-.product-card,
-.category-card {
-    contain: layout style paint;
-}
-
-/* ========================================
-   9. TOUCH SAFETY GUARDS (GLOBAL)
-   ======================================== */
-
-/* قاعدة عامة: أي حاجة واخدة opacity 0 لازم تموت تماماً */
-[style*="opacity: 0"],
-.fade-out,
-.modal:not(.show),
-.drawer:not(.open),
-.overlay:not(.active) {
-    pointer-events: none !important;
-    /* ممنوع اللمس */
-    visibility: hidden !important;
-    /* المتصفح يشيلها من حساباته */
-}
-
-/* تأمين الـ Body عشان ميعلقش */
-body:not(.modal-open):not([style*="overflow: hidden"]) {
-    overflow-y: auto !important;
-    position: static !important;
+/* Essential: Faster tap on actionable elements */
+a,
+button,
+.btn,
+input,
+select,
+textarea {
+    touch-action: manipulation;
 }
