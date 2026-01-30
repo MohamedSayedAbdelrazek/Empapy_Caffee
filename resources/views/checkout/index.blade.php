@@ -19,6 +19,15 @@
 
     <section class="py-5">
         <div class="container">
+            {{-- Warning Message --}}
+            @if (session('warning'))
+                <div class="alert alert-warning alert-dismissible fade show mb-4" role="alert">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    {{ session('warning') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            @endif
+
             {{-- Global Messages Display --}}
             @if (session('error'))
                 <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
@@ -37,7 +46,8 @@
             {{-- Validation Errors Summary --}}
             @if ($errors->any())
                 <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                    <h6 class="alert-heading"><i class="bi bi-exclamation-octagon me-2"></i>يرجى تصحيح الأخطاء التالية:</h6>
+                    <h6 class="alert-heading"><i class="bi bi-exclamation-octagon me-2"></i>يرجى تصحيح الأخطاء التالية:
+                    </h6>
                     <ul class="mb-0 mt-2">
                         @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>
@@ -109,16 +119,23 @@
                                     @enderror
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label">المحافظة</label>
-                                    <select name="governorate" class="form-select">
+                                    <label class="form-label">المحافظة *</label>
+                                    <select name="governorate" id="governorateSelect"
+                                        class="form-select @error('governorate') is-invalid @enderror" required
+                                        onchange="updateShippingFee()">
                                         <option value="">اختر المحافظة</option>
                                         @php $userGov = old('governorate', auth()->user()?->governorate); @endphp
-                                        @foreach (['القاهرة', 'الجيزة', 'الإسكندرية', 'الدقهلية', 'الشرقية', 'المنوفية', 'القليوبية', 'البحيرة', 'الغربية', 'كفر الشيخ', 'دمياط', 'بورسعيد', 'الإسماعيلية', 'السويس', 'الفيوم', 'بني سويف', 'المنيا', 'أسيوط', 'سوهاج', 'قنا', 'الأقصر', 'أسوان', 'البحر الأحمر', 'شمال سيناء', 'جنوب سيناء', 'مطروح', 'الوادي الجديد'] as $gov)
-                                            <option value="{{ $gov }}" {{ $userGov === $gov ? 'selected' : '' }}>
-                                                {{ $gov }}
+                                        @foreach ($shippingZones as $zone)
+                                            <option value="{{ $zone->name }}"
+                                                {{ $userGov === $zone->name ? 'selected' : '' }}
+                                                data-fee="{{ $zone->fee }}">
+                                                {{ $zone->name }} ({{ number_format($zone->fee) }} ج.م)
                                             </option>
                                         @endforeach
                                     </select>
+                                    @error('governorate')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">ملاحظات إضافية</label>
@@ -355,14 +372,15 @@
                             </div>
                             <div class="d-flex justify-content-between mb-2">
                                 <span>التوصيل</span>
-                                <span class="{{ $shipping == 0 ? 'text-success' : '' }}">
+                                <span id="shippingFeeDisplay" class="{{ $shipping == 0 ? 'text-success' : '' }}">
                                     {{ $shipping == 0 ? 'مجاني' : number_format($shipping) . ' ج.م' }}
                                 </span>
                             </div>
 
                             <!-- Coupon/Reward Code Section -->
                             <div class="coupon-section my-3 p-3 rounded" style="background: var(--cream-dark);">
-                                <label class="form-label mb-2"><i class="bi bi-ticket-perforated me-2"></i>كود الخصم أو
+                                <label class="form-label mb-2"><i class="bi bi-ticket-perforated me-2"></i>كود الخصم
+                                    أو
                                     المكافأة</label>
                                 <div class="input-group">
                                     <input type="text" id="couponCode" class="form-control"
@@ -374,7 +392,8 @@
                                 </div>
                                 <input type="hidden" name="coupon_code" id="appliedCouponCode" value="">
                                 <div id="couponMessage" class="mt-2 small"></div>
-                                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>يمكنك استخدام
+                                <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>يمكنك
+                                    استخدام
                                     كود الخصم العادي أو كود مكافأة من نقاطك</small>
                             </div>
 
@@ -418,9 +437,9 @@
     <script>
         // تعريف المتغيرات
         let stripe, elements, cardElement;
-        const originalTotal = {{ $total }};
+        let originalTotal = {{ $total }};
         const subtotal = {{ $subtotal }};
-        const shipping = {{ $shipping }};
+        let shipping = {{ $shipping }};
         let currentDiscount = 0;
         let currentTotal = {{ $total }};
 
@@ -693,6 +712,73 @@
                     '<span class="text-danger"><i class="bi bi-x-circle me-1"></i>حدث خطأ أثناء التحقق من الكود</span>';
                 btn.disabled = false;
                 btn.innerHTML = 'تطبيق';
+            }
+        }
+
+        // Initialize on load if value exists
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('governorateSelect').value) {
+                updateShippingFee();
+            }
+        });
+
+        // Update Shipping Fee based on Governorate
+        async function updateShippingFee() {
+            const select = document.getElementById('governorateSelect');
+            const gov = select.value;
+            const feeDisplay = document.getElementById('shippingFeeDisplay');
+            const totalDisplay = document.getElementById('totalAmount');
+
+            if (!gov) return;
+
+            // Show loading state
+            feeDisplay.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+            try {
+                const response = await fetch('/checkout/calculate-shipping', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        governorate: gov,
+                        subtotal: subtotal
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Update global shipping variable
+                    shipping = parseFloat(data.shipping);
+
+                    // Update Fee Display
+                    if (data.is_free) {
+                        feeDisplay.textContent = 'مجاني';
+                        feeDisplay.className = 'text-success fw-bold';
+                    } else {
+                        feeDisplay.textContent = data.message;
+                        feeDisplay.className = '';
+                    }
+
+                    // Recalculate Total with Discount
+                    // Note: originalTotal includes initial shipping, so we should recalculate base
+                    // Base Total = Subtotal + New Shipping - Discount
+                    currentTotal = subtotal + shipping - currentDiscount;
+
+                    // Update Total Display
+                    totalDisplay.textContent = currentTotal.toLocaleString('ar-EG') + ' ج.م';
+
+                    // Update originalTotal reference if needed (though we calculate from subtotal)
+                    originalTotal = subtotal + shipping;
+
+                }
+
+            } catch (error) {
+                console.error('Error updating shipping:', error);
+                feeDisplay.textContent = 'خطأ في الحساب';
             }
         }
     </script>

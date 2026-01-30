@@ -112,10 +112,10 @@
                                     <label class="form-label">المحافظة</label>
                                     <select name="governorate" class="form-select">
                                         <option value="">اختر المحافظة</option>
-                                        @foreach (['القاهرة', 'الجيزة', 'الإسكندرية', 'الدقهلية', 'الشرقية', 'المنوفية', 'القليوبية', 'البحيرة', 'الغربية', 'كفر الشيخ', 'دمياط', 'بورسعيد', 'الإسماعيلية', 'السويس', 'الفيوم', 'بني سويف', 'المنيا', 'أسيوط', 'سوهاج', 'قنا', 'الأقصر', 'أسوان', 'البحر الأحمر', 'شمال سيناء', 'جنوب سيناء', 'مطروح', 'الوادي الجديد'] as $gov)
-                                            <option value="{{ $gov }}"
-                                                {{ old('governorate', $user->governorate) == $gov ? 'selected' : '' }}>
-                                                {{ $gov }}</option>
+                                        @foreach ($shippingZones as $zone)
+                                            <option value="{{ $zone->name }}"
+                                                {{ old('governorate', $user->governorate) == $zone->name ? 'selected' : '' }}>
+                                                {{ $zone->name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -403,7 +403,7 @@
                     .catch(error => {
                         console.error('Upload Error:', error);
                         const message = error.message || error.errors?.avatar?.[0] ||
-                        'حدث خطأ أثناء رفع الصورة';
+                            'حدث خطأ أثناء رفع الصورة';
                         alert(message);
                         location.reload();
                     });

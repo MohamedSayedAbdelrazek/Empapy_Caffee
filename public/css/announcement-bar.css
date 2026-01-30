@@ -1,0 +1,120 @@
+/**
+ * Announcement Bar - Clean & Professional
+ * Database-driven, admin-controlled announcements
+ */
+
+.announcement-bar {
+    background: linear-gradient(135deg, #2C1810 0%, #3D2317 100%);
+    color: #fff;
+    padding: 10px 0;
+    overflow: hidden;
+    position: relative;
+    z-index: 1100;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.announcement-track {
+    display: flex;
+    width: 100%;
+    overflow: hidden;
+}
+
+.announcement-content {
+    display: flex;
+    animation: marquee 30s linear infinite;
+    white-space: nowrap;
+    direction: ltr;
+    /* LTR for smooth scroll */
+    will-change: transform;
+}
+
+.announcement-content:hover {
+    animation-play-state: paused;
+}
+
+.announcement-item {
+    direction: rtl;
+    /* Restore RTL for Arabic text */
+    display: inline-flex;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    flex-shrink: 0;
+}
+
+.announcement-item i {
+    color: #C9A227;
+    font-size: 1rem;
+}
+
+.announcement-divider {
+    color: #C9A227;
+    padding: 0 15px;
+    font-size: 0.8rem;
+    opacity: 0.7;
+    flex-shrink: 0;
+}
+
+/* Marquee animation - moves half the content (because it's duplicated) */
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Close button */
+.announcement-close {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 10;
+}
+
+.announcement-close:hover {
+    background: rgba(201, 162, 39, 0.25);
+    border-color: rgba(201, 162, 39, 0.5);
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .announcement-bar {
+        padding: 8px 0;
+    }
+
+    .announcement-item {
+        font-size: 0.85rem;
+        padding: 0 15px;
+    }
+
+    .announcement-content {
+        /* Slower on mobile for readability */
+        animation-duration: 45s;
+    }
+
+    .announcement-divider {
+        padding: 0 12px;
+    }
+
+    .announcement-close {
+        width: 24px;
+        height: 24px;
+        font-size: 0.9rem;
+    }
+}

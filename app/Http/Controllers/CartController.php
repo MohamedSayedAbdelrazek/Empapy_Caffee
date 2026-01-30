@@ -22,9 +22,14 @@ class CartController extends Controller
     {
         $cartData = $this->cartService->getCartWithProducts();
 
+        $freeShippingThreshold = \App\Models\Setting::get('shipping_free_threshold', 500);
+        $shippingFee = \App\Models\Setting::get('shipping_fee', 50);
+
         return view('cart.index', [
             'cartItems' => $cartData['items'],
-            'total' => $cartData['total']
+            'total' => $cartData['total'],
+            'freeShippingThreshold' => $freeShippingThreshold,
+            'shippingFee' => $shippingFee,
         ]);
     }
 

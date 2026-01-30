@@ -177,18 +177,18 @@
                             <div class="d-flex justify-content-between mb-3">
                                 <span>التوصيل</span>
                                 <span class="fw-bold text-success">
-                                    @if ($total >= 500)
+                                    @if ($total >= $freeShippingThreshold)
                                         مجاني
                                     @else
-                                        50 ج.م
+                                        {{ $shippingFee }} ج.م
                                     @endif
                                 </span>
                             </div>
 
-                            @if ($total < 500)
+                            @if ($total < $freeShippingThreshold)
                                 <div class="alert alert-info small mb-3">
                                     <i class="bi bi-info-circle me-2"></i>
-                                    أضف {{ number_format(500 - $total) }} ج.م للحصول على توصيل مجاني
+                                    أضف {{ number_format($freeShippingThreshold - $total) }} ج.م للحصول على توصيل مجاني
                                 </div>
                             @endif
 
@@ -197,7 +197,7 @@
                             <div class="d-flex justify-content-between mb-4">
                                 <span class="fs-5">الإجمالي</span>
                                 <span class="fs-4 fw-bold" style="color: var(--gold);" id="cartTotal">
-                                    {{ number_format($total + ($total >= 500 ? 0 : 50)) }} ج.م
+                                    {{ number_format($total + ($total >= $freeShippingThreshold ? 0 : $shippingFee)) }} ج.م
                                 </span>
                             </div>
 
@@ -242,6 +242,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+            const FREE_SHIPPING_THRESHOLD = {{ $freeShippingThreshold }};
+            const SHIPPING_FEE = {{ $shippingFee }};
 
             // Quantity buttons
             document.querySelectorAll('.qty-btn-modern').forEach(btn => {
@@ -368,7 +370,7 @@
                 }
 
                 // Update delivery fee and total
-                const deliveryFee = cartData.total >= 500 ? 0 : 50;
+                const deliveryFee = cartData.total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
                 const totalWithDelivery = cartData.total + deliveryFee;
 
                 // Update delivery text
@@ -390,8 +392,8 @@
 
                 // Update or remove free shipping alert
                 const existingAlert = document.querySelector('.alert.alert-info');
-                if (cartData.total < 500) {
-                    const remaining = 500 - cartData.total;
+                if (cartData.total < FREE_SHIPPING_THRESHOLD) {
+                    const remaining = FREE_SHIPPING_THRESHOLD - cartData.total;
                     if (existingAlert) {
                         existingAlert.innerHTML = `
                             <i class="bi bi-info-circle me-2"></i>

@@ -98,7 +98,23 @@
                     </a>
                 </li>
 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.announcements.*') ? 'active' : '' }}"
+                        href="{{ route('admin.announcements.index') }}">
+                        <i class="bi bi-megaphone"></i>
+                        <span>شريط الإعلانات</span>
+                    </a>
+                </li>
+
                 <li class="nav-section">إدارة المستخدمين</li>
+
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->routeIs('admin.settings.*') ? 'active' : '' }}"
+                        href="{{ route('admin.settings.index') }}">
+                        <i class="bi bi-sliders"></i>
+                        <span>إعدادات الموقع</span>
+                    </a>
+                </li>
 
                 <li class="nav-item">
                     <a class="nav-link {{ request()->routeIs('admin.users.*') ? 'active' : '' }}"

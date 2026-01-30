@@ -94,6 +94,9 @@
     <!-- UX Enhancements CSS -->
     <link rel="stylesheet" href="{{ asset('css/ux-enhancements.css') }}">
 
+    <!-- Announcement Bar CSS -->
+    <link rel="stylesheet" href="{{ asset('css/announcement-bar.css') }}">
+
     <!-- Loyalty System CSS -->
     <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
 
@@ -118,59 +121,36 @@
 </head>
 
 <body>
-    <!-- Announcement Bar -->
-    <div class="announcement-bar" id="announcementBar">
-        <div class="announcement-track">
-            <div class="announcement-content">
-                <!-- First Set -->
-                <span class="announcement-item">
-                    <i class="bi bi-truck"></i>
-                    توصيل مجاني للطلبات أكثر من 500 ج.م
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-gift"></i>
-                    خصم 15% على طلبك الأول - كود: WELCOME15
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-star-fill"></i>
-                    قهوة طازجة محمصة يومياً
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-clock"></i>
-                    توصيل سريع خلال 24 ساعة
-                </span>
-                <span class="announcement-divider">☕</span>
+    <!-- Dynamic Announcement Bar -->
+    @php
+        $announcements = \App\Models\Announcement::active()->ordered()->get();
+    @endphp
 
-                <!-- Duplicate Set for Seamless Loop -->
-                <span class="announcement-item">
-                    <i class="bi bi-truck"></i>
-                    توصيل مجاني للطلبات أكثر من 500 ج.م
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-gift"></i>
-                    خصم 15% على طلبك الأول - كود: WELCOME15
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-star-fill"></i>
-                    قهوة طازجة محمصة يومياً
-                </span>
-                <span class="announcement-divider">☕</span>
-                <span class="announcement-item">
-                    <i class="bi bi-clock"></i>
-                    توصيل سريع خلال 24 ساعة
-                </span>
-                <span class="announcement-divider">☕</span>
+    @if ($announcements->isNotEmpty())
+        <div class="announcement-bar" id="announcementBar">
+            <div class="announcement-track">
+                <div class="announcement-content">
+                    @foreach ($announcements as $announcement)
+                        <span class="announcement-item">
+                            {{ $announcement->message_ar }}
+                        </span>
+                        <span class="announcement-divider">☕</span>
+                    @endforeach
+
+                    {{-- Duplicate for seamless loop --}}
+                    @foreach ($announcements as $announcement)
+                        <span class="announcement-item">
+                            {{ $announcement->message_ar }}
+                        </span>
+                        <span class="announcement-divider">☕</span>
+                    @endforeach
+                </div>
             </div>
+            <button class="announcement-close" id="announcementCloseBtn" aria-label="إخفاء شريط الإعلانات">
+                <i class="bi bi-x"></i>
+            </button>
         </div>
-        <button class="announcement-close" id="announcementCloseBtn" aria-label="إخفاء شريط الإعلانات">
-            <i class="bi bi-x"></i>
-        </button>
-    </div>
+    @endif
 
     <!-- Navbar -->
     @include('components.navbar')

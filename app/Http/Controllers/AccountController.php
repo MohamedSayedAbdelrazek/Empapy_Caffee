@@ -39,7 +39,8 @@ class AccountController extends Controller
     public function profile()
     {
         $user = Auth::user();
-        return view('account.profile', compact('user'));
+        $shippingZones = \App\Models\ShippingZone::active()->ordered()->get();
+        return view('account.profile', compact('user', 'shippingZones'));
     }
 
     /**

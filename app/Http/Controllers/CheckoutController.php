@@ -43,10 +43,25 @@ class CheckoutController extends Controller
             }
         }
 
-        $shipping = $subtotal >= 500 ? 0 : 50; // Free shipping over 500 EGP
+        // Create view data
+        $shippingZones = \App\Models\ShippingZone::active()->ordered()->get();
+        // Initial shipping calc (will be updated by JS based on selection)
+        $freeShippingThreshold = \App\Models\Setting::get('shipping_free_threshold', 500);
+
+        // Try to get shipping fee from user's saved governorate
+        $shippingFee = 0;
+        $userGov = auth()->user()?->governorate;
+        if ($userGov) {
+            $zone = $shippingZones->firstWhere('name', $userGov);
+            if ($zone) {
+                $shippingFee = $zone->fee;
+            }
+        }
+
+        $shipping = $subtotal >= $freeShippingThreshold ? 0 : $shippingFee;
         $total = $subtotal + $shipping;
 
-        return view('checkout.index', compact('cartItems', 'subtotal', 'shipping', 'total'));
+        return view('checkout.index', compact('cartItems', 'subtotal', 'shippingZones', 'freeShippingThreshold', 'shipping', 'total'));
     }
 
     /**
@@ -101,7 +116,24 @@ class CheckoutController extends Controller
                 }
             }
 
-            $shipping = $subtotal >= 500 ? 0 : 50;
+            $freeShippingThreshold = \App\Models\Setting::get('shipping_free_threshold', 500);
+
+            // Calculate shipping based on zone (governorate)
+            $shippingFee = 0;
+            if ($request->governorate) {
+                $zone = \App\Models\ShippingZone::where('name', $request->governorate)->first();
+                if ($zone) {
+                    $shippingFee = $zone->fee;
+                } else {
+                    // Fallback to default if zone not found active
+                    $shippingFee = \App\Models\Setting::get('shipping_fee', 50);
+                }
+            } else {
+                $shippingFee = \App\Models\Setting::get('shipping_fee', 50);
+            }
+
+            // Apply free shipping rule logic
+            $shipping = $subtotal >= $freeShippingThreshold ? 0 : $shippingFee;
             $discount = 0;
             $couponCode = null;
             $redemption = null;
@@ -257,8 +289,52 @@ class CheckoutController extends Controller
     /**
      * Display order success page
      */
+    /**
+     * Display order success page
+     */
     public function success(Order $order)
     {
         return view('checkout.success', compact('order'));
+    }
+
+    /**
+     * Calculate shipping fee via AJAX
+     */
+    public function calculateShipping(Request $request)
+    {
+        $request->validate([
+            'governorate' => 'required|string',
+            'subtotal' => 'nullable|numeric'
+        ]);
+
+        $zone = \App\Models\ShippingZone::where('name', $request->governorate)->active()->first();
+        $fee = $zone ? $zone->fee : \App\Models\Setting::get('shipping_fee', 50);
+        $freeThreshold = \App\Models\Setting::get('shipping_free_threshold', 500);
+
+        // Required subtotal from cart session if not passed
+        $subtotal = $request->subtotal;
+        if (!$subtotal) {
+            $cart = session()->get('cart', []);
+            $subtotal = 0;
+            foreach ($cart as $item) {
+                $product = Product::find($item['product_id']);
+                if ($product) {
+                    $unitPrice = $product->calculatePriceWithOptions(array_values($item['options'] ?? []));
+                    $subtotal += $unitPrice * $item['quantity'];
+                }
+            }
+        }
+
+        $shipping = $subtotal >= $freeThreshold ? 0 : $fee;
+        $total = $subtotal + $shipping;
+
+        return response()->json([
+            'success' => true,
+            'fee' => $fee,
+            'shipping' => $shipping,
+            'total' => $total,
+            'is_free' => $shipping == 0,
+            'message' => $shipping == 0 ? 'شحن مجاني' : number_format($shipping) . ' ج.م'
+        ]);
     }
 }

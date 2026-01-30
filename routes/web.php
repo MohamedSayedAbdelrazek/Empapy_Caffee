@@ -63,6 +63,7 @@ Route::get('/api/device/vapid-key', [App\Http\Controllers\Api\DeviceController::
 // Checkout
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::post('/checkout/calculate-shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculate-shipping'); // Added route
 Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Payment Routes (Stripe)
@@ -162,6 +163,18 @@ Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function ()
 
     // Coupons (admin only)
     Route::resource('coupons', CouponController::class);
+
+    // Announcements (admin only)
+    Route::resource('announcements', App\Http\Controllers\Admin\AnnouncementController::class);
+    Route::post('announcements/reorder', [App\Http\Controllers\Admin\AnnouncementController::class, 'reorder'])->name('announcements.reorder');
+    Route::post('announcements/{announcement}/toggle', [App\Http\Controllers\Admin\AnnouncementController::class, 'toggleActive'])->name('announcements.toggle');
+
+    // Settings (admin only)
+    Route::get('settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
+    Route::put('settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+
+    // Shipping Zones (admin only)
+    Route::resource('shipping-zones', App\Http\Controllers\Admin\ShippingZoneController::class)->only(['index', 'update']);
 
     // Staff Management (admin only)
     Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
