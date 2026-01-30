@@ -41,9 +41,7 @@ class Permission extends Model
             'categories' => 'الفئات',
             'coupons' => 'الكوبونات',
             'users' => 'المستخدمين',
-            'reports' => 'التقارير',
             'settings' => 'الإعدادات',
-            'reviews' => 'التقييمات',
             'notifications' => 'الإشعارات',
         ];
     }

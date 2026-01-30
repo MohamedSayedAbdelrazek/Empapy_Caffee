@@ -22,8 +22,6 @@ class PermissionSeeder extends Seeder
             // Orders Group
             ['name' => 'view-orders', 'display_name_ar' => 'عرض الطلبات', 'group' => 'orders'],
             ['name' => 'edit-orders', 'display_name_ar' => 'تعديل الطلبات', 'group' => 'orders'],
-            ['name' => 'delete-orders', 'display_name_ar' => 'حذف الطلبات', 'group' => 'orders'],
-            ['name' => 'export-orders', 'display_name_ar' => 'تصدير الطلبات', 'group' => 'orders'],
 
             // Categories Group
             ['name' => 'view-categories', 'display_name_ar' => 'عرض الفئات', 'group' => 'categories'],
@@ -44,22 +42,12 @@ class PermissionSeeder extends Seeder
             ['name' => 'delete-users', 'display_name_ar' => 'حذف مستخدمين', 'group' => 'users'],
             ['name' => 'manage-permissions', 'display_name_ar' => 'إدارة الصلاحيات', 'group' => 'users'],
 
-            // Reports Group
-            ['name' => 'view-reports', 'display_name_ar' => 'عرض التقارير', 'group' => 'reports'],
-            ['name' => 'export-reports', 'display_name_ar' => 'تصدير التقارير', 'group' => 'reports'],
-            ['name' => 'view-analytics', 'display_name_ar' => 'عرض الإحصائيات', 'group' => 'reports'],
-
             // Settings Group
+            ['name' => 'view-analytics', 'display_name_ar' => 'عرض الإحصائيات', 'group' => 'settings'],
             ['name' => 'edit-settings', 'display_name_ar' => 'تعديل الإعدادات', 'group' => 'settings'],
             ['name' => 'manage-site', 'display_name_ar' => 'إدارة الموقع', 'group' => 'settings'],
 
-            // Reviews Group
-            ['name' => 'view-reviews', 'display_name_ar' => 'عرض التقييمات', 'group' => 'reviews'],
-            ['name' => 'moderate-reviews', 'display_name_ar' => 'مراجعة التقييمات', 'group' => 'reviews'],
-            ['name' => 'delete-reviews', 'display_name_ar' => 'حذف التقييمات', 'group' => 'reviews'],
-
             // Notifications Group
-            ['name' => 'send-notifications', 'display_name_ar' => 'إرسال إشعارات', 'group' => 'notifications'],
             ['name' => 'view-notifications', 'display_name_ar' => 'عرض الإشعارات', 'group' => 'notifications'],
         ];
 
