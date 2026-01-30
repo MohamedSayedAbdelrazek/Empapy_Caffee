@@ -37,8 +37,7 @@
                                         <div class="avatar-sm">
                                             @if ($member->avatar)
                                                 <img src="{{ Storage::url($member->avatar) }}" alt="{{ $member->name }}"
-                                                    class="rounded-circle"
-                                                    style="width: 40px; height: 40px; object-fit: cover;">
+                                                    class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
                                             @else
                                                 <div class="rounded-circle d-flex align-items-center justify-content-center"
                                                     style="width: 40px; height: 40px; background: linear-gradient(135deg, #c9a227 0%, #e8c547 100%); color: #1a1a2e; font-weight: 600;">
@@ -76,8 +75,7 @@
                                         </a>
                                         @if ($member->id !== auth()->id())
                                             <form action="{{ route('admin.staff.destroy', $member) }}" method="POST"
-                                                class="d-inline"
-                                                onsubmit="return confirm('هل أنت متأكد من حذف هذا الموظف؟')">
+                                                class="d-inline" onsubmit="return confirm('هل أنت متأكد من حذف هذا الموظف؟')">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-outline-danger" title="حذف">

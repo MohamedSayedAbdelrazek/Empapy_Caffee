@@ -69,7 +69,7 @@
                                 لا يمكنك تغيير دورك الخاص
                             </div>
                         @else
-                            <div class="form-text" id="roleHint">
+                            <div class="form-text text-light" id="roleHint">
                                 <span id="adminHint" style="display: none;">
                                     <i class="bi bi-info-circle text-primary me-1"></i>
                                     المدير لديه جميع الصلاحيات تلقائياً
@@ -154,31 +154,31 @@
         </div>
     </div>
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const roleSelect = document.getElementById('roleSelect');
-    const permissionsSection = document.getElementById('permissionsSection');
-    const adminHint = document.getElementById('adminHint');
-    const staffHint = document.getElementById('staffHint');
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const roleSelect = document.getElementById('roleSelect');
+                const permissionsSection = document.getElementById('permissionsSection');
+                const adminHint = document.getElementById('adminHint');
+                const staffHint = document.getElementById('staffHint');
 
-    if (!roleSelect || !permissionsSection) return;
+                if (!roleSelect || !permissionsSection) return;
 
-    function togglePermissions() {
-        if (roleSelect.value === 'admin') {
-            permissionsSection.style.display = 'none';
-            if (adminHint) adminHint.style.display = 'inline';
-            if (staffHint) staffHint.style.display = 'none';
-        } else {
-            permissionsSection.style.display = 'block';
-            if (adminHint) adminHint.style.display = 'none';
-            if (staffHint) staffHint.style.display = 'inline';
-        }
-    }
+                function togglePermissions() {
+                    if (roleSelect.value === 'admin') {
+                        permissionsSection.style.display = 'none';
+                        if (adminHint) adminHint.style.display = 'inline';
+                        if (staffHint) staffHint.style.display = 'none';
+                    } else {
+                        permissionsSection.style.display = 'block';
+                        if (adminHint) adminHint.style.display = 'none';
+                        if (staffHint) staffHint.style.display = 'inline';
+                    }
+                }
 
-    roleSelect.addEventListener('change', togglePermissions);
-    togglePermissions(); // Run on page load
-});
-</script>
-@endpush
+                roleSelect.addEventListener('change', togglePermissions);
+                togglePermissions(); // Run on page load
+            });
+        </script>
+    @endpush
 @endsection

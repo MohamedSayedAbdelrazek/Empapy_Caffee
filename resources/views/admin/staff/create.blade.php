@@ -52,7 +52,8 @@
                     {{-- Role --}}
                     <div class="col-md-6">
                         <label class="form-label">الدور <span class="text-danger">*</span></label>
-                        <select name="role" id="roleSelect" class="form-select @error('role') is-invalid @enderror" required>
+                        <select name="role" id="roleSelect" class="form-select @error('role') is-invalid @enderror"
+                            required>
                             <option value="">اختر الدور</option>
                             <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>
                                 🛡️ مدير - صلاحيات كاملة
@@ -64,7 +65,7 @@
                         @error('role')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text" id="roleHint">
+                        <div class="form-text text-light" id="roleHint">
                             <span id="adminHint" style="display: none;">
                                 <i class="bi bi-info-circle text-primary me-1"></i>
                                 المدير لديه جميع الصلاحيات تلقائياً
@@ -108,29 +109,29 @@
         </div>
     </div>
 
-@push('scripts')
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const roleSelect = document.getElementById('roleSelect');
-    const permissionsSection = document.getElementById('permissionsSection');
-    const adminHint = document.getElementById('adminHint');
-    const staffHint = document.getElementById('staffHint');
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const roleSelect = document.getElementById('roleSelect');
+                const permissionsSection = document.getElementById('permissionsSection');
+                const adminHint = document.getElementById('adminHint');
+                const staffHint = document.getElementById('staffHint');
 
-    function togglePermissions() {
-        if (roleSelect.value === 'admin') {
-            permissionsSection.style.display = 'none';
-            adminHint.style.display = 'inline';
-            staffHint.style.display = 'none';
-        } else {
-            permissionsSection.style.display = 'block';
-            adminHint.style.display = 'none';
-            staffHint.style.display = 'inline';
-        }
-    }
+                function togglePermissions() {
+                    if (roleSelect.value === 'admin') {
+                        permissionsSection.style.display = 'none';
+                        adminHint.style.display = 'inline';
+                        staffHint.style.display = 'none';
+                    } else {
+                        permissionsSection.style.display = 'block';
+                        adminHint.style.display = 'none';
+                        staffHint.style.display = 'inline';
+                    }
+                }
 
-    roleSelect.addEventListener('change', togglePermissions);
-    togglePermissions(); // Run on page load
-});
-</script>
-@endpush
+                roleSelect.addEventListener('change', togglePermissions);
+                togglePermissions(); // Run on page load
+            });
+        </script>
+    @endpush
 @endsection
