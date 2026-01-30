@@ -192,7 +192,7 @@
                     @if (auth()->user()->isAdmin())
                         مدير النظام
                     @else
-                        كاشير
+                        موظف
                     @endif
                 </span>
             </div>

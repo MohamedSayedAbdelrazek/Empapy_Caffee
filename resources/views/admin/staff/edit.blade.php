@@ -53,13 +53,13 @@
                     {{-- Role --}}
                     <div class="col-md-6">
                         <label class="form-label">الدور <span class="text-danger">*</span></label>
-                        <select name="role" class="form-select @error('role') is-invalid @enderror" required
+                        <select name="role" id="roleSelect" class="form-select @error('role') is-invalid @enderror" required
                             @if ($staff->id === auth()->id()) disabled @endif>
                             <option value="admin" {{ old('role', $staff->role) === 'admin' ? 'selected' : '' }}>
                                 🛡️ مدير - صلاحيات كاملة
                             </option>
                             <option value="cashier" {{ old('role', $staff->role) === 'cashier' ? 'selected' : '' }}>
-                                👤 كاشير
+                                👤 موظف - صلاحيات مخصصة
                             </option>
                         </select>
                         @if ($staff->id === auth()->id())
@@ -67,6 +67,16 @@
                             <div class="form-text text-warning">
                                 <i class="bi bi-exclamation-triangle me-1"></i>
                                 لا يمكنك تغيير دورك الخاص
+                            </div>
+                        @else
+                            <div class="form-text" id="roleHint">
+                                <span id="adminHint" style="display: none;">
+                                    <i class="bi bi-info-circle text-primary me-1"></i>
+                                    المدير لديه جميع الصلاحيات تلقائياً
+                                </span>
+                                <span id="staffHint">
+                                    اختر الصلاحيات المخصصة من القسم أدناه
+                                </span>
                             </div>
                         @endif
                         @error('role')
@@ -143,4 +153,32 @@
             </div>
         </div>
     </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('roleSelect');
+    const permissionsSection = document.getElementById('permissionsSection');
+    const adminHint = document.getElementById('adminHint');
+    const staffHint = document.getElementById('staffHint');
+
+    if (!roleSelect || !permissionsSection) return;
+
+    function togglePermissions() {
+        if (roleSelect.value === 'admin') {
+            permissionsSection.style.display = 'none';
+            if (adminHint) adminHint.style.display = 'inline';
+            if (staffHint) staffHint.style.display = 'none';
+        } else {
+            permissionsSection.style.display = 'block';
+            if (adminHint) adminHint.style.display = 'none';
+            if (staffHint) staffHint.style.display = 'inline';
+        }
+    }
+
+    roleSelect.addEventListener('change', togglePermissions);
+    togglePermissions(); // Run on page load
+});
+</script>
+@endpush
 @endsection

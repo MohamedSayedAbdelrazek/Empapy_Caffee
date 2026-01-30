@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">➕ إضافة موظف جديد</h2>
-            <p class="text-muted mb-0">إضافة مدير أو كاشير جديد للنظام</p>
+            <p class="text-muted mb-0">إضافة مدير أو موظف جديد للنظام</p>
         </div>
         <a href="{{ route('admin.staff.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-right me-2"></i>رجوع
@@ -52,20 +52,26 @@
                     {{-- Role --}}
                     <div class="col-md-6">
                         <label class="form-label">الدور <span class="text-danger">*</span></label>
-                        <select name="role" class="form-select @error('role') is-invalid @enderror" required>
+                        <select name="role" id="roleSelect" class="form-select @error('role') is-invalid @enderror" required>
                             <option value="">اختر الدور</option>
                             <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>
                                 🛡️ مدير - صلاحيات كاملة
                             </option>
                             <option value="cashier" {{ old('role') === 'cashier' ? 'selected' : '' }}>
-                                👤 كاشير
+                                👤 موظف - صلاحيات مخصصة
                             </option>
                         </select>
                         @error('role')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
-                        <div class="form-text">
-                            يمكنك اختيار صلاحيات مخصصة لهذا الموظف من القسم أدناه
+                        <div class="form-text" id="roleHint">
+                            <span id="adminHint" style="display: none;">
+                                <i class="bi bi-info-circle text-primary me-1"></i>
+                                المدير لديه جميع الصلاحيات تلقائياً
+                            </span>
+                            <span id="staffHint">
+                                اختر الصلاحيات المخصصة من القسم أدناه
+                            </span>
                         </div>
                     </div>
 
@@ -101,4 +107,30 @@
             </form>
         </div>
     </div>
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('roleSelect');
+    const permissionsSection = document.getElementById('permissionsSection');
+    const adminHint = document.getElementById('adminHint');
+    const staffHint = document.getElementById('staffHint');
+
+    function togglePermissions() {
+        if (roleSelect.value === 'admin') {
+            permissionsSection.style.display = 'none';
+            adminHint.style.display = 'inline';
+            staffHint.style.display = 'none';
+        } else {
+            permissionsSection.style.display = 'block';
+            adminHint.style.display = 'none';
+            staffHint.style.display = 'inline';
+        }
+    }
+
+    roleSelect.addEventListener('change', togglePermissions);
+    togglePermissions(); // Run on page load
+});
+</script>
+@endpush
 @endsection

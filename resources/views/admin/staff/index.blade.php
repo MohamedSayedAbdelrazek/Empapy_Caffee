@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">👥 إدارة الفريق</h2>
-            <p class="text-muted mb-0">إدارة المديرين والكاشير</p>
+            <p class="text-muted mb-0">إدارة المديرين والموظفين</p>
         </div>
         <a href="{{ route('admin.staff.create') }}" class="btn btn-primary">
             <i class="bi bi-plus-lg me-2"></i>إضافة موظف جديد
@@ -63,7 +63,7 @@
                                         </span>
                                     @else
                                         <span class="badge bg-info">
-                                            <i class="bi bi-person-badge me-1"></i>كاشير
+                                            <i class="bi bi-person-badge me-1"></i>موظف
                                         </span>
                                     @endif
                                 </td>
@@ -128,7 +128,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <div>
                             <h3 class="mb-0">{{ \App\Models\User::where('role', 'cashier')->count() }}</h3>
-                            <small>الكاشير</small>
+                            <small>الموظفين</small>
                         </div>
                         <i class="bi bi-person-badge display-4 opacity-50"></i>
                     </div>
