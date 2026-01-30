@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 /**
  * Keep body scroll active unless a modal/overlay is open
- * FIXED: Now includes mobile user panel state
+ * FIXED: Force-enable scroll on load to prevent cache/lifecycle bugs
  */
 function initScrollGuard() {
     function isOverlayOpen() {
@@ -44,7 +44,7 @@ function initScrollGuard() {
         const quickViewOpen = document.querySelector('.quick-view-modal.open');
         const lightboxOpen = document.querySelector('.lightbox.active');
         const bootstrapModalOpen = document.body.classList.contains('modal-open');
-        const userPanelOpen = document.body.classList.contains('user-panel-open'); // ADDED
+        const userPanelOpen = document.body.classList.contains('user-panel-open');
 
         return cartOpen || quickShopOpen || quickViewOpen || lightboxOpen || bootstrapModalOpen || userPanelOpen;
     }
@@ -52,23 +52,41 @@ function initScrollGuard() {
     function enforceBodyScroll() {
         if (!isOverlayOpen()) {
             document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.documentElement.style.overflow = '';
         }
     }
 
+    // CRITICAL: Force-enable scroll immediately on page load
     enforceBodyScroll();
+
+    // Re-check on scroll/touch
     window.addEventListener('scroll', enforceBodyScroll, { passive: true });
     window.addEventListener('touchmove', enforceBodyScroll, { passive: true });
 
     // Scroll Performance: Add scroll-active class to disable heavy effects during scroll
     let scrollTimeout;
-    window.addEventListener('scroll', function() {
+    window.addEventListener('scroll', function () {
         document.body.classList.add('scroll-active');
         clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(function() {
+        scrollTimeout = setTimeout(function () {
             document.body.classList.remove('scroll-active');
-        }, 150); // Remove class 150ms after scroll stops
+        }, 150);
     }, { passive: true });
 }
+
+// CRITICAL FIX: Force-enable scroll after ALL scripts load
+window.addEventListener('load', function () {
+    setTimeout(function () {
+        // Final safety check: ensure scroll is enabled if no overlays are open
+        const hasOverlay = document.querySelector('.cart-drawer.open, .quick-view-modal.open, .lightbox.active, .modal.show');
+        if (!hasOverlay && !document.body.classList.contains('modal-open')) {
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.documentElement.style.overflow = '';
+        }
+    }, 100);
+});
 
 /**
  * Announcement Bar Dismiss

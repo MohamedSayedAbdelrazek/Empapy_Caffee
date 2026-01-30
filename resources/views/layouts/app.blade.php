@@ -94,9 +94,6 @@
     <!-- UX Enhancements CSS -->
     <link rel="stylesheet" href="{{ asset('css/ux-enhancements.css') }}">
 
-    <!-- Mobile Scroll Performance CSS -->
-    <link rel="stylesheet" href="{{ asset('css/scroll-performance.css') }}">
-
     <!-- Loyalty System CSS -->
     <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
 
