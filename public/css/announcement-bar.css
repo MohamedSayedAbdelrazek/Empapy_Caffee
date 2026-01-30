@@ -17,14 +17,16 @@
     display: flex;
     width: 100%;
     overflow: hidden;
+    /* Add padding to avoid close button overlap */
+    padding-left: 50px;
+    padding-right: 10px;
+    box-sizing: border-box;
 }
 
 .announcement-content {
-    display: flex;
-    animation: marquee 30s linear infinite;
+    display: inline-flex;
+    animation: marquee 25s linear infinite;
     white-space: nowrap;
-    direction: ltr;
-    /* LTR for smooth scroll */
     will-change: transform;
 }
 
@@ -33,14 +35,13 @@
 }
 
 .announcement-item {
-    direction: rtl;
-    /* Restore RTL for Arabic text */
     display: inline-flex;
     align-items: center;
     padding: 0 20px;
     font-size: 0.9rem;
     font-weight: 500;
     flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .announcement-item i {
@@ -59,7 +60,7 @@
 /* Marquee animation - moves 25% of the content (because it's repeated 4 times) */
 @keyframes marquee {
     0% {
-        transform: translateX(0);
+        transform: translateX(0%);
     }
 
     100% {
@@ -98,23 +99,28 @@
         padding: 8px 0;
     }
 
+    .announcement-track {
+        padding-left: 45px;
+    }
+
     .announcement-item {
-        font-size: 0.85rem;
-        padding: 0 15px;
+        font-size: 0.8rem;
+        padding: 0 12px;
     }
 
     .announcement-content {
-        /* Faster on mobile for better visibility - 20s instead of 45s */
-        animation-duration: 20s;
+        /* Faster on mobile - 15s for better readability */
+        animation-duration: 15s;
     }
 
     .announcement-divider {
-        padding: 0 12px;
+        padding: 0 10px;
     }
 
     .announcement-close {
         width: 24px;
         height: 24px;
         font-size: 0.9rem;
+        left: 8px;
     }
 }

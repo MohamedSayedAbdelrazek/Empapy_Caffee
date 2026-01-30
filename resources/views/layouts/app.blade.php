@@ -10,7 +10,7 @@
     <script>
         // ✅ Service Worker Registration for PWA
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 navigator.serviceWorker.register('/sw.js')
                     .then(reg => console.log('✅ SW registered:', reg.scope))
                     .catch(err => console.log('❌ SW registration failed:', err));
@@ -47,7 +47,8 @@
     <link rel="apple-touch-icon" sizes="256x256" href="{{ asset('icons/ios/256.png') }}">
 
     <!-- SEO Meta Tags -->
-    <meta name="description" content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
+    <meta name="description"
+        content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
     <meta name="keywords" content="قهوة, كافيه, قهوة فاخرة, بن, إمبابي, espresso, coffee">
     <meta name="author" content="Empapy Caffe">
 
@@ -215,7 +216,7 @@
             return div.innerHTML;
         }
 
-        window.handleFirebaseMessage = function(payload) {
+        window.handleFirebaseMessage = function (payload) {
             console.log('[User Layout] Received Firebase Message:', payload);
             const {
                 notification,
