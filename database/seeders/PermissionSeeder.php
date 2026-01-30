@@ -42,6 +42,18 @@ class PermissionSeeder extends Seeder
             ['name' => 'delete-users', 'display_name_ar' => 'حذف مستخدمين', 'group' => 'users'],
             ['name' => 'manage-permissions', 'display_name_ar' => 'إدارة الصلاحيات', 'group' => 'users'],
 
+            // Loyalty Group
+            ['name' => 'view-loyalty', 'display_name_ar' => 'عرض نظام الولاء', 'group' => 'loyalty'],
+            ['name' => 'manage-loyalty', 'display_name_ar' => 'إدارة نظام الولاء', 'group' => 'loyalty'],
+
+            // Announcements Group
+            ['name' => 'view-announcements', 'display_name_ar' => 'عرض الإعلانات', 'group' => 'announcements'],
+            ['name' => 'manage-announcements', 'display_name_ar' => 'إدارة الإعلانات', 'group' => 'announcements'],
+
+            // Contacts Group
+            ['name' => 'view-contacts', 'display_name_ar' => 'عرض رسائل التواصل', 'group' => 'contacts'],
+            ['name' => 'manage-contacts', 'display_name_ar' => 'إدارة رسائل التواصل', 'group' => 'contacts'],
+
             // Settings Group
             ['name' => 'view-analytics', 'display_name_ar' => 'عرض الإحصائيات', 'group' => 'settings'],
             ['name' => 'edit-settings', 'display_name_ar' => 'تعديل الإعدادات', 'group' => 'settings'],

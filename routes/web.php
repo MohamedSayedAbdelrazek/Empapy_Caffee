@@ -140,47 +140,81 @@ Route::prefix('admin')->name('admin.')->middleware(['staff'])->group(function ()
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes - Admin Only (Full Access)
+| Admin Routes - Permission Based Access
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin')->name('admin.')->middleware(['admin'])->group(function () {
-    // Dashboard (admin only)
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+Route::prefix('admin')->name('admin.')->middleware(['staff'])->group(function () {
+    // Dashboard (requires view-analytics)
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard')->middleware('permission:view-analytics');
 
-    // Products (admin only)
-    Route::resource('products', ProductController::class);
-    Route::get('products-trashed', [ProductController::class, 'trashed'])->name('products.trashed');
-    Route::post('products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
-    Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('products.force-delete');
+    // Products (requires product permissions)
+    Route::get('products', [ProductController::class, 'index'])->name('products.index')->middleware('permission:view-products');
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create')->middleware('permission:create-products');
+    Route::post('products', [ProductController::class, 'store'])->name('products.store')->middleware('permission:create-products');
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show')->middleware('permission:view-products');
+    Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit')->middleware('permission:edit-products');
+    Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update')->middleware('permission:edit-products');
+    Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy')->middleware('permission:delete-products');
+    Route::get('products-trashed', [ProductController::class, 'trashed'])->name('products.trashed')->middleware('permission:delete-products');
+    Route::post('products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore')->middleware('permission:delete-products');
+    Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete'])->name('products.force-delete')->middleware('permission:delete-products');
 
-    // Categories (admin only)
-    Route::resource('categories', CategoryController::class);
+    // Categories (requires category permissions)
+    Route::get('categories', [CategoryController::class, 'index'])->name('categories.index')->middleware('permission:view-categories');
+    Route::get('categories/create', [CategoryController::class, 'create'])->name('categories.create')->middleware('permission:create-categories');
+    Route::post('categories', [CategoryController::class, 'store'])->name('categories.store')->middleware('permission:create-categories');
+    Route::get('categories/{category}', [CategoryController::class, 'show'])->name('categories.show')->middleware('permission:view-categories');
+    Route::get('categories/{category}/edit', [CategoryController::class, 'edit'])->name('categories.edit')->middleware('permission:edit-categories');
+    Route::put('categories/{category}', [CategoryController::class, 'update'])->name('categories.update')->middleware('permission:edit-categories');
+    Route::delete('categories/{category}', [CategoryController::class, 'destroy'])->name('categories.destroy')->middleware('permission:delete-categories');
 
-    // Users/Customers (admin only)
-    Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show');
+    // Users/Customers (requires view-users)
+    Route::get('/users', [UserController::class, 'index'])->name('users.index')->middleware('permission:view-users');
+    Route::get('/users/{user}', [UserController::class, 'show'])->name('users.show')->middleware('permission:view-users');
 
-    // Coupons (admin only)
-    Route::resource('coupons', CouponController::class);
+    // Coupons (requires coupon permissions)
+    Route::get('coupons', [CouponController::class, 'index'])->name('coupons.index')->middleware('permission:view-coupons');
+    Route::get('coupons/create', [CouponController::class, 'create'])->name('coupons.create')->middleware('permission:create-coupons');
+    Route::post('coupons', [CouponController::class, 'store'])->name('coupons.store')->middleware('permission:create-coupons');
+    Route::get('coupons/{coupon}', [CouponController::class, 'show'])->name('coupons.show')->middleware('permission:view-coupons');
+    Route::get('coupons/{coupon}/edit', [CouponController::class, 'edit'])->name('coupons.edit')->middleware('permission:edit-coupons');
+    Route::put('coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update')->middleware('permission:edit-coupons');
+    Route::delete('coupons/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy')->middleware('permission:delete-coupons');
 
-    // Announcements (admin only)
-    Route::resource('announcements', App\Http\Controllers\Admin\AnnouncementController::class);
-    Route::post('announcements/reorder', [App\Http\Controllers\Admin\AnnouncementController::class, 'reorder'])->name('announcements.reorder');
-    Route::post('announcements/{announcement}/toggle', [App\Http\Controllers\Admin\AnnouncementController::class, 'toggleActive'])->name('announcements.toggle');
+    // Announcements (requires announcement permissions)
+    Route::get('announcements', [App\Http\Controllers\Admin\AnnouncementController::class, 'index'])->name('announcements.index')->middleware('permission:view-announcements');
+    Route::get('announcements/create', [App\Http\Controllers\Admin\AnnouncementController::class, 'create'])->name('announcements.create')->middleware('permission:manage-announcements');
+    Route::post('announcements', [App\Http\Controllers\Admin\AnnouncementController::class, 'store'])->name('announcements.store')->middleware('permission:manage-announcements');
+    Route::get('announcements/{announcement}', [App\Http\Controllers\Admin\AnnouncementController::class, 'show'])->name('announcements.show')->middleware('permission:view-announcements');
+    Route::get('announcements/{announcement}/edit', [App\Http\Controllers\Admin\AnnouncementController::class, 'edit'])->name('announcements.edit')->middleware('permission:manage-announcements');
+    Route::put('announcements/{announcement}', [App\Http\Controllers\Admin\AnnouncementController::class, 'update'])->name('announcements.update')->middleware('permission:manage-announcements');
+    Route::delete('announcements/{announcement}', [App\Http\Controllers\Admin\AnnouncementController::class, 'destroy'])->name('announcements.destroy')->middleware('permission:manage-announcements');
+    Route::post('announcements/reorder', [App\Http\Controllers\Admin\AnnouncementController::class, 'reorder'])->name('announcements.reorder')->middleware('permission:manage-announcements');
+    Route::post('announcements/{announcement}/toggle', [App\Http\Controllers\Admin\AnnouncementController::class, 'toggleActive'])->name('announcements.toggle')->middleware('permission:manage-announcements');
 
-    // Settings (admin only)
-    Route::get('settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index');
-    Route::put('settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update');
+    // Settings (requires edit-settings)
+    Route::get('settings', [App\Http\Controllers\Admin\SettingsController::class, 'index'])->name('settings.index')->middleware('permission:edit-settings');
+    Route::put('settings', [App\Http\Controllers\Admin\SettingsController::class, 'update'])->name('settings.update')->middleware('permission:edit-settings');
 
-    // Shipping Zones (admin only)
-    Route::resource('shipping-zones', App\Http\Controllers\Admin\ShippingZoneController::class)->only(['index', 'update']);
+    // Shipping Zones (requires manage-site)
+    Route::get('shipping-zones', [App\Http\Controllers\Admin\ShippingZoneController::class, 'index'])->name('shipping-zones.index')->middleware('permission:manage-site');
+    Route::put('shipping-zones/{shipping_zone}', [App\Http\Controllers\Admin\ShippingZoneController::class, 'update'])->name('shipping-zones.update')->middleware('permission:manage-site');
 
-    // Staff Management (admin only)
-    Route::resource('staff', \App\Http\Controllers\Admin\StaffController::class);
+    // Staff Management (requires user management permissions)
+    Route::get('staff', [\App\Http\Controllers\Admin\StaffController::class, 'index'])->name('staff.index')->middleware('permission:view-users');
+    Route::get('staff/create', [\App\Http\Controllers\Admin\StaffController::class, 'create'])->name('staff.create')->middleware('permission:create-users');
+    Route::post('staff', [\App\Http\Controllers\Admin\StaffController::class, 'store'])->name('staff.store')->middleware('permission:create-users');
+    Route::get('staff/{staff}', [\App\Http\Controllers\Admin\StaffController::class, 'show'])->name('staff.show')->middleware('permission:view-users');
+    Route::get('staff/{staff}/edit', [\App\Http\Controllers\Admin\StaffController::class, 'edit'])->name('staff.edit')->middleware('permission:edit-users');
+    Route::put('staff/{staff}', [\App\Http\Controllers\Admin\StaffController::class, 'update'])->name('staff.update')->middleware('permission:edit-users');
+    Route::delete('staff/{staff}', [\App\Http\Controllers\Admin\StaffController::class, 'destroy'])->name('staff.destroy')->middleware('permission:delete-users');
 
-    // Contact Messages (admin only)
-    Route::resource('contacts', \App\Http\Controllers\Admin\ContactController::class)->only(['index', 'show', 'update', 'destroy']);
+    // Contact Messages (requires contact permissions)
+    Route::get('contacts', [\App\Http\Controllers\Admin\ContactController::class, 'index'])->name('contacts.index')->middleware('permission:view-contacts');
+    Route::get('contacts/{contact}', [\App\Http\Controllers\Admin\ContactController::class, 'show'])->name('contacts.show')->middleware('permission:view-contacts');
+    Route::put('contacts/{contact}', [\App\Http\Controllers\Admin\ContactController::class, 'update'])->name('contacts.update')->middleware('permission:manage-contacts');
+    Route::delete('contacts/{contact}', [\App\Http\Controllers\Admin\ContactController::class, 'destroy'])->name('contacts.destroy')->middleware('permission:manage-contacts');
 });
 
 /*
@@ -234,39 +268,39 @@ Route::middleware('auth')->prefix('loyalty')->name('loyalty.')->group(function (
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin/loyalty')->name('admin.loyalty.')->middleware(['auth', 'admin'])->group(function () {
-    // Dashboard
-    Route::get('/', [App\Http\Controllers\Admin\LoyaltyController::class, 'index'])->name('dashboard');
+Route::prefix('admin/loyalty')->name('admin.loyalty.')->middleware(['auth', 'staff'])->group(function () {
+    // Dashboard (view-loyalty)
+    Route::get('/', [App\Http\Controllers\Admin\LoyaltyController::class, 'index'])->name('dashboard')->middleware('permission:view-loyalty');
 
-    // Point Rules
-    Route::get('/rules', [App\Http\Controllers\Admin\LoyaltyController::class, 'rules'])->name('rules');
-    Route::get('/rules/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createRule'])->name('rules.create');
-    Route::post('/rules', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeRule'])->name('rules.store');
-    Route::get('/rules/{rule}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editRule'])->name('rules.edit');
-    Route::put('/rules/{rule}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateRule'])->name('rules.update');
-    Route::delete('/rules/{rule}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyRule'])->name('rules.destroy');
+    // Point Rules (manage-loyalty)
+    Route::get('/rules', [App\Http\Controllers\Admin\LoyaltyController::class, 'rules'])->name('rules')->middleware('permission:view-loyalty');
+    Route::get('/rules/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createRule'])->name('rules.create')->middleware('permission:manage-loyalty');
+    Route::post('/rules', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeRule'])->name('rules.store')->middleware('permission:manage-loyalty');
+    Route::get('/rules/{rule}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editRule'])->name('rules.edit')->middleware('permission:manage-loyalty');
+    Route::put('/rules/{rule}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateRule'])->name('rules.update')->middleware('permission:manage-loyalty');
+    Route::delete('/rules/{rule}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyRule'])->name('rules.destroy')->middleware('permission:manage-loyalty');
 
-    // Tiers
-    Route::get('/tiers', [App\Http\Controllers\Admin\LoyaltyController::class, 'tiers'])->name('tiers');
-    Route::get('/tiers/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createTier'])->name('tiers.create');
-    Route::post('/tiers', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeTier'])->name('tiers.store');
-    Route::get('/tiers/{tier}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editTier'])->name('tiers.edit');
-    Route::put('/tiers/{tier}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateTier'])->name('tiers.update');
-    Route::delete('/tiers/{tier}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyTier'])->name('tiers.destroy');
+    // Tiers (manage-loyalty)
+    Route::get('/tiers', [App\Http\Controllers\Admin\LoyaltyController::class, 'tiers'])->name('tiers')->middleware('permission:view-loyalty');
+    Route::get('/tiers/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createTier'])->name('tiers.create')->middleware('permission:manage-loyalty');
+    Route::post('/tiers', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeTier'])->name('tiers.store')->middleware('permission:manage-loyalty');
+    Route::get('/tiers/{tier}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editTier'])->name('tiers.edit')->middleware('permission:manage-loyalty');
+    Route::put('/tiers/{tier}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateTier'])->name('tiers.update')->middleware('permission:manage-loyalty');
+    Route::delete('/tiers/{tier}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyTier'])->name('tiers.destroy')->middleware('permission:manage-loyalty');
 
-    // Rewards
-    Route::get('/rewards', [App\Http\Controllers\Admin\LoyaltyController::class, 'rewards'])->name('rewards');
-    Route::get('/rewards/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createReward'])->name('rewards.create');
-    Route::post('/rewards', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeReward'])->name('rewards.store');
-    Route::get('/rewards/{reward}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editReward'])->name('rewards.edit');
-    Route::put('/rewards/{reward}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateReward'])->name('rewards.update');
-    Route::delete('/rewards/{reward}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyReward'])->name('rewards.destroy');
+    // Rewards (manage-loyalty)
+    Route::get('/rewards', [App\Http\Controllers\Admin\LoyaltyController::class, 'rewards'])->name('rewards')->middleware('permission:view-loyalty');
+    Route::get('/rewards/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createReward'])->name('rewards.create')->middleware('permission:manage-loyalty');
+    Route::post('/rewards', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeReward'])->name('rewards.store')->middleware('permission:manage-loyalty');
+    Route::get('/rewards/{reward}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editReward'])->name('rewards.edit')->middleware('permission:manage-loyalty');
+    Route::put('/rewards/{reward}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateReward'])->name('rewards.update')->middleware('permission:manage-loyalty');
+    Route::delete('/rewards/{reward}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyReward'])->name('rewards.destroy')->middleware('permission:manage-loyalty');
 
-    // User Points Management
-    Route::get('/users', [App\Http\Controllers\Admin\LoyaltyController::class, 'users'])->name('users');
-    Route::get('/users/{user}', [App\Http\Controllers\Admin\LoyaltyController::class, 'showUser'])->name('users.show');
-    Route::post('/users/{user}/adjust', [App\Http\Controllers\Admin\LoyaltyController::class, 'adjustPoints'])->name('users.adjust');
+    // User Points Management (manage-loyalty)
+    Route::get('/users', [App\Http\Controllers\Admin\LoyaltyController::class, 'users'])->name('users')->middleware('permission:view-loyalty');
+    Route::get('/users/{user}', [App\Http\Controllers\Admin\LoyaltyController::class, 'showUser'])->name('users.show')->middleware('permission:view-loyalty');
+    Route::post('/users/{user}/adjust', [App\Http\Controllers\Admin\LoyaltyController::class, 'adjustPoints'])->name('users.adjust')->middleware('permission:manage-loyalty');
 
-    // Transactions
-    Route::get('/transactions', [App\Http\Controllers\Admin\LoyaltyController::class, 'transactions'])->name('transactions');
+    // Transactions (view-loyalty)
+    Route::get('/transactions', [App\Http\Controllers\Admin\LoyaltyController::class, 'transactions'])->name('transactions')->middleware('permission:view-loyalty');
 });
