@@ -56,14 +56,14 @@
     flex-shrink: 0;
 }
 
-/* Marquee animation - moves half the content (because it's duplicated) */
+/* Marquee animation - moves 25% of the content (because it's repeated 4 times) */
 @keyframes marquee {
     0% {
         transform: translateX(0);
     }
 
     100% {
-        transform: translateX(-50%);
+        transform: translateX(-25%);
     }
 }
 
@@ -104,8 +104,8 @@
     }
 
     .announcement-content {
-        /* Slower on mobile for readability */
-        animation-duration: 45s;
+        /* Faster on mobile for better visibility - 20s instead of 45s */
+        animation-duration: 20s;
     }
 
     .announcement-divider {

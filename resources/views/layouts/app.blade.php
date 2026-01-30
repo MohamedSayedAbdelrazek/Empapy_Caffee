@@ -130,20 +130,15 @@
         <div class="announcement-bar" id="announcementBar">
             <div class="announcement-track">
                 <div class="announcement-content">
-                    @foreach ($announcements as $announcement)
-                        <span class="announcement-item">
-                            {{ $announcement->message_ar }}
-                        </span>
-                        <span class="announcement-divider">☕</span>
-                    @endforeach
-
-                    {{-- Duplicate for seamless loop --}}
-                    @foreach ($announcements as $announcement)
-                        <span class="announcement-item">
-                            {{ $announcement->message_ar }}
-                        </span>
-                        <span class="announcement-divider">☕</span>
-                    @endforeach
+                    {{-- Repeat 4 times for seamless loop on all screen sizes --}}
+                    @for ($i = 0; $i < 4; $i++)
+                        @foreach ($announcements as $announcement)
+                            <span class="announcement-item">
+                                {{ $announcement->message_ar }}
+                            </span>
+                            <span class="announcement-divider">☕</span>
+                        @endforeach
+                    @endfor
                 </div>
             </div>
             <button class="announcement-close" id="announcementCloseBtn" aria-label="إخفاء شريط الإعلانات">
