@@ -1,5 +1,5 @@
 <!-- Premium Footer -->
-<footer class="footer-main">
+<footer class="footer-main" style="margin-top: 60px;">
     <!-- Wave Effect -->
     <div class="footer-wave">
         <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -8,6 +8,7 @@
                 fill="#1a1a1a" />
         </svg>
     </div>
+ 
 
     <div class="footer-content">
         <div class="container">
@@ -93,11 +94,11 @@
 
                    
                 </div>
+                
             </div>
         </div>
     </div>
-
-    <!-- Creative Map Section -->
+ <!-- Creative Map Section -->
     <div class="footer-map-section" data-aos="fade-up">
         <div class="container">
             <div class="row justify-content-center">
@@ -142,7 +143,7 @@
             </div>
         </div>
     </div>
-
+  
     <style>
         /* Creative Map Section Styling */
         .footer-map-section {

@@ -95,12 +95,9 @@
 
     <!-- Cinematic Video Showcase Section -->
     <section class="video-showcase-section" data-aos="fade-up">
-        <!-- Video Background -->
+        <!-- Image Background (replaced video) -->
         <div class="video-background">
-            <video autoplay muted loop playsinline preload="metadata" loading="lazy" class="d-none d-md-block"
-                id="showcaseVideo">
-                <source src="{{ asset('assets/videos/2675509-hd_1920_1080_24fps.mp4') }}" type="video/mp4">
-            </video>
+            <img src="{{ asset('images/showcase-bg.jpg') }}" alt="Coffee Beans Background" class="showcase-bg-image">
             <!-- Gradient Overlays -->
             <div class="video-overlay-gradient top"></div>
             <div class="video-overlay-gradient bottom"></div>
@@ -156,11 +153,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Video Controls -->
-        <button class="video-control-btn" id="videoToggle" aria-label="Toggle video playback">
-            <i class="bi bi-pause-fill" id="playPauseIcon"></i>
-        </button>
     </section>
 
     <!-- Featured Products -->
@@ -452,7 +444,7 @@
             /* Allow scroll to pass through */
         }
 
-        .video-background video {
+        .video-background .showcase-bg-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -460,7 +452,7 @@
             transition: transform 8s ease;
         }
 
-        .video-showcase-section:hover .video-background video {
+        .video-showcase-section:hover .video-background .showcase-bg-image {
             transform: scale(1.1);
         }
 
