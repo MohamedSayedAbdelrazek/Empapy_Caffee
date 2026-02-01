@@ -77,7 +77,7 @@ class CheckoutController extends Controller
             'city' => 'required|string|max:100',
             'governorate' => 'nullable|string|max:100',
             'notes' => 'nullable|string|max:500',
-            'payment_method' => 'required|in:cash_on_delivery,card',
+            'payment_method' => 'required|in:cash_on_delivery', // Online payment coming soon
             'coupon_code' => 'nullable|string|max:50'
         ]);
 

@@ -34,8 +34,8 @@ class LoyaltyReward extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
-        'available_from' => 'date',
-        'available_until' => 'date',
+        'available_from' => 'datetime',
+        'available_until' => 'datetime',
         'reward_value' => 'decimal:2',
     ];
 

@@ -168,46 +168,24 @@
                                 </div>
                             </div>
 
-                            <!-- Card Payment Option -->
-                            <div class="payment-option-card glass-card p-4 position-relative" id="card-option">
+                            <!-- Card Payment Option - Coming Soon -->
+                            <div class="glass-card p-4 position-relative opacity-75" id="card-option">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <div class="d-flex align-items-center gap-3 flex-grow-1">
                                         <div class="payment-icon-wrapper">
-                                            <i class="bi bi-credit-card fs-3 text-primary"></i>
+                                            <i class="bi bi-credit-card fs-3 text-muted"></i>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <strong class="d-block mb-1">الدفع بالبطاقة</strong>
-                                            <small class="text-muted">ادفع بأمان باستخدام بطاقتك الائتمانية</small>
-                                        </div>
-                                    </div>
-                                    <div class="form-check form-check-reverse m-0">
-                                        <input class="form-check-input payment-radio" type="radio"
-                                            name="payment_method" value="card" id="card">
-                                        <label class="form-check-label visually-hidden" for="card">الدفع
-                                            بالبطاقة</label>
-                                    </div>
-                                </div>
-
-                                <!-- Stripe Card Element Container -->
-                                <div id="cardElementContainer" class="card-input-container mt-3"
-                                    style="max-height: 0; opacity: 0; overflow: hidden;">
-                                    <div class="glass-card p-3">
-                                        <label class="form-label mb-2 d-flex align-items-center">
-                                            <i class="bi bi-credit-card-2-front me-2 text-primary"></i>
-                                            <span>بيانات البطاقة</span>
-                                            <span class="badge bg-success ms-2" style="font-size: 0.65rem;">
-                                                <i class="bi bi-shield-check me-1"></i>آمن
-                                            </span>
-                                        </label>
-                                        <div id="card-element" class="stripe-card-element"></div>
-                                        <div id="card-errors" class="text-danger small mt-2"></div>
-                                        <div class="mt-2">
+                                            <strong class="d-block mb-1 text-muted">الدفع الإلكتروني</strong>
                                             <small class="text-muted">
-                                                <i class="bi bi-lock-fill me-1"></i>
-                                                معلوماتك محمية بتقنية Stripe المشفرة
+                                                <i class="bi bi-clock me-1"></i>
+                                                قريباً - سيتم توفير الدفع أونلاين
                                             </small>
                                         </div>
                                     </div>
+                                    <span class="badge bg-warning text-dark">
+                                        <i class="bi bi-hourglass-split me-1"></i>قريباً
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -430,203 +408,25 @@
 
 @push('scripts')
     <!-- Load Libraries -->
-    <script src="https://js.stripe.com/v3/"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
         // تعريف المتغيرات
-        let stripe, elements, cardElement;
         let originalTotal = {{ $total }};
         const subtotal = {{ $subtotal }};
         let shipping = {{ $shipping }};
         let currentDiscount = 0;
         let currentTotal = {{ $total }};
 
-        // --- الحل النهائي: الدالة اللي بتزن على Stripe لحد ما ييجي ---
-        const stripeLoader = setInterval(function() {
-            if (typeof Stripe !== 'undefined') {
-                clearInterval(stripeLoader); // وقف الزن خلاص لقيناه
-                console.log('✅ Stripe Loaded!');
-                initPaymentSystem(); // شغل السيستم
-            } else {
-                console.log('⏳ Waiting for Stripe...');
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mark COD as active
+            document.getElementById('cod-option').classList.add('active');
+            
+            if (document.getElementById('governorateSelect').value) {
+                updateShippingFee();
             }
-        }, 100);
-
-        // دالة التشغيل (مش هتشتغل غير لما Stripe يوصل)
-        function initPaymentSystem() {
-            stripe = Stripe('{{ config('stripe.key') }}');
-
-            // تعريف العناصر
-            if (!elements) {
-                elements = stripe.elements({
-                    locale: 'ar'
-                });
-                cardElement = elements.create('card', {
-                    style: {
-                        base: {
-                            fontSize: '16px',
-                            color: '#212529',
-                            fontFamily: '"Cairo", sans-serif',
-                            '::placeholder': {
-                                color: '#aab7c4'
-                            },
-                        },
-                        invalid: {
-                            color: '#dc3545',
-                            iconColor: '#dc3545'
-                        },
-                    },
-                    hidePostalCode: true
-                });
-                cardElement.mount('#card-element');
-
-                // هندلة الأخطاء
-                cardElement.on('change', function(event) {
-                    const displayError = document.getElementById('card-errors');
-                    if (event.error) displayError.textContent = event.error.message;
-                    else displayError.textContent = '';
-                });
-            }
-
-            // تفعيل الزراير
-            setupListeners();
-            updateUI();
-        }
-
-        function setupListeners() {
-            // التعامل مع الكليك
-            const codOption = document.getElementById('cod-option');
-            const cardOption = document.getElementById('card-option');
-
-            if (codOption) codOption.addEventListener('click', () => {
-                document.getElementById('cod').checked = true;
-                togglePaymentMethod();
-            });
-
-            if (cardOption) cardOption.addEventListener('click', () => {
-                document.getElementById('card').checked = true;
-                togglePaymentMethod();
-            });
-
-            document.querySelectorAll('input[name="payment_method"]').forEach(radio => {
-                radio.addEventListener('change', togglePaymentMethod);
-            });
-
-            // الفورم
-            const form = document.querySelector('form');
-            form.addEventListener('submit', async function(e) {
-                const method = document.querySelector('input[name="payment_method"]:checked').value;
-                if (method === 'card') {
-                    e.preventDefault();
-                    await handleCardPayment();
-                }
-            });
-        }
-
-        function togglePaymentMethod() {
-            const isCard = document.getElementById('card').checked;
-            const container = document.getElementById('cardElementContainer');
-
-            updateUI();
-
-            if (isCard) {
-                container.classList.add('show');
-                // محاولة فوكس آمنة
-                setTimeout(() => {
-                    if (cardElement) cardElement.focus();
-                }, 500);
-            } else {
-                container.classList.remove('show');
-            }
-        }
-
-        function updateUI() {
-            const isCard = document.getElementById('card').checked;
-            const cardOpt = document.getElementById('card-option');
-            const codOpt = document.getElementById('cod-option');
-
-            if (isCard) {
-                cardOpt.classList.add('active');
-                codOpt.classList.remove('active');
-            } else {
-                codOpt.classList.add('active');
-                cardOpt.classList.remove('active');
-            }
-        }
-
-        async function handleCardPayment() {
-            const btn = document.querySelector('button[type="submit"]');
-            const oldText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = 'جاري المعالجة...';
-
-            try {
-                // 1. Backend Intent
-                const res = await fetch('{{ route('payment.create-intent') }}', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                    },
-                    body: JSON.stringify({
-                        amount: currentTotal,
-                        customer_name: document.querySelector('[name="customer_name"]').value,
-                        customer_email: document.querySelector('[name="customer_email"]').value
-                    })
-                });
-
-                const data = await res.json();
-                if (data.error) throw new Error(data.error);
-
-                // 2. Stripe Confirm
-                const result = await stripe.confirmCardPayment(data.clientSecret, {
-                    payment_method: {
-                        card: cardElement,
-                        billing_details: {
-                            name: document.querySelector('[name="customer_name"]').value
-                        }
-                    }
-                });
-
-                if (result.error) throw result.error;
-
-                if (result.paymentIntent.status === 'succeeded') {
-                    // Success!
-                    confetti({
-                        particleCount: 150,
-                        spread: 70,
-                        origin: {
-                            y: 0.6
-                        }
-                    });
-
-                    Swal.fire({
-                        title: 'مبروك!',
-                        text: 'تم الدفع بنجاح',
-                        icon: 'success',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-
-                    // Submit Form
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'transaction_id';
-                    input.value = result.paymentIntent.id;
-                    document.querySelector('form').appendChild(input);
-                    document.querySelector('form').submit();
-                }
-
-            } catch (err) {
-                console.error(err);
-                document.getElementById('card-errors').textContent = err.message;
-                btn.disabled = false;
-                btn.innerHTML = oldText;
-                Swal.fire('خطأ', err.message, 'error');
-            }
-        }
+        });
 
         // Coupon Logic - Complete Implementation
         async function applyCoupon() {

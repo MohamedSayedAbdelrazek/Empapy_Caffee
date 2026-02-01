@@ -28,8 +28,8 @@ class PointRule extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'is_first_order_only' => 'boolean',
-        'starts_at' => 'date',
-        'ends_at' => 'date',
+        'starts_at' => 'datetime',
+        'ends_at' => 'datetime',
         'value' => 'decimal:2',
         'min_order_amount' => 'decimal:2',
     ];

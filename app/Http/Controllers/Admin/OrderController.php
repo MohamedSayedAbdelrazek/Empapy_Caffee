@@ -114,11 +114,38 @@ class OrderController extends Controller
                 $redemption->cancel(); // This restores points to user
             }
 
+            // Refund coupon usage if used
+            if ($order->coupon_code && !str_starts_with($order->coupon_code, 'RWD-')) {
+                $coupon = \App\Models\Coupon::where('code', $order->coupon_code)->first();
+                if ($coupon && $coupon->usage_count > 0) {
+                    $coupon->decrement('usage_count');
+                }
+            }
+
             // Also update order status to cancelled
             $order->update([
                 'status' => 'cancelled',
                 'payment_status' => $newStatus
             ]);
+
+            // Send notification to customer
+            if ($order->user_id) {
+                try {
+                    $firebaseService = new FirebaseNotificationService();
+                    $firebaseService->sendToUsers(
+                        [$order->user_id],
+                        '💰 تم استرداد مبلغ طلبك',
+                        "تم استرداد مبلغ طلبك #{$order->order_number} بنجاح",
+                        [
+                            'type' => 'payment_refunded',
+                            'order_number' => $order->order_number,
+                            'url' => url('/my-orders/' . $order->id),
+                        ]
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('[FCM] Failed to send refund notification: ' . $e->getMessage());
+                }
+            }
 
             return back()->with('success', 'تم استرداد المبلغ وإلغاء الطلب. تم إرجاع نقاط الولاء للعميل.');
         }
@@ -126,6 +153,25 @@ class OrderController extends Controller
         $order->update([
             'payment_status' => $newStatus
         ]);
+
+        // Send payment status notification to customer
+        if ($oldStatus !== $newStatus && $order->user_id && $newStatus === 'paid') {
+            try {
+                $firebaseService = new FirebaseNotificationService();
+                $firebaseService->sendToUsers(
+                    [$order->user_id],
+                    '✅ تم تأكيد الدفع',
+                    "تم تأكيد دفع طلبك #{$order->order_number}",
+                    [
+                        'type' => 'payment_confirmed',
+                        'order_number' => $order->order_number,
+                        'url' => url('/my-orders/' . $order->id),
+                    ]
+                );
+            } catch (\Exception $e) {
+                \Log::error('[FCM] Failed to send payment confirmation notification: ' . $e->getMessage());
+            }
+        }
 
         return back()->with('success', 'تم تحديث حالة الدفع');
     }
@@ -168,9 +214,38 @@ class OrderController extends Controller
             return back()->with('error', 'لا يمكن إلغاء طلب تم شحنه أو تسليمه. يرجى استخدام عملية الاسترداد بدلاً من ذلك.');
         }
 
+        // Refund coupon usage if used
+        if ($order->coupon_code && !str_starts_with($order->coupon_code, 'RWD-')) {
+            $coupon = \App\Models\Coupon::where('code', $order->coupon_code)->first();
+            if ($coupon && $coupon->usage_count > 0) {
+                $coupon->decrement('usage_count');
+            }
+        }
+
+        // Restore reward redemption points if used
+        if ($order->coupon_code && str_starts_with($order->coupon_code, 'RWD-')) {
+            $redemption = \App\Models\RewardRedemption::where('order_id', $order->id)
+                ->where('status', 'applied')
+                ->first();
+
+            if ($redemption) {
+                $redemption->cancel(); // This restores points to user
+            }
+        }
+
         $order->update([
             'status' => 'cancelled'
         ]);
+
+        // Send notification to customer
+        if ($order->user_id) {
+            try {
+                $firebaseService = new FirebaseNotificationService();
+                $firebaseService->notifyOrderStatusChange($order, $order->getOriginal('status'), 'cancelled');
+            } catch (\Exception $e) {
+                \Log::error('[FCM] Failed to send cancellation notification: ' . $e->getMessage());
+            }
+        }
 
         return back()->with('success', 'تم إلغاء الطلب');
     }
@@ -331,24 +406,24 @@ class OrderController extends Controller
                 'notes' => $order->notes,
                 'payment_status' => $order->payment_status,
                 'payment_method' => $order->payment_method === 'cash_on_delivery' ? 'الدفع عند الاستلام' : $order->payment_method,
-                'subtotal' => number_format($order->subtotal),
-                'shipping' => $order->shipping == 0 ? 'مجاني' : number_format($order->shipping) . ' ج.م',
-                'discount' => $order->discount > 0 ? number_format($order->discount) : null,
+                'subtotal' => number_format((float) $order->subtotal),
+                'shipping' => $order->shipping == 0 ? 'مجاني' : number_format((float) $order->shipping) . ' ج.م',
+                'discount' => $order->discount > 0 ? number_format((float) $order->discount) : null,
                 'coupon_code' => $order->coupon_code,
-                'total' => number_format($order->total),
+                'total' => number_format((float) $order->total),
                 'created_at' => $order->created_at->format('Y/m/d H:i'),
                 'created_at_human' => $order->created_at->diffForHumans(),
                 'gift' => $giftData,
                 'items' => $order->items->map(fn($item) => [
                     'name' => $item->product_name,
                     'quantity' => $item->quantity,
-                    'price' => number_format($item->price),
-                    'total' => number_format($item->total),
+                    'price' => number_format((float) $item->price),
+                    'total' => number_format((float) $item->total),
                     'image' => $item->product?->image,
                     'options' => $item->selectedOptions->map(fn($opt) => [
                         'label' => $opt->option_name ?? $opt->option_type,
                         'value' => $opt->value_name ?? '',
-                        'price' => $opt->price_modifier > 0 ? '+' . number_format($opt->price_modifier) : null,
+                        'price' => $opt->price_modifier > 0 ? '+' . number_format((float) $opt->price_modifier) : null,
                     ]),
                     'options_text' => $item->options_display_text,
                 ])
