@@ -280,14 +280,6 @@ Route::prefix('admin/loyalty')->name('admin.loyalty.')->middleware(['auth', 'sta
     Route::put('/rules/{rule}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateRule'])->name('rules.update')->middleware('permission:manage-loyalty');
     Route::delete('/rules/{rule}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyRule'])->name('rules.destroy')->middleware('permission:manage-loyalty');
 
-    // Tiers (manage-loyalty)
-    Route::get('/tiers', [App\Http\Controllers\Admin\LoyaltyController::class, 'tiers'])->name('tiers')->middleware('permission:view-loyalty');
-    Route::get('/tiers/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createTier'])->name('tiers.create')->middleware('permission:manage-loyalty');
-    Route::post('/tiers', [App\Http\Controllers\Admin\LoyaltyController::class, 'storeTier'])->name('tiers.store')->middleware('permission:manage-loyalty');
-    Route::get('/tiers/{tier}/edit', [App\Http\Controllers\Admin\LoyaltyController::class, 'editTier'])->name('tiers.edit')->middleware('permission:manage-loyalty');
-    Route::put('/tiers/{tier}', [App\Http\Controllers\Admin\LoyaltyController::class, 'updateTier'])->name('tiers.update')->middleware('permission:manage-loyalty');
-    Route::delete('/tiers/{tier}', [App\Http\Controllers\Admin\LoyaltyController::class, 'destroyTier'])->name('tiers.destroy')->middleware('permission:manage-loyalty');
-
     // Rewards (manage-loyalty)
     Route::get('/rewards', [App\Http\Controllers\Admin\LoyaltyController::class, 'rewards'])->name('rewards')->middleware('permission:view-loyalty');
     Route::get('/rewards/create', [App\Http\Controllers\Admin\LoyaltyController::class, 'createReward'])->name('rewards.create')->middleware('permission:manage-loyalty');

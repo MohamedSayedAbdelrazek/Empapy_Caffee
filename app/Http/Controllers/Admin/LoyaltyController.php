@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\LoyaltyPoint;
 use App\Models\LoyaltyReward;
-use App\Models\LoyaltyTier;
 use App\Models\PointRule;
 use App\Models\PointTransaction;
 use App\Models\Referral;
@@ -30,9 +29,6 @@ class LoyaltyController extends Controller
     {
         $stats = $this->loyaltyService->getStatistics();
 
-        // Get all tiers for distribution
-        $tiers = LoyaltyTier::active()->ordered()->get();
-
         // Recent transactions
         $recentTransactions = PointTransaction::with('user')
             ->latest()
@@ -53,7 +49,6 @@ class LoyaltyController extends Controller
 
         return view('admin.loyalty.dashboard', compact(
             'stats',
-            'tiers',
             'recentTransactions',
             'topEarners',
             'recentReferrals'
@@ -161,115 +156,6 @@ class LoyaltyController extends Controller
     }
 
     // ========================================
-    // TIER MANAGEMENT
-    // ========================================
-
-    /**
-     * List all tiers
-     */
-    public function tiers()
-    {
-        $tiers = LoyaltyTier::ordered()->get();
-        return view('admin.loyalty.tiers.index', compact('tiers'));
-    }
-
-    /**
-     * Show create tier form
-     */
-    public function createTier()
-    {
-        return view('admin.loyalty.tiers.create');
-    }
-
-    /**
-     * Store new tier
-     */
-    public function storeTier(Request $request)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'min_points' => 'required|integer|min:0',
-            'max_points' => 'nullable|integer|min:0',
-            'discount_percent' => 'integer|min:0|max:100',
-            'free_shipping' => 'boolean',
-            'free_shipping_threshold' => 'nullable|numeric|min:0',
-            'points_multiplier' => 'numeric|min:1|max:10',
-            'icon' => 'required|string|max:10',
-            'color' => 'required|string|max:7',
-            'perks' => 'nullable|array',
-            'perks.*' => 'string',
-            'sort_order' => 'integer|min:0',
-            'is_active' => 'boolean',
-        ]);
-
-        // Auto-generate slug from name
-        $validated['slug'] = Str::slug($request->name) ?: 'tier_' . now()->timestamp;
-        $validated['free_shipping'] = $request->boolean('free_shipping');
-        $validated['is_active'] = $request->boolean('is_active');
-
-        LoyaltyTier::create($validated);
-
-        return redirect()->route('admin.loyalty.tiers')
-            ->with('success', 'تم إنشاء المستوى بنجاح');
-    }
-
-    /**
-     * Show edit tier form
-     */
-    public function editTier(LoyaltyTier $tier)
-    {
-        return view('admin.loyalty.tiers.edit', compact('tier'));
-    }
-
-    /**
-     * Update tier
-     */
-    public function updateTier(Request $request, LoyaltyTier $tier)
-    {
-        $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'description' => 'nullable|string',
-            'min_points' => 'required|integer|min:0',
-            'max_points' => 'nullable|integer|min:0',
-            'discount_percent' => 'integer|min:0|max:100',
-            'free_shipping' => 'boolean',
-            'free_shipping_threshold' => 'nullable|numeric|min:0',
-            'points_multiplier' => 'numeric|min:1|max:10',
-            'icon' => 'required|string|max:10',
-            'color' => 'required|string|max:7',
-            'perks' => 'nullable|array',
-            'perks.*' => 'string',
-            'sort_order' => 'integer|min:0',
-            'is_active' => 'boolean',
-        ]);
-
-        $validated['free_shipping'] = $request->boolean('free_shipping');
-        $validated['is_active'] = $request->boolean('is_active');
-
-        $tier->update($validated);
-
-        return redirect()->route('admin.loyalty.tiers')
-            ->with('success', 'تم تحديث المستوى بنجاح');
-    }
-
-    /**
-     * Delete tier
-     */
-    public function destroyTier(LoyaltyTier $tier)
-    {
-        // Don't allow deleting if users are in this tier
-        if ($tier->loyaltyPoints()->exists()) {
-            return back()->with('error', 'لا يمكن حذف مستوى يحتوي على مستخدمين');
-        }
-
-        $tier->delete();
-
-        return redirect()->route('admin.loyalty.tiers')
-            ->with('success', 'تم حذف المستوى');
-    }
-
-    // ========================================
     // REWARDS MANAGEMENT
     // ========================================
 
@@ -290,10 +176,9 @@ class LoyaltyController extends Controller
      */
     public function createReward()
     {
-        $tiers = LoyaltyTier::active()->ordered()->get();
         $products = \App\Models\Product::active()->get();
 
-        return view('admin.loyalty.rewards.create', compact('tiers', 'products'));
+        return view('admin.loyalty.rewards.create', compact('products'));
     }
 
     /**
@@ -339,10 +224,9 @@ class LoyaltyController extends Controller
      */
     public function editReward(LoyaltyReward $reward)
     {
-        $tiers = LoyaltyTier::active()->ordered()->get();
         $products = \App\Models\Product::active()->get();
 
-        return view('admin.loyalty.rewards.edit', compact('reward', 'tiers', 'products'));
+        return view('admin.loyalty.rewards.edit', compact('reward', 'products'));
     }
 
     /**
@@ -361,7 +245,6 @@ class LoyaltyController extends Controller
             'icon' => 'string|max:10',
             'stock' => 'nullable|integer|min:0',
             'max_per_user' => 'nullable|integer|min:1',
-            'tier_required' => 'nullable|exists:loyalty_tiers,slug',
             'is_active' => 'boolean',
             'is_featured' => 'boolean',
             'sort_order' => 'integer|min:0',
@@ -414,19 +297,14 @@ class LoyaltyController extends Controller
         }
 
         // Filter by tier
-        if ($request->filled('tier')) {
-            $query->where('current_tier', $request->tier);
-        }
-
         // Sort
         $sortBy = $request->get('sort', 'available_points');
         $sortDir = $request->get('dir', 'desc');
         $query->orderBy($sortBy, $sortDir);
 
         $users = $query->paginate(20);
-        $tiers = LoyaltyTier::active()->ordered()->get();
 
-        return view('admin.loyalty.users.index', compact('users', 'tiers'));
+        return view('admin.loyalty.users.index', compact('users'));
     }
 
     /**

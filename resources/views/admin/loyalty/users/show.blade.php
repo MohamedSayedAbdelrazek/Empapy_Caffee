@@ -33,14 +33,6 @@
                     <p class="text-muted mb-3">{{ $user->email }}</p>
 
                     @if ($loyalty)
-                        @if ($loyalty->tier)
-                            <span class="badge fs-6 mb-3" style="background: {{ $loyalty->tier->color ?? '#6c757d' }};">
-                                {{ $loyalty->tier->icon }} {{ $loyalty->tier->name }}
-                            </span>
-                        @else
-                            <span class="badge bg-secondary fs-6 mb-3">{{ $loyalty->current_tier }}</span>
-                        @endif
-
                         <div class="border-top border-secondary pt-3 mt-3">
                             <div class="row text-center">
                                 <div class="col-4">
@@ -73,14 +65,12 @@
                             @csrf
                             <div class="mb-3">
                                 <label class="form-label">النقاط</label>
-                                <input type="number" name="points" class="form-control" placeholder="مثال: 100 أو -50"
-                                    required>
+                                <input type="number" name="points" class="form-control" placeholder="مثال: 100 أو -50" required>
                                 <small class="text-muted">استخدم قيمة سالبة للخصم</small>
                             </div>
                             <div class="mb-3">
                                 <label class="form-label">السبب</label>
-                                <input type="text" name="reason" class="form-control" placeholder="سبب التعديل"
-                                    required>
+                                <input type="text" name="reason" class="form-control" placeholder="سبب التعديل" required>
                             </div>
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="bi bi-check-lg me-1"></i> تطبيق

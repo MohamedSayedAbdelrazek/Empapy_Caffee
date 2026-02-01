@@ -108,16 +108,6 @@
                                 <span>{{ number_format($reward->points_required) }} نقطة</span>
                             </div>
 
-                            <!-- Tier Requirement -->
-                            @if ($reward->tier_required)
-                                <div class="mt-2">
-                                    <small class="text-muted">
-                                        <i class="bi bi-trophy me-1"></i>
-                                        يتطلب مستوى {{ $reward->requiredTier?->name ?? $reward->tier_required }}
-                                    </small>
-                                </div>
-                            @endif
-
                             <!-- Stock -->
                             @if ($reward->stock !== null)
                                 <div class="mt-2">

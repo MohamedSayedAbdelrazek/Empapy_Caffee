@@ -85,24 +85,6 @@
             value="{{ old('sort_order', $reward?->sort_order ?? 0) }}">
     </div>
 
-    @if (isset($tiers) && $tiers->count() > 0)
-        <div class="col-md-6">
-            <label class="form-label">المستوى المطلوب</label>
-            <select name="tier_required" class="form-select @error('tier_required') is-invalid @enderror">
-                <option value="">بدون شرط</option>
-                @foreach ($tiers as $tier)
-                    <option value="{{ $tier->slug }}"
-                        {{ old('tier_required', $reward?->tier_required) === $tier->slug ? 'selected' : '' }}>
-                        {{ $tier->icon }} {{ $tier->name }}
-                    </option>
-                @endforeach
-            </select>
-            @error('tier_required')
-                <div class="invalid-feedback">{{ $message }}</div>
-            @enderror
-        </div>
-    @endif
-
     <div class="col-12">
         <label class="form-label">الوصف</label>
         <textarea name="description" rows="2" class="form-control @error('description') is-invalid @enderror"

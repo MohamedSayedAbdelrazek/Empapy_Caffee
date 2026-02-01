@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\LoyaltyReward;
-use App\Models\LoyaltyTier;
 use App\Models\RewardRedemption;
 use App\Services\LoyaltyService;
 use Illuminate\Http\Request;
@@ -32,13 +31,6 @@ class LoyaltyController extends Controller
                 'current_tier' => 'bronze',
             ]);
         }
-
-        // Get current tier info
-        $currentTier = LoyaltyTier::where('slug', $loyalty->current_tier)->first();
-        $nextTier = $currentTier?->getNextTier();
-
-        // Get all tiers for progress visualization
-        $allTiers = LoyaltyTier::active()->ordered()->get();
 
         // Recent transactions
         $transactions = $user->pointTransactions()
@@ -73,9 +65,6 @@ class LoyaltyController extends Controller
 
         return view('loyalty.index', compact(
             'loyalty',
-            'currentTier',
-            'nextTier',
-            'allTiers',
             'transactions',
             'pendingRedemptions',
             'featuredRewards',
@@ -125,9 +114,7 @@ class LoyaltyController extends Controller
             $reward->user_can_redeem = $reward->canBeRedeemedBy($user);
         });
 
-        $tiers = LoyaltyTier::active()->ordered()->get();
-
-        return view('loyalty.rewards', compact('rewards', 'userPoints', 'tiers'));
+        return view('loyalty.rewards', compact('rewards', 'userPoints'));
     }
 
     /**

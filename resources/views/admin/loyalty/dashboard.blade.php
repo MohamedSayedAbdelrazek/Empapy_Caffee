@@ -14,9 +14,6 @@
                 <a href="{{ route('admin.loyalty.rules') }}" class="btn btn-outline-primary">
                     <i class="bi bi-gear me-1"></i> قواعد النقاط
                 </a>
-                <a href="{{ route('admin.loyalty.tiers') }}" class="btn btn-outline-primary">
-                    <i class="bi bi-trophy me-1"></i> المستويات
-                </a>
                 <a href="{{ route('admin.loyalty.rewards') }}" class="btn btn-outline-primary">
                     <i class="bi bi-gift me-1"></i> المكافآت
                 </a>
@@ -105,47 +102,29 @@
             </div>
         </div>
 
-        <!-- Monthly Stats & Tier Distribution -->
+        <!-- Monthly Stats -->
         <div class="row g-4 mb-4">
-            <!-- Monthly Stats -->
-            <div class="col-lg-4">
+            <div class="col-lg-12">
                 <div class="card border-0 shadow-sm h-100">
                     <div class="card-header bg-transparent border-0">
                         <h5 class="mb-0"><i class="bi bi-calendar-month me-2"></i>إحصائيات الشهر</h5>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
-                            <span class="text-muted">نقاط مكتسبة هذا الشهر</span>
-                            <span class="fw-bold text-success fs-5">+{{ number_format($stats['monthly_earned']) }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">نقاط مستخدمة هذا الشهر</span>
-                            <span class="fw-bold text-danger fs-5">-{{ number_format($stats['monthly_redeemed']) }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Tier Distribution -->
-            <div class="col-lg-8">
-                <div class="card border-0 shadow-sm h-100">
-                    <div class="card-header bg-transparent border-0">
-                        <h5 class="mb-0"><i class="bi bi-pie-chart me-2"></i>توزيع الأعضاء حسب المستوى</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-3">
-                            @foreach ($tiers as $tier)
-                                <div class="col-md-3">
-                                    <div class="p-3 rounded-3 text-center" style="background: {{ $tier->color }}20;">
-                                        <div class="fs-2 mb-2">{{ $tier->icon }}</div>
-                                        <h6 class="mb-1">{{ $tier->name }}</h6>
-                                        <h3 class="mb-0 fw-bold" style="color: {{ $tier->color }};">
-                                            {{ number_format($stats['tier_distribution'][$tier->slug] ?? 0) }}
-                                        </h3>
-                                        <small class="text-muted">عضو</small>
-                                    </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                    <span class="text-muted">نقاط مكتسبة هذا الشهر</span>
+                                    <span
+                                        class="fw-bold text-success fs-5">+{{ number_format($stats['monthly_earned']) }}</span>
                                 </div>
-                            @endforeach
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                    <span class="text-muted">نقاط مستخدمة هذا الشهر</span>
+                                    <span
+                                        class="fw-bold text-danger fs-5">-{{ number_format($stats['monthly_redeemed']) }}</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -192,13 +171,11 @@
                                                 {{ $transaction->type_label }}
                                             </span>
                                         </td>
-                                        <td
-                                            class="fw-bold {{ $transaction->is_positive ? 'text-success' : 'text-danger' }}">
+                                        <td class="fw-bold {{ $transaction->is_positive ? 'text-success' : 'text-danger' }}">
                                             {{ $transaction->formatted_points }}
                                         </td>
                                         <td>{{ $transaction->source_label }}</td>
-                                        <td><small
-                                                class="text-muted">{{ $transaction->created_at->diffForHumans() }}</small>
+                                        <td><small class="text-muted">{{ $transaction->created_at->diffForHumans() }}</small>
                                         </td>
                                     </tr>
                                 @empty
@@ -222,26 +199,12 @@
                     </div>
                     <div class="list-group list-group-flush" style="background: transparent;">
                         @forelse($topEarners as $index => $earner)
-                            <div
-                                class="d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
+                            <div class="d-flex justify-content-between align-items-center py-3 border-bottom border-secondary">
                                 <div class="d-flex align-items-center">
                                     <span
                                         class="badge bg-{{ $index < 3 ? 'warning' : 'secondary' }} me-2">{{ $index + 1 }}</span>
                                     <div>
                                         <span class="fw-medium">{{ $earner->user->name ?? 'مستخدم محذوف' }}</span>
-                                        <br>
-                                        <small class="text-muted">
-                                            @if ($earner->current_tier === 'bronze')
-                                                🥉
-                                            @elseif($earner->current_tier === 'silver')
-                                                🥈
-                                            @elseif($earner->current_tier === 'gold')
-                                                🥇
-                                            @elseif($earner->current_tier === 'platinum')
-                                                💎
-                                            @endif
-                                            {{ $earner->current_tier }}
-                                        </small>
                                     </div>
                                 </div>
                                 <span class="fw-bold text-warning">{{ number_format($earner->total_earned) }}
@@ -267,8 +230,7 @@
                                         <i class="bi bi-arrow-left mx-2"></i>
                                         <span>{{ $referral->referred->name ?? 'محذوف' }}</span>
                                     </div>
-                                    <span
-                                        class="badge bg-{{ $referral->status_color }}">{{ $referral->status_label }}</span>
+                                    <span class="badge bg-{{ $referral->status_color }}">{{ $referral->status_label }}</span>
                                 </div>
                                 <small class="text-muted">{{ $referral->created_at->diffForHumans() }}</small>
                             </div>

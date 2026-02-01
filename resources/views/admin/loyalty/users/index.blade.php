@@ -20,27 +20,15 @@
         <!-- Filters -->
         <div class="admin-card mb-4">
             <form action="" method="GET" class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-5">
                     <label class="form-label">البحث</label>
                     <input type="text" name="search" class="form-control form-control-sm"
                         placeholder="اسم أو بريد إلكتروني..." value="{{ request('search') }}">
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">المستوى</label>
-                    <select name="tier" class="form-select form-select-sm">
-                        <option value="">الكل</option>
-                        @foreach ($tiers as $tier)
-                            <option value="{{ $tier->slug }}" {{ request('tier') === $tier->slug ? 'selected' : '' }}>
-                                {{ $tier->icon }} {{ $tier->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-2">
                     <label class="form-label">ترتيب حسب</label>
                     <select name="sort" class="form-select form-select-sm">
-                        <option value="available_points"
-                            {{ request('sort', 'available_points') === 'available_points' ? 'selected' : '' }}>النقاط
+                        <option value="available_points" {{ request('sort', 'available_points') === 'available_points' ? 'selected' : '' }}>النقاط
                             المتاحة</option>
                         <option value="total_earned" {{ request('sort') === 'total_earned' ? 'selected' : '' }}>إجمالي
                             المكتسب</option>
@@ -48,7 +36,7 @@
                         </option>
                     </select>
                 </div>
-                <div class="col-md-3 d-flex align-items-end gap-2">
+                <div class="col-md-4 d-flex align-items-end gap-2">
                     <button type="submit" class="btn btn-primary btn-sm">
                         <i class="bi bi-filter me-1"></i> تصفية
                     </button>
@@ -66,7 +54,6 @@
                     <thead>
                         <tr>
                             <th>العضو</th>
-                            <th>المستوى</th>
                             <th>النقاط المتاحة</th>
                             <th>إجمالي المكتسب</th>
                             <th>إجمالي المستخدم</th>
@@ -90,15 +77,6 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td>
-                                    @if ($loyalty->tier)
-                                        <span class="badge" style="background: {{ $loyalty->tier->color ?? '#6c757d' }};">
-                                            {{ $loyalty->tier->icon }} {{ $loyalty->tier->name }}
-                                        </span>
-                                    @else
-                                        <span class="badge bg-secondary">{{ $loyalty->current_tier }}</span>
-                                    @endif
-                                </td>
                                 <td class="fw-bold text-warning">{{ number_format($loyalty->available_points) }}</td>
                                 <td class="text-success">+{{ number_format($loyalty->total_earned) }}</td>
                                 <td class="text-danger">-{{ number_format($loyalty->total_redeemed) }}</td>
@@ -112,7 +90,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center py-5 text-muted">
+                                <td colspan="6" class="text-center py-5 text-muted">
                                     <i class="bi bi-people fs-1 d-block mb-2"></i>
                                     لا يوجد أعضاء في نظام الولاء بعد
                                 </td>

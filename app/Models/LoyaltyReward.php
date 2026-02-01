@@ -121,15 +121,6 @@ class LoyaltyReward extends Model
             return ['can' => false, 'reason' => 'نفدت الكمية'];
         }
 
-        if ($this->tier_required) {
-            $userTier = LoyaltyTier::where('slug', $loyalty->current_tier)->first();
-            $requiredTier = LoyaltyTier::where('slug', $this->tier_required)->first();
-
-            if (!$userTier || !$requiredTier || $userTier->sort_order < $requiredTier->sort_order) {
-                return ['can' => false, 'reason' => "يتطلب مستوى {$requiredTier->name_ar}"];
-            }
-        }
-
         if ($this->max_per_user) {
             $userRedemptions = $this->redemptions()
                 ->where('user_id', $user->id)
@@ -185,11 +176,14 @@ class LoyaltyReward extends Model
      */
     public function getIsAvailableAttribute(): bool
     {
-        if (!$this->is_active) return false;
+        if (!$this->is_active)
+            return false;
 
-        if ($this->available_from && $this->available_from->isFuture()) return false;
+        if ($this->available_from && $this->available_from->isFuture())
+            return false;
 
-        if ($this->available_until && $this->available_until->isPast()) return false;
+        if ($this->available_until && $this->available_until->isPast())
+            return false;
 
         return $this->is_in_stock;
     }

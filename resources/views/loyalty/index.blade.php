@@ -20,7 +20,7 @@
         <!-- Main Stats Row -->
         <div class="row g-4 mb-5">
             <!-- Points Card -->
-            <div class="col-lg-4" data-aos="fade-up">
+            <div class="col-lg-6" data-aos="fade-up">
                 <div class="glass-card p-4 text-center h-100">
                     <div class="mb-3">
                         <i class="bi bi-coin text-warning fs-1"></i>
@@ -31,27 +31,8 @@
                 </div>
             </div>
 
-            <!-- Tier Card -->
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="glass-card p-4 text-center h-100">
-                    <div class="mb-3">
-                        <span class="fs-1">{{ $currentTier->icon ?? '🥉' }}</span>
-                    </div>
-                    <h6 class="text-muted mb-2">مستواك الحالي</h6>
-                    <div class="tier-badge tier-badge-{{ $currentTier->slug ?? 'bronze' }} mx-auto mb-2">
-                        {{ $currentTier->name ?? 'برونزي' }}
-                    </div>
-                    @if ($currentTier && $currentTier->discount_percent > 0)
-                        <p class="mb-0 small text-success">
-                            <i class="bi bi-check-circle me-1"></i>
-                            خصم {{ $currentTier->discount_percent }}% على كل طلب
-                        </p>
-                    @endif
-                </div>
-            </div>
-
             <!-- Referrals Card -->
-            <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
                 <div class="glass-card p-4 text-center h-100">
                     <div class="mb-3">
                         <i class="bi bi-people text-info fs-1"></i>
@@ -64,72 +45,6 @@
                 </div>
             </div>
         </div>
-
-        <!-- Tier Progress -->
-        @if ($nextTier)
-            <div class="glass-card p-4 mb-5" data-aos="fade-up">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">
-                        <i class="bi bi-graph-up-arrow me-2 text-primary"></i>
-                        التقدم نحو المستوى التالي
-                    </h5>
-                    <span class="badge tier-badge tier-badge-{{ $nextTier->slug }}">
-                        {{ $nextTier->icon }} {{ $nextTier->name }}
-                    </span>
-                </div>
-
-                <!-- Tier Icons -->
-                <div class="tier-icons-row mb-4">
-                    @foreach ($allTiers as $tier)
-                        <div class="tier-icon-item {{ $tier->slug === $currentTier?->slug ? 'active' : '' }}">
-                            <div class="tier-icon-circle {{ $tier->slug }}"
-                                style="border-color: {{ $tier->color }}; color: {{ $tier->color }};">
-                                {{ $tier->icon }}
-                            </div>
-                            <span>{{ $tier->name }}</span>
-                        </div>
-                    @endforeach
-                </div>
-
-                <!-- Progress Bar -->
-                <div class="tier-progress-bar mb-3">
-                    <div class="tier-progress-fill {{ $currentTier?->slug ?? 'bronze' }}"
-                        style="width: {{ $loyalty->progress_to_next_tier }}%;"></div>
-                </div>
-
-                <div class="tier-progress-labels">
-                    <span>{{ number_format($loyalty->tier_points) }} نقطة</span>
-                    <span class="fw-bold">{{ number_format($loyalty->points_to_next_tier) }} نقطة متبقية</span>
-                    <span>{{ number_format($nextTier->min_points) }} نقطة</span>
-                </div>
-            </div>
-        @else
-            <div class="glass-card p-4 mb-5 text-center" data-aos="fade-up">
-                <div class="fs-1 mb-3">💎</div>
-                <h4 class="text-warning">مبروك! أنت في أعلى مستوى</h4>
-                <p class="text-muted mb-0">استمتع بجميع المزايا الحصرية لعملائنا VIP</p>
-            </div>
-        @endif
-
-        <!-- Current Tier Benefits -->
-        @if ($currentTier && count($currentTier->all_benefits) > 0)
-            <div class="glass-card p-4 mb-5" data-aos="fade-up">
-                <h5 class="mb-4">
-                    <i class="bi bi-star me-2 text-warning"></i>
-                    مزايا مستوى {{ $currentTier->name }}
-                </h5>
-                <div class="row g-3">
-                    @foreach ($currentTier->all_benefits as $benefit)
-                        <div class="col-md-6 col-lg-4">
-                            <div class="d-flex align-items-center p-3 bg-success bg-opacity-10 rounded-3">
-                                <i class="bi bi-check2-circle text-success fs-4 me-3"></i>
-                                <span>{{ $benefit }}</span>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-        @endif
 
         <!-- Featured Rewards -->
         @if ($featuredRewards->count() > 0)
@@ -150,8 +65,7 @@
                                 class="reward-card {{ $reward->is_featured ? 'featured' : '' }} {{ $loyalty->available_points < $reward->points_required ? 'locked' : '' }}">
                                 <div class="reward-card-image">
                                     @if ($reward->image)
-                                        <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name }}"
-                                            class="img-fluid">
+                                        <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name }}" class="img-fluid">
                                     @else
                                         <span>{{ $reward->icon }}</span>
                                     @endif
@@ -243,8 +157,7 @@
                                             </span>
                                             <p class="mb-0">{{ $transaction->description }}</p>
                                         </div>
-                                        <small
-                                            class="transaction-meta">{{ $transaction->created_at->diffForHumans() }}</small>
+                                        <small class="transaction-meta">{{ $transaction->created_at->diffForHumans() }}</small>
                                     </div>
                                 </div>
                             @endforeach
@@ -314,7 +227,7 @@
         <!-- Success Toast with Confetti -->
         <div class="confetti-container" id="confettiContainer"></div>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 // Show confetti
                 const colors = ['#FFD700', '#C9A227', '#8B4513', '#2ECC71', '#3498DB'];
                 const container = document.getElementById('confettiContainer');
