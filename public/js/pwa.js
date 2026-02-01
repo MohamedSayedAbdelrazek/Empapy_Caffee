@@ -199,13 +199,43 @@
                 </div>
                 
                 <div class="pwa-ios-instructions" id="pwaIOSInstructions">
-                    <div class="pwa-ios-step">
-                        <i class="bi bi-box-arrow-up"></i>
-                        <span>اضغط على أيقونة المشاركة</span>
+                    <div class="pwa-ios-title">
+                        <i class="bi bi-phone"></i>
+                        لتثبيت التطبيق على جهازك
                     </div>
-                    <div class="pwa-ios-step">
-                        <i class="bi bi-plus-square"></i>
-                        <span>ثم اختر "إضافة إلى الشاشة الرئيسية"</span>
+                    <div class="pwa-ios-steps">
+                        <div class="pwa-ios-step">
+                            <div class="pwa-ios-step-number">1</div>
+                            <div class="pwa-ios-step-content">
+                                <span class="pwa-ios-step-text">اضغط على زر المشاركة</span>
+                                <span class="pwa-ios-step-icon">
+                                    <svg width="20" height="20" viewBox="0 0 50 50" fill="currentColor">
+                                        <path d="M30.3 13.7L25 8.4l-5.3 5.3-1.4-1.4L25 5.6l6.7 6.7z"/>
+                                        <path d="M24 7h2v21h-2z"/>
+                                        <path d="M35 40H15c-1.7 0-3-1.3-3-3V19c0-1.7 1.3-3 3-3h7v2h-7c-.6 0-1 .4-1 1v18c0 .6.4 1 1 1h20c.6 0 1-.4 1-1V19c0-.6-.4-1-1-1h-7v-2h7c1.7 0 3 1.3 3 3v18c0 1.7-1.3 3-3 3z"/>
+                                    </svg>
+                                </span>
+                                <span class="pwa-ios-step-hint">في أسفل الشاشة (Safari)</span>
+                            </div>
+                        </div>
+                        <div class="pwa-ios-step">
+                            <div class="pwa-ios-step-number">2</div>
+                            <div class="pwa-ios-step-content">
+                                <span class="pwa-ios-step-text">اختر "إضافة إلى الشاشة الرئيسية"</span>
+                                <span class="pwa-ios-step-icon">
+                                    <i class="bi bi-plus-square"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="pwa-ios-step">
+                            <div class="pwa-ios-step-number">3</div>
+                            <div class="pwa-ios-step-content">
+                                <span class="pwa-ios-step-text">اضغط "إضافة" للتأكيد</span>
+                                <span class="pwa-ios-step-icon">
+                                    <i class="bi bi-check-lg"></i>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
