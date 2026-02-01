@@ -44,7 +44,7 @@ class AppServiceProvider extends ServiceProvider
         // Register Observers for notifications
         Order::observe(OrderObserver::class);
         User::observe(UserObserver::class);
-        Review::observe(ReviewObserver::class);
+        // DISABLED: Review::observe(ReviewObserver::class); // Uncomment when ready
 
         // Only force HTTPS when explicitly enabled via .env
         // Set FORCE_HTTPS=true in .env when you have SSL certificate

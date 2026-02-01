@@ -59,6 +59,27 @@
                         </div>
                     </div>
 
+                    {{-- Points Earned Preview --}}
+                    @auth
+                        @php
+                            $pointRule = \App\Models\PointRule::active()->forTrigger('order_complete')->first();
+                            $expectedPoints = $pointRule ? $pointRule->calculatePoints($order->total) : 0;
+                        @endphp
+                        @if($expectedPoints > 0)
+                            <div class="glass-card p-3 mb-4 text-center"
+                                style="background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(201, 162, 39, 0.2)); border: 1px solid rgba(201, 162, 39, 0.3);">
+                                <div class="d-flex align-items-center justify-content-center gap-2">
+                                    <i class="bi bi-gift text-warning fs-4"></i>
+                                    <div>
+                                        <span class="text-muted">ستحصل على</span>
+                                        <strong class="text-warning mx-1">{{ $expectedPoints }}</strong>
+                                        <span class="text-muted">نقطة عند التسليم!</span>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
+                    @endauth
+
                     <div class="d-flex gap-3 justify-content-center flex-wrap">
                         <a href="{{ route('orders.track') }}?order_number={{ $order->order_number }}"
                             class="btn btn-golden">
@@ -92,7 +113,7 @@
 
     <script>
         // Trigger confetti animation on page load
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             // Confetti configuration
             const duration = 3 * 1000; // 3 seconds
             const animationEnd = Date.now() + duration;
@@ -107,7 +128,7 @@
                 return Math.random() * (max - min) + min;
             }
 
-            const interval = setInterval(function() {
+            const interval = setInterval(function () {
                 const timeLeft = animationEnd - Date.now();
 
                 if (timeLeft <= 0) {
@@ -137,31 +158,31 @@
 
             @if ($order->payment_status === 'paid')
                 // Show SweetAlert2 for successful payment
-                setTimeout(function() {
+                setTimeout(function () {
                     Swal.fire({
                         title: '🎉 تم الدفع بنجاح!',
                         html: `
-                            <div class="text-center">
-                                <p class="mb-3">تم إتمام عملية الدفع بنجاح.</p>
-                                <div class="glass-card p-3 mb-3">
-                                    <div class="row g-2">
-                                        <div class="col-6 text-end">
-                                            <small class="text-muted">رقم الطلب:</small>
+                                    <div class="text-center">
+                                        <p class="mb-3">تم إتمام عملية الدفع بنجاح.</p>
+                                        <div class="glass-card p-3 mb-3">
+                                            <div class="row g-2">
+                                                <div class="col-6 text-end">
+                                                    <small class="text-muted">رقم الطلب:</small>
+                                                </div>
+                                                <div class="col-6 text-start">
+                                                    <strong>{{ $order->order_number }}</strong>
+                                                </div>
+                                                <div class="col-6 text-end">
+                                                    <small class="text-muted">المبلغ المدفوع:</small>
+                                                </div>
+                                                <div class="col-6 text-start">
+                                                    <strong style="color: var(--gold);">{{ number_format($order->total) }} ج.م</strong>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="col-6 text-start">
-                                            <strong>{{ $order->order_number }}</strong>
-                                        </div>
-                                        <div class="col-6 text-end">
-                                            <small class="text-muted">المبلغ المدفوع:</small>
-                                        </div>
-                                        <div class="col-6 text-start">
-                                            <strong style="color: var(--gold);">{{ number_format($order->total) }} ج.م</strong>
-                                        </div>
+                                        <p class="text-muted small mb-0">شكراً لثقتك في إمبابي كافيه ☕</p>
                                     </div>
-                                </div>
-                                <p class="text-muted small mb-0">شكراً لثقتك في إمبابي كافيه ☕</p>
-                            </div>
-                        `,
+                                `,
                         icon: 'success',
                         confirmButtonText: 'رائع!',
                         confirmButtonColor: '#C9A961',
@@ -174,6 +195,6 @@
                     });
                 }, 1000);
             @endif
-        });
+            });
     </script>
 @endpush

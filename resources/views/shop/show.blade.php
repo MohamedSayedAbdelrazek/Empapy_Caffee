@@ -30,6 +30,7 @@
             "name": "إمبابي كافيه"
         }
     }
+    {{-- DISABLED: Reviews/Rating - uncomment when ready
     @if(isset($product->reviews_avg_rating) && $product->reviews_count > 0)
     ,"aggregateRating": {
         "@type": "AggregateRating",
@@ -37,6 +38,7 @@
         "reviewCount": "{{ $product->reviews_count }}"
     }
     @endif
+    --}}
 }
 </script>
 @endpush
@@ -136,7 +138,7 @@
                         <h1 class="mb-3" style="font-size: 2.5rem; font-weight: 800;">{{ $product->name }}</h1>
                         <h2 class="text-muted mb-4" style="font-size: 1.2rem; font-weight: 400;">{{ $product->name }}</h2>
 
-                        <!-- Rating Stars (if reviews exist) -->
+                        {{-- DISABLED: Rating Stars - uncomment when ready
                         @if (isset($product->reviews_avg_rating))
                             <div class="product-rating mb-3">
                                 <div class="stars">
@@ -151,6 +153,7 @@
                                 <span class="text-muted me-2">({{ $product->reviews_count ?? 0 }} تقييم)</span>
                             </div>
                         @endif
+                        --}}
 
                         <!-- Price Section -->
                         <div class="product-price-lg mb-4 p-4 glass-card">

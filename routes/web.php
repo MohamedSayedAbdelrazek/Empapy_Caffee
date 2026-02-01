@@ -90,11 +90,11 @@ Route::prefix('wishlist')->name('wishlist.')->group(function () {
     Route::get('/count', [WishlistController::class, 'count'])->name('count');
 });
 
-// Reviews Routes
-Route::prefix('reviews')->name('reviews.')->group(function () {
-    Route::post('/', [ReviewController::class, 'store'])->name('store')->middleware('auth');
-    Route::delete('/{review}', [ReviewController::class, 'destroy'])->name('destroy')->middleware('auth');
-});
+// DISABLED: Reviews Routes - uncomment when ready
+// Route::prefix('reviews')->name('reviews.')->group(function () {
+//     Route::post('/', [ReviewController::class, 'store'])->name('store')->middleware('auth');
+//     Route::delete('/{review}', [ReviewController::class, 'destroy'])->name('destroy')->middleware('auth');
+// });
 
 // Coupon Validation Route
 Route::post('/coupon/validate', [App\Http\Controllers\CouponController::class, 'validate']);
