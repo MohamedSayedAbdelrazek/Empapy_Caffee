@@ -130,11 +130,14 @@ class PointRule extends Model
      */
     public function getIsValidAttribute(): bool
     {
-        if (!$this->is_active) return false;
+        if (!$this->is_active)
+            return false;
 
-        if ($this->starts_at && $this->starts_at->isFuture()) return false;
+        if ($this->starts_at && $this->starts_at->isFuture())
+            return false;
 
-        if ($this->ends_at && $this->ends_at->isPast()) return false;
+        if ($this->ends_at && $this->ends_at->isPast())
+            return false;
 
         return true;
     }

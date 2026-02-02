@@ -24,7 +24,7 @@ class ProductStoreRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
             'price' => 'required|numeric|min:0',
-            'sale_price' => 'nullable|numeric|min:0|lt:price',
+            'sale_price' => 'nullable|numeric|min:0',
             'weight' => 'nullable|string|max:50',
             'roast_level' => 'nullable|in:light,medium,dark',
             'is_featured' => 'nullable',
@@ -32,6 +32,21 @@ class ProductStoreRequest extends FormRequest
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'gallery.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048'
         ];
+    }
+
+    /**
+     * Configure the validator instance.
+     */
+    public function withValidator($validator)
+    {
+        $validator->after(function ($validator) {
+            // Only validate sale_price < price if sale_price has a value
+            if ($this->filled('sale_price') && $this->filled('price')) {
+                if ((float) $this->sale_price >= (float) $this->price) {
+                    $validator->errors()->add('sale_price', 'سعر التخفيض يجب أن يكون أقل من السعر الأصلي');
+                }
+            }
+        });
     }
 
     /**

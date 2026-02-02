@@ -17,369 +17,596 @@
 
         <div class="row g-4">
             <div class="col-lg-8">
+                {{-- Basic Product Information --}}
                 <div class="admin-card mb-4">
-                    <h5 class="mb-4">معلومات المنتج</h5>
+                    <h5 class="mb-4">
+                        <i class="bi bi-box-seam me-2 text-warning"></i>
+                        معلومات المنتج الأساسية
+                    </h5>
 
                     <div class="row g-3">
                         <div class="col-12">
-                            <label class="form-label">اسم المنتج</label>
+                            <label class="form-label">اسم المنتج <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control @error('name') is-invalid @enderror"
-                                value="{{ old('name') }}" required>
+                                value="{{ old('name') }}" required placeholder="أدخل اسم المنتج">
                             @error('name')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="col-12">
                             <label class="form-label">وصف المنتج</label>
-                            <textarea name="description" class="form-control" rows="3">{{ old('description') }}</textarea>
+                            <textarea name="description" class="form-control" rows="3" placeholder="أضف وصفاً تفصيلياً للمنتج...">{{ old('description') }}</textarea>
                         </div>
                     </div>
                 </div>
 
+                {{-- Pricing Section --}}
                 <div class="admin-card mb-4">
-                    <h5 class="mb-4">التسعير</h5>
+                    <h5 class="mb-4">
+                        <i class="bi bi-currency-dollar me-2 text-success"></i>
+                        التسعير
+                    </h5>
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label">السعر (ج.م) *</label>
+                            <label class="form-label">السعر (ج.م) <span class="text-danger">*</span></label>
                             <input type="number" name="price" class="form-control @error('price') is-invalid @enderror"
                                 value="{{ old('price') }}" step="0.01" min="0" required>
                             <div class="form-text text-muted">
-                                في حالة وجود خيارات (مثل الوزن)، ضع سعر أقل خيار هنا كـ "سعر يبدأ من".
+                                <i class="bi bi-info-circle me-1"></i>
+                                في حالة وجود خيارات أوزان، ضع سعر أقل وزن هنا كـ "يبدأ من"
                             </div>
                             @error('price')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label">سعر التخفيض</label>
-                            <input type="number" name="sale_price" class="form-control" value="{{ old('sale_price') }}"
-                                step="0.01" min="0">
+                            <label class="form-label">سعر التخفيض (اختياري)</label>
+                            <input type="number" name="sale_price" class="form-control @error('sale_price') is-invalid @enderror" 
+                                value="{{ old('sale_price') }}" step="0.01" min="0" placeholder="اتركه فارغاً إذا لا يوجد خصم">
+                            @error('sale_price')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
                     </div>
                 </div>
 
+                {{-- Smart Product Configuration --}}
                 <div class="admin-card mb-4">
-                    <h5 class="mb-4">تفاصيل القهوة</h5>
+                    <h5 class="mb-4">
+                        <i class="bi bi-magic me-2 text-primary"></i>
+                        تكوين المنتج الذكي
+                    </h5>
+                    <p class="text-muted mb-4">
+                        <i class="bi bi-lightbulb me-1"></i>
+                        اختر خصائص المنتج وسيتم عرض الحقول المناسبة تلقائياً
+                    </p>
+
+                    {{-- Product Type Selection Cards --}}
+                    <div class="row g-3 mb-4">
+                        {{-- Is Coffee Product --}}
+                        <div class="col-md-6 col-lg-3">
+                            <div class="product-type-card" id="coffee_card" onclick="toggleProductType('coffee')">
+                                <input type="checkbox" name="is_coffee_product" id="is_coffee_product" value="1" 
+                                    {{ old('is_coffee_product') ? 'checked' : '' }} class="d-none product-type-checkbox">
+                                <div class="type-icon">
+                                    <i class="bi bi-cup-hot"></i>
+                                </div>
+                                <h6 class="type-title">منتج قهوة / بن</h6>
+                                <p class="type-desc">له درجات تحميص ووزن افتراضي</p>
+                            </div>
+                        </div>
+
+                        {{-- Has Weight Options --}}
+                        <div class="col-md-6 col-lg-3">
+                            <div class="product-type-card" id="weight_card" onclick="toggleProductType('weight')">
+                                <input type="checkbox" name="has_weight_options" id="has_weight_options" value="1" 
+                                    {{ old('has_weight_options') ? 'checked' : '' }} class="d-none product-type-checkbox">
+                                <div class="type-icon type-icon-blue">
+                                    <i class="bi bi-box-seam"></i>
+                                </div>
+                                <h6 class="type-title">أوزان متعددة</h6>
+                                <p class="type-desc">متوفر بأوزان مختلفة بأسعار مختلفة</p>
+                            </div>
+                        </div>
+
+                        {{-- Has Roast Options --}}
+                        <div class="col-md-6 col-lg-3">
+                            <div class="product-type-card" id="roast_card" onclick="toggleProductType('roast')">
+                                <input type="checkbox" name="has_roast_options" id="has_roast_options" value="1" 
+                                    {{ old('has_roast_options') ? 'checked' : '' }} class="d-none product-type-checkbox">
+                                <div class="type-icon type-icon-red">
+                                    <i class="bi bi-fire"></i>
+                                </div>
+                                <h6 class="type-title">درجات تحميص</h6>
+                                <p class="type-desc">متوفر بدرجات تحميص مختلفة</p>
+                            </div>
+                        </div>
+
+                        {{-- Has Additives --}}
+                        <div class="col-md-6 col-lg-3">
+                            <div class="product-type-card" id="additive_card" onclick="toggleProductType('additive')">
+                                <input type="checkbox" name="has_additive_options" id="has_additive_options" value="1" 
+                                    {{ old('has_additive_options') ? 'checked' : '' }} class="d-none product-type-checkbox">
+                                <div class="type-icon type-icon-green">
+                                    <i class="bi bi-plus-circle"></i>
+                                </div>
+                                <h6 class="type-title">إضافات</h6>
+                                <p class="type-desc">يمكن إضافة نكهات أو مكونات إضافية</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Selected Options Summary --}}
+                    <div class="selected-options-summary mb-4" id="options_summary" style="display: none;">
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="badge bg-secondary">الخيارات المفعّلة:</span>
+                            <span class="badge bg-warning text-dark option-badge" id="badge_coffee" style="display: none;">
+                                <i class="bi bi-cup-hot me-1"></i>منتج قهوة
+                            </span>
+                            <span class="badge bg-primary option-badge" id="badge_weight" style="display: none;">
+                                <i class="bi bi-box-seam me-1"></i>أوزان متعددة
+                            </span>
+                            <span class="badge bg-danger option-badge" id="badge_roast" style="display: none;">
+                                <i class="bi bi-fire me-1"></i>درجات تحميص
+                            </span>
+                            <span class="badge bg-success option-badge" id="badge_additive" style="display: none;">
+                                <i class="bi bi-plus-circle me-1"></i>إضافات
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Coffee Details Section (Conditional) --}}
+                <div class="admin-card mb-4 conditional-section" id="coffee_details_section" style="display: none;">
+                    <h5 class="mb-4">
+                        <i class="bi bi-cup-hot me-2 text-warning"></i>
+                        تفاصيل القهوة
+                    </h5>
 
                     <div class="row g-3">
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="default_weight_field">
                             <label class="form-label">الوزن الافتراضي</label>
                             <input type="text" name="weight" class="form-control" value="{{ old('weight') }}"
-                                placeholder="250g">
-                            <small class="text-muted">سيظهر إذا لم يكن للمنتج خيارات أوزان</small>
+                                placeholder="مثال: 250g">
+                            <small class="text-muted">للمنتجات ذات الوزن الثابت</small>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-6" id="default_roast_field">
                             <label class="form-label">درجة التحميص الافتراضية</label>
                             <select name="roast_level" class="form-select">
-                                <option value="">اختر...</option>
-                                <option value="light" {{ old('roast_level') === 'light' ? 'selected' : '' }}>تحميص
-                                    فاتح
-                                </option>
-                                <option value="medium" {{ old('roast_level') === 'medium' ? 'selected' : '' }}>تحميص
-                                    متوسط
-                                </option>
-                                <option value="dark" {{ old('roast_level') === 'dark' ? 'selected' : '' }}>تحميص داكن
-                                </option>
+                                <option value="">اختر درجة التحميص...</option>
+                                <option value="light" {{ old('roast_level') === 'light' ? 'selected' : '' }}>فاتح (Light)</option>
+                                <option value="medium" {{ old('roast_level') === 'medium' ? 'selected' : '' }}>متوسط (Medium)</option>
+                                <option value="dark" {{ old('roast_level') === 'dark' ? 'selected' : '' }}>داكن (Dark)</option>
                             </select>
+                            <small class="text-muted">للمنتجات ذات درجة تحميص ثابتة</small>
                         </div>
                     </div>
                 </div>
 
-                {{-- Product Options Section --}}
-                <div class="admin-card mt-4">
-                    <h5 class="mb-4">
-                        <i class="bi bi-sliders me-2"></i>
-                        خيارات المنتج (متعددة الأسعار)
-                    </h5>
-                    <p class="text-muted mb-4">فعّل الخيارات التي تريدها لهذا المنتج. <strong>الأوزان</strong> لها سعر
-                        كامل لكل وزن، بينما <strong>التحميص والإضافات</strong> هي فروقات على السعر.</p>
-
-                    {{-- Weight Options --}}
-                    <div class="option-section mb-4 p-3 rounded"
-                        style="background: rgba(201, 162, 39, 0.05); border: 1px solid rgba(201, 162, 39, 0.2);">
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" id="has_weight_options"
-                                name="has_weight_options" value="1" {{ old('has_weight_options') ? 'checked' : '' }}
-                                onchange="toggleOptionSection('weight')">
-                            <label class="form-check-label fw-bold" for="has_weight_options">
-                                <i class="bi bi-box-seam me-1"></i>
-                                هذا المنتج له أوزان متعددة
-                            </label>
-                        </div>
-
-                        <div id="weight_options_container" class="option-values-container"
-                            style="{{ old('has_weight_options') ? '' : 'display: none;' }}">
-                            <table class="table table-dark table-hover mb-2">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 50%">الوزن</th>
-                                        <th style="width: 30%">السعر (ج.م) *</th>
-                                        <th style="width: 10%">افتراضي</th>
-                                        <th style="width: 10%"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="weight_values_body">
-                                    @if (old('weight_values'))
-                                        @foreach (old('weight_values') as $index => $value)
-                                            <tr>
-                                                <td><input type="text" name="weight_values[{{ $index }}][value]"
-                                                        class="form-control form-control-sm"
-                                                        value="{{ $value['value'] ?? '' }}" placeholder="مثال: 125 جم">
-                                                </td>
-                                                <td><input type="number"
-                                                        name="weight_values[{{ $index }}][price_modifier]"
-                                                        class="form-control form-control-sm"
-                                                        value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
-                                                </td>
-                                                <td class="text-center"><input type="radio" name="weight_default"
-                                                        value="{{ $index }}" class="form-check-input"
-                                                        {{ $value['is_default'] ?? false ? 'checked' : '' }}
-                                                        onchange="setDefaultValue('weight', {{ $index }})">
-                                                </td>
-                                                <td><button type="button" class="btn btn-sm btn-outline-danger"
-                                                        onclick="removeOptionRow(this)"><i
-                                                            class="bi bi-trash"></i></button></td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                </tbody>
-                            </table>
-                            <button type="button" class="btn btn-sm btn-outline-warning"
-                                onclick="addOptionRow('weight')">
-                                <i class="bi bi-plus-lg me-1"></i>إضافة وزن
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Roast Options --}}
-                    <div class="option-section mb-4 p-3 rounded"
-                        style="background: rgba(239, 68, 68, 0.05); border: 1px solid rgba(239, 68, 68, 0.2);">
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" id="has_roast_options"
-                                name="has_roast_options" value="1" {{ old('has_roast_options') ? 'checked' : '' }}
-                                onchange="toggleOptionSection('roast')">
-                            <label class="form-check-label fw-bold" for="has_roast_options">
-                                <i class="bi bi-fire me-1"></i>
-                                هذا المنتج له درجات تحميص متعددة
-                            </label>
-                        </div>
-
-                        <div id="roast_options_container" class="option-values-container"
-                            style="{{ old('has_roast_options') ? '' : 'display: none;' }}">
-                            <table class="table table-dark table-hover mb-2">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 50%">درجة التحميص</th>
-                                        <th style="width: 30%">السعر الإضافي (ج.م)</th>
-                                        <th style="width: 10%">افتراضي</th>
-                                        <th style="width: 10%"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="roast_values_body">
-                                    @if (old('roast_values'))
-                                        @foreach (old('roast_values') as $index => $value)
-                                            <tr>
-                                                <td><input type="text" name="roast_values[{{ $index }}][value]"
-                                                        class="form-control form-control-sm"
-                                                        value="{{ $value['value'] ?? '' }}" placeholder="مثال: فاتح">
-                                                </td>
-                                                <td><input type="number"
-                                                        name="roast_values[{{ $index }}][price_modifier]"
-                                                        class="form-control form-control-sm"
-                                                        value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
-                                                </td>
-                                                <td class="text-center"><input type="radio" name="roast_default"
-                                                        value="{{ $index }}" class="form-check-input"
-                                                        {{ $value['is_default'] ?? false ? 'checked' : '' }}
-                                                        onchange="setDefaultValue('roast', {{ $index }})"></td>
-                                                <td><button type="button" class="btn btn-sm btn-outline-danger"
-                                                        onclick="removeOptionRow(this)"><i
-                                                            class="bi bi-trash"></i></button></td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                </tbody>
-                            </table>
-                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="addOptionRow('roast')">
-                                <i class="bi bi-plus-lg me-1"></i>إضافة درجة تحميص
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Additive Options --}}
-                    <div class="option-section p-3 rounded"
-                        style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.2);">
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" id="has_additive_options"
-                                name="has_additive_options" value="1"
-                                {{ old('has_additive_options') ? 'checked' : '' }}
-                                onchange="toggleOptionSection('additive')">
-                            <label class="form-check-label fw-bold" for="has_additive_options">
-                                <i class="bi bi-plus-circle me-1"></i>
-                                هذا المنتج له إضافات
-                            </label>
-                        </div>
-
-                        <div id="additive_options_container" class="option-values-container"
-                            style="{{ old('has_additive_options') ? '' : 'display: none;' }}">
-                            <table class="table table-dark table-hover mb-2">
-                                <thead>
-                                    <tr>
-                                        <th style="width: 50%">الإضافة</th>
-                                        <th style="width: 30%">السعر الإضافي (ج.م)</th>
-                                        <th style="width: 10%">افتراضي</th>
-                                        <th style="width: 10%"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="additive_values_body">
-                                    @if (old('additive_values'))
-                                        @foreach (old('additive_values') as $index => $value)
-                                            <tr>
-                                                <td><input type="text"
-                                                        name="additive_values[{{ $index }}][value]"
-                                                        class="form-control form-control-sm"
-                                                        value="{{ $value['value'] ?? '' }}" placeholder="مثال: بالهيل">
-                                                </td>
-                                                <td><input type="number"
-                                                        name="additive_values[{{ $index }}][price_modifier]"
-                                                        class="form-control form-control-sm"
-                                                        value="{{ $value['price_modifier'] ?? 0 }}" step="0.01">
-                                                </td>
-                                                <td class="text-center"><input type="radio" name="additive_default"
-                                                        value="{{ $index }}" class="form-check-input"
-                                                        {{ $value['is_default'] ?? false ? 'checked' : '' }}
-                                                        onchange="setDefaultValue('additive', {{ $index }})">
-                                                </td>
-                                                <td><button type="button" class="btn btn-sm btn-outline-danger"
-                                                        onclick="removeOptionRow(this)"><i
-                                                            class="bi bi-trash"></i></button></td>
-                                            </tr>
-                                        @endforeach
-                                    @endif
-                                </tbody>
-                            </table>
-                            <button type="button" class="btn btn-sm btn-outline-success"
-                                onclick="addOptionRow('additive')">
-                                <i class="bi bi-plus-lg me-1"></i>إضافة إضافة جديدة
-                            </button>
-                        </div>
-                    </div>
-
-                    {{-- Additive Weight Pricing Matrix --}}
-                    <div class="option-section p-3 rounded mt-4" id="pricing_matrix_section"
-                        style="background: rgba(139, 92, 246, 0.05); border: 1px solid rgba(139, 92, 246, 0.2); display: none;">
-                        <div class="d-flex align-items-center gap-2 mb-3">
-                            <i class="bi bi-grid-3x3-gap-fill text-primary"></i>
-                            <h6 class="fw-bold mb-0">مصفوفة أسعار الإضافات حسب الوزن</h6>
-                        </div>
-                        <p class="text-muted small mb-3">
-                            <i class="bi bi-info-circle me-1"></i>
-                            حدد سعر كل إضافة لكل وزن. مثلاً: "بالهيل" قد يكلف +15 ج.م للوزن 125 جم و +30 ج.م للوزن 250 جم
-                        </p>
-
-                        <div class="table-responsive">
-                            <table class="table table-dark table-bordered text-center mb-0" id="pricing_matrix_table">
-                                <thead id="pricing_matrix_head">
-                                    <tr>
-                                        <th class="text-end" style="width: 150px;">الإضافة \ الوزن</th>
-                                        <!-- Weight columns will be added dynamically -->
-                                    </tr>
-                                </thead>
-                                <tbody id="pricing_matrix_body">
-                                    <!-- Additive rows will be added dynamically -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <small class="text-muted d-block mt-2">
-                            <i class="bi bi-lightbulb me-1"></i>
-                            اترك الخانة فارغة أو 0 إذا كانت الإضافة مجانية لهذا الوزن
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="admin-card mb-4">
-                <h5 class="mb-4">التصنيف</h5>
-
-                <label class="form-label">الصنف *</label>
-                <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
-                    <option value="">اختر الصنف...</option>
-                    @foreach ($categories as $category)
-                        <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
-                            {{ $category->name }}
-                        </option>
-                    @endforeach
-                </select>
-                @error('category_id')
-                    <div class="invalid-feedback">{{ $message }}</div>
-                @enderror
-            </div>
-
-            <div class="admin-card mb-4">
-                <h5 class="mb-4">صورة المنتج الرئيسية</h5>
-
-                <div class="image-upload-area mb-3" id="mainImageUpload">
-                    <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
-                    <label for="imageInput" class="upload-label">
-                        <i class="bi bi-cloud-arrow-up display-4"></i>
-                        <p class="mb-1">اسحب الصورة هنا أو انقر للاختيار</p>
-                        <small class="text-light opacity-75">PNG, JPG حتى 2MB</small>
-                    </label>
-                    <div id="mainImagePreview" class="image-preview d-none">
-                        <img src="" alt="Preview" id="previewImg">
-                        <button type="button" class="btn btn-sm btn-danger remove-image" onclick="removeMainImage()">
-                            <i class="bi bi-x"></i>
+                {{-- Weight Options Section (Conditional) --}}
+                <div class="admin-card mb-4 conditional-section" id="weight_section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="bi bi-box-seam me-2 text-primary"></i>
+                            خيارات الأوزان
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-primary" onclick="addOptionRow('weight')">
+                            <i class="bi bi-plus-lg me-1"></i>إضافة وزن
                         </button>
                     </div>
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>الأوزان لها سعر كامل لكل وزن</strong> - مثال: 125 جم بـ 50 ج.م، 250 جم بـ 90 ج.م
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%">الوزن</th>
+                                    <th style="width: 35%">السعر (ج.م) <span class="text-danger">*</span></th>
+                                    <th style="width: 10%">افتراضي</th>
+                                    <th style="width: 10%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="weight_values_body">
+                                @if (old('weight_values'))
+                                    @foreach (old('weight_values') as $index => $value)
+                                        <tr>
+                                            <td><input type="text" name="weight_values[{{ $index }}][value]"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ $value['value'] ?? '' }}" placeholder="مثال: 125 جم"></td>
+                                            <td><input type="number" name="weight_values[{{ $index }}][price_modifier]"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ $value['price_modifier'] ?? 0 }}" step="0.01" required></td>
+                                            <td class="text-center">
+                                                <input type="radio" name="weight_default" value="{{ $index }}" 
+                                                    class="form-check-input" {{ ($value['is_default'] ?? false) ? 'checked' : '' }}
+                                                    onchange="setDefaultValue('weight', {{ $index }})">
+                                                <input type="hidden" name="weight_values[{{ $index }}][is_default]" 
+                                                    value="{{ ($value['is_default'] ?? false) ? '1' : '0' }}" class="is-default-hidden">
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionRow(this)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-                @error('image')
-                    <div class="text-danger small">{{ $message }}</div>
-                @enderror
+
+                {{-- Roast Options Section (Conditional) --}}
+                <div class="admin-card mb-4 conditional-section" id="roast_section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="bi bi-fire me-2 text-danger"></i>
+                            درجات التحميص
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-danger" onclick="addOptionRow('roast')">
+                            <i class="bi bi-plus-lg me-1"></i>إضافة درجة تحميص
+                        </button>
+                    </div>
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>درجات التحميص تُضاف كفرق سعر</strong> - مثال: فاتح +0 ج.م، متوسط +5 ج.م، داكن +10 ج.م
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%">درجة التحميص</th>
+                                    <th style="width: 35%">السعر الإضافي (ج.م)</th>
+                                    <th style="width: 10%">افتراضي</th>
+                                    <th style="width: 10%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="roast_values_body">
+                                @if (old('roast_values'))
+                                    @foreach (old('roast_values') as $index => $value)
+                                        <tr>
+                                            <td><input type="text" name="roast_values[{{ $index }}][value]"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ $value['value'] ?? '' }}" placeholder="مثال: فاتح"></td>
+                                            <td><input type="number" name="roast_values[{{ $index }}][price_modifier]"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ $value['price_modifier'] ?? 0 }}" step="0.01"></td>
+                                            <td class="text-center">
+                                                <input type="radio" name="roast_default" value="{{ $index }}" 
+                                                    class="form-check-input" {{ ($value['is_default'] ?? false) ? 'checked' : '' }}
+                                                    onchange="setDefaultValue('roast', {{ $index }})">
+                                                <input type="hidden" name="roast_values[{{ $index }}][is_default]" 
+                                                    value="{{ ($value['is_default'] ?? false) ? '1' : '0' }}" class="is-default-hidden">
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionRow(this)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Additive Options Section (Conditional) --}}
+                <div class="admin-card mb-4 conditional-section" id="additive_section" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="mb-0">
+                            <i class="bi bi-plus-circle me-2 text-success"></i>
+                            الإضافات
+                        </h5>
+                        <button type="button" class="btn btn-sm btn-success" onclick="addOptionRow('additive')">
+                            <i class="bi bi-plus-lg me-1"></i>إضافة جديدة
+                        </button>
+                    </div>
+                    
+                    {{-- Notice about pricing matrix --}}
+                    <div class="alert alert-info small mb-3" id="additive_price_notice" style="display: none;">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>ملاحظة:</strong> بما أنك فعّلت الأوزان المتعددة، سيتم تحديد سعر كل إضافة حسب الوزن في المصفوفة أدناه.
+                    </div>
+
+                    <p class="text-muted mb-3" id="additive_simple_notice">
+                        <i class="bi bi-info-circle me-1"></i>
+                        <strong>الإضافات تُضاف كفرق سعر</strong> - مثال: بالهيل +15 ج.م، سادة +0 ج.م
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover mb-0" id="additive_table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 45%">الإضافة</th>
+                                    <th style="width: 35%" id="additive_price_header">السعر الإضافي (ج.م)</th>
+                                    <th style="width: 10%">افتراضي</th>
+                                    <th style="width: 10%"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="additive_values_body">
+                                @if (old('additive_values'))
+                                    @foreach (old('additive_values') as $index => $value)
+                                        <tr>
+                                            <td><input type="text" name="additive_values[{{ $index }}][value]"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ $value['value'] ?? '' }}" placeholder="مثال: بالهيل"></td>
+                                            <td class="additive-price-cell"><input type="number" name="additive_values[{{ $index }}][price_modifier]"
+                                                    class="form-control form-control-sm"
+                                                    value="{{ $value['price_modifier'] ?? 0 }}" step="0.01"></td>
+                                            <td class="text-center">
+                                                <input type="radio" name="additive_default" value="{{ $index }}" 
+                                                    class="form-check-input" {{ ($value['is_default'] ?? false) ? 'checked' : '' }}
+                                                    onchange="setDefaultValue('additive', {{ $index }})">
+                                                <input type="hidden" name="additive_values[{{ $index }}][is_default]" 
+                                                    value="{{ ($value['is_default'] ?? false) ? '1' : '0' }}" class="is-default-hidden">
+                                            </td>
+                                            <td>
+                                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionRow(this)">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {{-- Additive Weight Pricing Matrix (Conditional - when both weights and additives) --}}
+                <div class="admin-card mb-4 conditional-section" id="pricing_matrix_section" style="display: none;">
+                    <h5 class="mb-4">
+                        <i class="bi bi-grid-3x3-gap-fill me-2 text-purple"></i>
+                        مصفوفة أسعار الإضافات حسب الوزن
+                    </h5>
+                    <p class="text-muted mb-3">
+                        <i class="bi bi-lightbulb me-1"></i>
+                        حدد سعر كل إضافة لكل وزن. مثلاً: "بالهيل" قد تكلف +15 ج.م للوزن 125 جم و +25 ج.م للوزن 250 جم
+                    </p>
+
+                    <div class="table-responsive">
+                        <table class="table table-dark table-bordered text-center mb-0" id="pricing_matrix_table">
+                            <thead id="pricing_matrix_head">
+                                <tr>
+                                    <th class="text-end" style="min-width: 150px;">الإضافة \ الوزن</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pricing_matrix_body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <small class="text-muted d-block mt-2">
+                        <i class="bi bi-info-circle me-1"></i>
+                        اترك الخانة 0 إذا كانت الإضافة مجانية لهذا الوزن
+                    </small>
+                </div>
             </div>
 
-            <div class="admin-card mb-4">
-                <h5 class="mb-4">صور إضافية (اختياري)</h5>
+            <div class="col-lg-4">
+                {{-- Category Selection --}}
+                <div class="admin-card mb-4">
+                    <h5 class="mb-4">
+                        <i class="bi bi-folder me-2 text-warning"></i>
+                        التصنيف
+                    </h5>
 
-                <div class="image-upload-area mb-3" id="galleryUpload">
-                    <input type="file" name="gallery[]" id="galleryInput" accept="image/*" class="d-none" multiple>
-                    <label for="galleryInput" class="upload-label">
-                        <i class="bi bi-images display-4"></i>
-                        <p class="mb-1">اختر صور متعددة</p>
-                        <small class="text-light opacity-75">PNG, JPG حتى 2MB لكل صورة</small>
-                    </label>
+                    <label class="form-label">الصنف <span class="text-danger">*</span></label>
+                    <select name="category_id" class="form-select @error('category_id') is-invalid @enderror" required>
+                        <option value="">اختر الصنف...</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
-                <div id="galleryPreview" class="d-flex flex-wrap gap-2"></div>
+
+                {{-- Main Image Upload --}}
+                <div class="admin-card mb-4">
+                    <h5 class="mb-4">
+                        <i class="bi bi-image me-2 text-info"></i>
+                        صورة المنتج الرئيسية
+                    </h5>
+
+                    <div class="image-upload-area mb-3" id="mainImageUpload">
+                        <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
+                        <label for="imageInput" class="upload-label">
+                            <i class="bi bi-cloud-arrow-up display-4"></i>
+                            <p class="mb-1">اسحب الصورة هنا أو انقر للاختيار</p>
+                            <small class="text-light opacity-75">PNG, JPG, WebP حتى 2MB</small>
+                        </label>
+                        <div id="mainImagePreview" class="image-preview d-none">
+                            <img src="" alt="Preview" id="previewImg">
+                            <button type="button" class="btn btn-sm btn-danger remove-image" onclick="removeMainImage()">
+                                <i class="bi bi-x"></i>
+                            </button>
+                        </div>
+                    </div>
+                    @error('image')
+                        <div class="text-danger small">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                {{-- Gallery Upload --}}
+                <div class="admin-card mb-4">
+                    <h5 class="mb-4">
+                        <i class="bi bi-images me-2 text-secondary"></i>
+                        صور إضافية (اختياري)
+                    </h5>
+
+                    <div class="image-upload-area mb-3" id="galleryUpload">
+                        <input type="file" name="gallery[]" id="galleryInput" accept="image/*" class="d-none" multiple>
+                        <label for="galleryInput" class="upload-label">
+                            <i class="bi bi-images display-4"></i>
+                            <p class="mb-1">اختر صور متعددة</p>
+                            <small class="text-light opacity-75">PNG, JPG, WebP حتى 2MB لكل صورة</small>
+                        </label>
+                    </div>
+                    <div id="galleryPreview" class="d-flex flex-wrap gap-2"></div>
+                </div>
+
+                {{-- Status --}}
+                <div class="admin-card mb-4">
+                    <h5 class="mb-4">
+                        <i class="bi bi-toggle-on me-2 text-success"></i>
+                        الحالة
+                    </h5>
+
+                    <div class="form-check form-switch mb-3">
+                        <input type="checkbox" name="is_active" class="form-check-input" id="is_active" value="1"
+                            {{ old('is_active', true) ? 'checked' : '' }}>
+                        <label class="form-check-label" for="is_active">
+                            <i class="bi bi-check-circle me-1"></i>منتج نشط
+                        </label>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input type="checkbox" name="is_featured" class="form-check-input" id="is_featured" value="1"
+                            {{ old('is_featured') ? 'checked' : '' }}>
+                        <label class="form-check-label" for="is_featured">
+                            <i class="bi bi-star me-1"></i>منتج مميز
+                        </label>
+                    </div>
+                </div>
+
+                {{-- Submit Button --}}
+                <button type="submit" class="btn btn-admin-primary w-100 btn-lg">
+                    <i class="bi bi-check-lg me-2"></i>حفظ المنتج
+                </button>
             </div>
-
-            <div class="admin-card mb-4">
-                <h5 class="mb-4">الحالة</h5>
-
-                <div class="form-check mb-3">
-                    <input type="checkbox" name="is_active" class="form-check-input" id="is_active" value="1"
-                        {{ old('is_active', true) ? 'checked' : '' }}>
-                    <label class="form-check-label" for="is_active">منتج نشط</label>
-                </div>
-
-                <div class="form-check">
-                    <input type="checkbox" name="is_featured" class="form-check-input" id="is_featured" value="1"
-                        {{ old('is_featured') ? 'checked' : '' }}>
-                    <label class="form-check-label" for="is_featured">منتج مميز</label>
-                </div>
-            </div>
-
-            <button type="submit" class="btn btn-admin-primary w-100 btn-lg">
-                <i class="bi bi-check-lg me-2"></i>حفظ المنتج
-            </button>
-        </div>
         </div>
     </form>
 @endsection
 
 @push('styles')
     <style>
+        /* Product Type Cards */
+        .product-type-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .product-type-card:hover {
+            border-color: rgba(201, 162, 39, 0.5);
+            background: rgba(201, 162, 39, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .product-type-card.active {
+            border-color: var(--admin-primary);
+            background: rgba(201, 162, 39, 0.15);
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
+        }
+
+        .product-type-card .type-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(201, 162, 39, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.5rem;
+            color: var(--admin-primary);
+            transition: all 0.3s ease;
+        }
+
+        .product-type-card.active .type-icon {
+            background: var(--admin-primary);
+            color: #000;
+            transform: scale(1.1);
+        }
+
+        .product-type-card .type-icon-blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .product-type-card.active .type-icon-blue {
+            background: #3b82f6;
+            color: #fff;
+        }
+
+        .product-type-card .type-icon-red {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .product-type-card.active .type-icon-red {
+            background: #ef4444;
+            color: #fff;
+        }
+
+        .product-type-card .type-icon-green {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .product-type-card.active .type-icon-green {
+            background: #10b981;
+            color: #fff;
+        }
+
+        .product-type-card .type-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+
+        .product-type-card .type-desc {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-bottom: 0;
+            line-height: 1.4;
+        }
+
+        /* Selected Options Summary */
+        .selected-options-summary {
+            background: rgba(201, 162, 39, 0.1);
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            border-radius: 8px;
+            padding: 12px 15px;
+        }
+
+        .option-badge {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+        }
+
+        /* Conditional Sections Animation */
+        .conditional-section {
+            animation: fadeSlideIn 0.3s ease;
+        }
+
+        @keyframes fadeSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Image Upload */
         .image-upload-area {
             border: 2px dashed rgba(201, 162, 39, 0.5);
             border-radius: 12px;
@@ -454,12 +681,351 @@
             height: 20px;
             font-size: 10px;
         }
+
+        /* Purple color for matrix */
+        .text-purple {
+            color: #8b5cf6 !important;
+        }
+
+        /* Hide additive price column when matrix is active */
+        .hide-price-column .additive-price-cell,
+        .hide-price-column #additive_price_header {
+            display: none !important;
+        }
+
+        /* Pricing Matrix Styles */
+        #pricing_matrix_table input {
+            width: 80px;
+            margin: 0 auto;
+        }
+
+        #pricing_matrix_table th,
+        #pricing_matrix_table td {
+            vertical-align: middle;
+        }
+
+        /* Alert info style */
+        .alert-info {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
     </style>
 @endpush
 
 @push('scripts')
     <script>
-        // Main image upload
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize cards state from old values
+            initializeProductTypes();
+            // Update all sections based on current state
+            updateAllSections();
+        });
+
+        // Toggle product type
+        function toggleProductType(type) {
+            const card = document.getElementById(`${type}_card`);
+            const checkbox = document.getElementById(type === 'coffee' ? 'is_coffee_product' : `has_${type}_options`);
+            
+            checkbox.checked = !checkbox.checked;
+            card.classList.toggle('active', checkbox.checked);
+            
+            updateAllSections();
+        }
+
+        // Initialize product types from old values
+        function initializeProductTypes() {
+            const types = ['coffee', 'weight', 'roast', 'additive'];
+            types.forEach(type => {
+                const checkbox = document.getElementById(type === 'coffee' ? 'is_coffee_product' : `has_${type}_options`);
+                const card = document.getElementById(`${type}_card`);
+                if (checkbox && checkbox.checked) {
+                    card.classList.add('active');
+                }
+            });
+        }
+
+        // Update all sections based on selected types
+        function updateAllSections() {
+            const isCoffee = document.getElementById('is_coffee_product').checked;
+            const hasWeights = document.getElementById('has_weight_options').checked;
+            const hasRoast = document.getElementById('has_roast_options').checked;
+            const hasAdditives = document.getElementById('has_additive_options').checked;
+
+            // Update badges
+            document.getElementById('badge_coffee').style.display = isCoffee ? 'inline-block' : 'none';
+            document.getElementById('badge_weight').style.display = hasWeights ? 'inline-block' : 'none';
+            document.getElementById('badge_roast').style.display = hasRoast ? 'inline-block' : 'none';
+            document.getElementById('badge_additive').style.display = hasAdditives ? 'inline-block' : 'none';
+
+            // Show/hide summary
+            const hasAnyOption = isCoffee || hasWeights || hasRoast || hasAdditives;
+            document.getElementById('options_summary').style.display = hasAnyOption ? 'block' : 'none';
+
+            // Coffee details section - show only relevant fields
+            const coffeeSection = document.getElementById('coffee_details_section');
+            const defaultWeightField = document.getElementById('default_weight_field');
+            const defaultRoastField = document.getElementById('default_roast_field');
+            
+            // Hide weight field if multiple weights enabled
+            defaultWeightField.style.display = hasWeights ? 'none' : 'block';
+            // Hide roast field if multiple roasts enabled
+            defaultRoastField.style.display = hasRoast ? 'none' : 'block';
+            
+            // Show coffee section only if: is coffee AND at least one field is visible
+            const hasVisibleFields = !hasWeights || !hasRoast;
+            coffeeSection.style.display = (isCoffee && hasVisibleFields) ? 'block' : 'none';
+
+            // Weight section
+            const weightSection = document.getElementById('weight_section');
+            if (hasWeights) {
+                weightSection.style.display = 'block';
+                const tbody = document.getElementById('weight_values_body');
+                if (tbody.children.length === 0) {
+                    addOptionRow('weight');
+                }
+            } else {
+                weightSection.style.display = 'none';
+            }
+
+            // Roast section
+            const roastSection = document.getElementById('roast_section');
+            if (hasRoast) {
+                roastSection.style.display = 'block';
+                const tbody = document.getElementById('roast_values_body');
+                if (tbody.children.length === 0) {
+                    addOptionRow('roast');
+                }
+            } else {
+                roastSection.style.display = 'none';
+            }
+
+            // Additive section
+            const additiveSection = document.getElementById('additive_section');
+            if (hasAdditives) {
+                additiveSection.style.display = 'block';
+                const tbody = document.getElementById('additive_values_body');
+                if (tbody.children.length === 0) {
+                    addOptionRow('additive');
+                }
+            } else {
+                additiveSection.style.display = 'none';
+            }
+
+            // Pricing matrix (when both weights and additives)
+            const matrixSection = document.getElementById('pricing_matrix_section');
+            const additivePriceNotice = document.getElementById('additive_price_notice');
+            const additiveSimpleNotice = document.getElementById('additive_simple_notice');
+            const additiveTable = document.getElementById('additive_table');
+
+            if (hasWeights && hasAdditives) {
+                matrixSection.style.display = 'block';
+                additivePriceNotice.style.display = 'block';
+                additiveSimpleNotice.style.display = 'none';
+                // Hide price column in additive table
+                additiveTable.classList.add('hide-price-column');
+                updatePricingMatrix();
+            } else {
+                matrixSection.style.display = 'none';
+                additivePriceNotice.style.display = 'none';
+                additiveSimpleNotice.style.display = 'block';
+                additiveTable.classList.remove('hide-price-column');
+            }
+        }
+
+        // Option row counters
+        const optionCounters = {
+            weight: {{ old('weight_values') ? count(old('weight_values')) : 0 }},
+            roast: {{ old('roast_values') ? count(old('roast_values')) : 0 }},
+            additive: {{ old('additive_values') ? count(old('additive_values')) : 0 }}
+        };
+
+        // Add new option row
+        function addOptionRow(type) {
+            const tbody = document.getElementById(`${type}_values_body`);
+            const index = optionCounters[type]++;
+
+            const placeholders = {
+                weight: 'مثال: 125 جم',
+                roast: 'مثال: فاتح',
+                additive: 'مثال: بالهيل'
+            };
+
+            const isFirstRow = tbody.children.length === 0;
+            const hasWeights = document.getElementById('has_weight_options').checked;
+
+            let priceCellContent = '';
+            if (type === 'additive' && hasWeights) {
+                priceCellContent = `<span class="text-muted small">حسب المصفوفة</span>
+                    <input type="hidden" name="additive_values[${index}][price_modifier]" value="0">`;
+            } else {
+                const priceRequired = type === 'weight' ? 'required' : '';
+                const priceValue = type === 'weight' ? '' : '0';
+                priceCellContent = `<input type="number" name="${type}_values[${index}][price_modifier]"
+                    class="form-control form-control-sm" value="${priceValue}" step="0.01" ${priceRequired}>`;
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="text" name="${type}_values[${index}][value]"
+                    class="form-control form-control-sm" placeholder="${placeholders[type]}" required></td>
+                <td class="additive-price-cell">${priceCellContent}</td>
+                <td class="text-center">
+                    <input type="radio" name="${type}_default" value="${index}" 
+                        class="form-check-input" ${isFirstRow ? 'checked' : ''}
+                        onchange="setDefaultValue('${type}', ${index})">
+                    <input type="hidden" name="${type}_values[${index}][is_default]" 
+                        value="${isFirstRow ? '1' : '0'}" class="is-default-hidden">
+                </td>
+                <td>
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionRow(this)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+
+            // Update matrix if applicable
+            if (type === 'weight' || type === 'additive') {
+                updatePricingMatrix();
+            }
+        }
+
+        // Remove option row
+        function removeOptionRow(button) {
+            const row = button.closest('tr');
+            const tbody = row.closest('tbody');
+            const type = tbody.id.replace('_values_body', '');
+
+            row.remove();
+
+            // Re-index remaining rows
+            reindexOptionRows(type);
+
+            // Ensure at least one default is set
+            const radios = tbody.querySelectorAll('input[type="radio"]');
+            const hasChecked = Array.from(radios).some(r => r.checked);
+            if (!hasChecked && radios.length > 0) {
+                radios[0].checked = true;
+                const hiddenInput = radios[0].closest('td').querySelector('.is-default-hidden');
+                if (hiddenInput) hiddenInput.value = '1';
+            }
+
+            // Update matrix if applicable
+            if (type === 'weight' || type === 'additive') {
+                updatePricingMatrix();
+            }
+        }
+
+        // Set default value
+        function setDefaultValue(type, selectedIndex) {
+            const tbody = document.getElementById(`${type}_values_body`);
+            
+            // Reset all
+            tbody.querySelectorAll('.is-default-hidden').forEach(input => {
+                input.value = '0';
+            });
+
+            // Set selected
+            const selectedRadio = tbody.querySelector(`input[type="radio"][value="${selectedIndex}"]`);
+            if (selectedRadio) {
+                const hiddenInput = selectedRadio.closest('td').querySelector('.is-default-hidden');
+                if (hiddenInput) hiddenInput.value = '1';
+            }
+        }
+
+        // Re-index option rows
+        function reindexOptionRows(type) {
+            const tbody = document.getElementById(`${type}_values_body`);
+            const rows = tbody.querySelectorAll('tr');
+
+            rows.forEach((row, index) => {
+                row.querySelectorAll('input').forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name) {
+                        input.setAttribute('name', name.replace(/\[\d+\]/, `[${index}]`));
+                    }
+                    if (input.type === 'radio') {
+                        input.value = index;
+                        input.setAttribute('onchange', `setDefaultValue('${type}', ${index})`);
+                    }
+                });
+            });
+
+            optionCounters[type] = rows.length;
+        }
+
+        // Update pricing matrix
+        function updatePricingMatrix() {
+            const hasWeights = document.getElementById('has_weight_options').checked;
+            const hasAdditives = document.getElementById('has_additive_options').checked;
+            
+            if (!hasWeights || !hasAdditives) return;
+
+            const weights = getOptionValues('weight');
+            const additives = getOptionValues('additive');
+
+            if (weights.length === 0 || additives.length === 0) return;
+
+            // Build header
+            let headerHtml = '<tr><th class="text-end" style="min-width: 150px;">الإضافة \\ الوزن</th>';
+            weights.forEach((weight, wIdx) => {
+                headerHtml += `<th style="min-width: 100px;">${weight.name || 'الوزن ' + (wIdx + 1)}</th>`;
+            });
+            headerHtml += '</tr>';
+            document.getElementById('pricing_matrix_head').innerHTML = headerHtml;
+
+            // Build body
+            let bodyHtml = '';
+            additives.forEach((additive, aIdx) => {
+                bodyHtml += `<tr><td class="text-end fw-bold">${additive.name || 'الإضافة ' + (aIdx + 1)}</td>`;
+                weights.forEach((weight, wIdx) => {
+                    const inputName = `additive_weight_prices[${aIdx}][${wIdx}]`;
+                    const existingValue = getExistingMatrixValue(aIdx, wIdx);
+                    bodyHtml += `<td>
+                        <input type="number" name="${inputName}" 
+                            class="form-control form-control-sm text-center" 
+                            value="${existingValue}" step="0.01" placeholder="0">
+                    </td>`;
+                });
+                bodyHtml += '</tr>';
+            });
+            document.getElementById('pricing_matrix_body').innerHTML = bodyHtml;
+        }
+
+        // Get option values
+        function getOptionValues(type) {
+            const tbody = document.getElementById(`${type}_values_body`);
+            const rows = tbody.querySelectorAll('tr');
+            const values = [];
+
+            rows.forEach((row, index) => {
+                const nameInput = row.querySelector('input[type="text"]');
+                values.push({
+                    index: index,
+                    name: nameInput ? nameInput.value : ''
+                });
+            });
+
+            return values;
+        }
+
+        // Get existing matrix value
+        function getExistingMatrixValue(additiveIdx, weightIdx) {
+            const input = document.querySelector(`input[name="additive_weight_prices[${additiveIdx}][${weightIdx}]"]`);
+            return input ? input.value : '0';
+        }
+
+        // Listen for changes to update matrix labels
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('#weight_values_body input[type="text"], #additive_values_body input[type="text"]')) {
+                updatePricingMatrix();
+            }
+        });
+
+        // ====== Image Upload ======
         const imageInput = document.getElementById('imageInput');
         const mainImagePreview = document.getElementById('mainImagePreview');
         const previewImg = document.getElementById('previewImg');
@@ -478,15 +1044,13 @@
             }
         });
 
-        // Drag and drop for main image
+        // Drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            mainImageUpload.addEventListener(eventName, preventDefaults, false);
+            mainImageUpload.addEventListener(eventName, e => {
+                e.preventDefault();
+                e.stopPropagation();
+            }, false);
         });
-
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
 
         ['dragenter', 'dragover'].forEach(eventName => {
             mainImageUpload.addEventListener(eventName, () => mainImageUpload.classList.add('dragover'), false);
@@ -497,8 +1061,7 @@
         });
 
         mainImageUpload.addEventListener('drop', function(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
+            const files = e.dataTransfer.files;
             if (files.length) {
                 imageInput.files = files;
                 imageInput.dispatchEvent(new Event('change'));
@@ -524,9 +1087,7 @@
                     reader.onload = function(e) {
                         const div = document.createElement('div');
                         div.className = 'gallery-item';
-                        div.innerHTML = `
-                        <img src="${e.target.result}" alt="Gallery ${index + 1}">
-                    `;
+                        div.innerHTML = `<img src="${e.target.result}" alt="Gallery ${index + 1}">`;
                         galleryPreview.appendChild(div);
                     };
                     reader.readAsDataURL(file);
@@ -534,275 +1095,11 @@
             }
         });
 
-        // ====== Product Options Management ======
-
-        // Option row counters
-        const optionCounters = {
-            weight: 0,
-            roast: 0,
-            additive: 0
-        };
-
-        // Toggle option section visibility
-        function toggleOptionSection(type) {
-            const container = document.getElementById(`${type}_options_container`);
-            const checkbox = document.getElementById(`has_${type}_options`);
-
-            if (checkbox.checked) {
-                container.style.display = 'block';
-                // Add first row if empty
-                const tbody = document.getElementById(`${type}_values_body`);
-                if (tbody.children.length === 0) {
-                    addOptionRow(type);
-                }
-            } else {
-                container.style.display = 'none';
-            }
-        }
-
-        // Add new option row
-        function addOptionRow(type) {
-            const tbody = document.getElementById(`${type}_values_body`);
-            const index = optionCounters[type]++;
-
-            const placeholders = {
-                weight: {
-                    ar: 'مثال: 125 جم'
-                },
-                roast: {
-                    ar: 'مثال: فاتح'
-                },
-                additive: {
-                    ar: 'مثال: بالهيل'
-                }
-            };
-
-            // Weight uses full price, others use modifier
-            const priceLabel = type === 'weight' ? '' : '0'; // Weight has no default, modifiers default to 0
-            const pricePlaceholder = type === 'weight' ? 'السعر الكامل' : 'فرق السعر';
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><input type="text" name="${type}_values[${index}][value]" class="form-control form-control-sm" placeholder="${placeholders[type].ar}" required></td>
-                <td><input type="number" name="${type}_values[${index}][price_modifier]" class="form-control form-control-sm" value="${priceLabel}" step="0.01" placeholder="${pricePlaceholder}" ${type === 'weight' ? 'required' : ''}></td>
-                <td class="text-center">
-                    <input type="radio" name="${type}_default" value="${index}" class="form-check-input" onchange="setDefaultValue('${type}', ${index})">
-                    <input type="hidden" name="${type}_values[${index}][is_default]" value="0" class="is-default-hidden">
-                </td>
-                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="removeOptionRow(this)"><i class="bi bi-trash"></i></button></td>
-            `;
-
-            tbody.appendChild(row);
-
-            // If this is the first row, set it as default
-            if (tbody.children.length === 1) {
-                const radio = row.querySelector('input[type="radio"]');
-                radio.checked = true;
-                setDefaultValue(type, index);
-            }
-
-            // Re-index all rows
-            reindexOptionRows(type);
-        }
-
-        // Remove option row
-        function removeOptionRow(button) {
-            const row = button.closest('tr');
-            const tbody = row.closest('tbody');
-            const type = tbody.id.replace('_values_body', '');
-
-            row.remove();
-
-            // Re-index remaining rows
-            reindexOptionRows(type);
-
-            // Ensure at least one default is set
-            const radios = tbody.querySelectorAll('input[type="radio"]');
-            const hasChecked = Array.from(radios).some(r => r.checked);
-            if (!hasChecked && radios.length > 0) {
-                radios[0].checked = true;
-                const hiddenInput = radios[0].closest('td').querySelector('.is-default-hidden');
-                if (hiddenInput) hiddenInput.value = '1';
-            }
-        }
-
-        // Set default value
-        function setDefaultValue(type, selectedIndex) {
-            const tbody = document.getElementById(`${type}_values_body`);
-            const rows = tbody.querySelectorAll('tr');
-
-            rows.forEach((row, idx) => {
-                const hiddenInput = row.querySelector('.is-default-hidden');
-                if (hiddenInput) {
-                    hiddenInput.value = '0';
-                }
-            });
-
-            // Set the selected one as default
-            const radios = tbody.querySelectorAll('input[type="radio"]');
-            radios.forEach(radio => {
-                const hiddenInput = radio.closest('td').querySelector('.is-default-hidden');
-                if (radio.checked && hiddenInput) {
-                    hiddenInput.value = '1';
-                }
-            });
-        }
-
-        // Re-index option rows after add/remove
-        function reindexOptionRows(type) {
-            const tbody = document.getElementById(`${type}_values_body`);
-            const rows = tbody.querySelectorAll('tr');
-
-            rows.forEach((row, index) => {
-                const inputs = row.querySelectorAll('input');
-                inputs.forEach(input => {
-                    const name = input.getAttribute('name');
-                    if (name) {
-                        const newName = name.replace(/\[\d+\]/, `[${index}]`);
-                        input.setAttribute('name', newName);
-                    }
-
-                    // Update radio value
-                    if (input.type === 'radio') {
-                        input.value = index;
-                        input.setAttribute('onchange', `setDefaultValue('${type}', ${index})`);
-                    }
-                });
-            });
-
-            optionCounters[type] = rows.length;
-
-            // Update pricing matrix when weight or additive changes
-            if (type === 'weight' || type === 'additive') {
-                updatePricingMatrix();
-            }
-        }
-
-        // ====== Pricing Matrix Management ======
-
-        // Check if pricing matrix should be visible
-        function shouldShowMatrix() {
-            const hasWeights = document.getElementById('has_weight_options').checked;
-            const hasAdditives = document.getElementById('has_additive_options').checked;
-            const weightRows = document.getElementById('weight_values_body').querySelectorAll('tr');
-            const additiveRows = document.getElementById('additive_values_body').querySelectorAll('tr');
-
-            return hasWeights && hasAdditives && weightRows.length > 0 && additiveRows.length > 0;
-        }
-
-        // Update pricing matrix visibility and content
-        function updatePricingMatrix() {
-            const matrixSection = document.getElementById('pricing_matrix_section');
-
-            if (shouldShowMatrix()) {
-                matrixSection.style.display = 'block';
-                rebuildMatrix();
-            } else {
-                matrixSection.style.display = 'none';
-            }
-        }
-
-        // Rebuild the matrix table
-        function rebuildMatrix() {
-            const thead = document.getElementById('pricing_matrix_head');
-            const tbody = document.getElementById('pricing_matrix_body');
-
-            // Get current weights and additives
-            const weights = getOptionValues('weight');
-            const additives = getOptionValues('additive');
-
-            // Build header row
-            let headerHtml = '<tr><th class="text-end" style="min-width: 120px;">الإضافة \\ الوزن</th>';
-            weights.forEach((weight, wIdx) => {
-                headerHtml += `<th style="min-width: 100px;">${weight.name || 'الوزن ' + (wIdx + 1)}</th>`;
-            });
-            headerHtml += '</tr>';
-            thead.innerHTML = headerHtml;
-
-            // Build body rows
-            let bodyHtml = '';
-            additives.forEach((additive, aIdx) => {
-                bodyHtml += `<tr>
-                    <td class="text-end fw-bold">${additive.name || 'الإضافة ' + (aIdx + 1)}</td>`;
-
-                weights.forEach((weight, wIdx) => {
-                    const inputName = `additive_weight_prices[${aIdx}][${wIdx}]`;
-                    const existingValue = getExistingMatrixValue(aIdx, wIdx);
-                    bodyHtml += `
-                        <td>
-                            <input type="number" name="${inputName}" 
-                                class="form-control form-control-sm text-center" 
-                                value="${existingValue}" 
-                                step="0.01" 
-                                placeholder="0"
-                                style="width: 80px; margin: 0 auto;">
-                        </td>`;
-                });
-
-                bodyHtml += '</tr>';
-            });
-            tbody.innerHTML = bodyHtml;
-        }
-
-        // Get option values from a table
-        function getOptionValues(type) {
-            const tbody = document.getElementById(`${type}_values_body`);
-            const rows = tbody.querySelectorAll('tr');
-            const values = [];
-
-            rows.forEach((row, index) => {
-                const nameInput = row.querySelector('input[type="text"]');
-                values.push({
-                    index: index,
-                    name: nameInput ? nameInput.value : ''
-                });
-            });
-
-            return values;
-        }
-
-        // Get existing matrix value (for preservation during rebuild)
-        function getExistingMatrixValue(additiveIdx, weightIdx) {
-            const input = document.querySelector(`input[name="additive_weight_prices[${additiveIdx}][${weightIdx}]"]`);
-            return input ? input.value : '0';
-        }
-
-        // Listen for changes in option values
-        document.addEventListener('input', function(e) {
-            if (e.target.matches(
-                    '#weight_values_body input[type="text"], #additive_values_body input[type="text"]')) {
-                updatePricingMatrix();
-            }
-        });
-
-        // Override toggleOptionSection to also update matrix
-        const originalToggleOptionSection = toggleOptionSection;
-
-        function toggleOptionSectionWithMatrix(type) {
-            const container = document.getElementById(`${type}_options_container`);
-            const checkbox = document.getElementById(`has_${type}_options`);
-
-            if (checkbox.checked) {
-                container.style.display = 'block';
-                // Add first row if empty
-                const tbody = document.getElementById(`${type}_values_body`);
-                if (tbody.children.length === 0) {
-                    addOptionRow(type);
-                }
-            } else {
-                container.style.display = 'none';
-            }
-
-            // Update matrix visibility
-            updatePricingMatrix();
-        }
-        toggleOptionSection = toggleOptionSectionWithMatrix;
-
         // Make functions global
-        window.toggleOptionSection = toggleOptionSectionWithMatrix;
+        window.toggleProductType = toggleProductType;
         window.addOptionRow = addOptionRow;
         window.removeOptionRow = removeOptionRow;
         window.setDefaultValue = setDefaultValue;
-        window.updatePricingMatrix = updatePricingMatrix;
+        window.removeMainImage = removeMainImage;
     </script>
 @endpush
