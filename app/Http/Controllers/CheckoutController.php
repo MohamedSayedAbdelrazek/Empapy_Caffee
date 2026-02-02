@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Services\FirebaseNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
@@ -126,10 +127,10 @@ class CheckoutController extends Controller
                     $shippingFee = $zone->fee;
                 } else {
                     // Fallback to default if zone not found active
-                    $shippingFee = \App\Models\Setting::get('shipping_fee', 50);
+                    $shippingFee = \App\Models\Setting::get('shipping_fee', 0);
                 }
             } else {
-                $shippingFee = \App\Models\Setting::get('shipping_fee', 50);
+                $shippingFee = \App\Models\Setting::get('shipping_fee', 0);
             }
 
             // Apply free shipping rule logic
@@ -283,7 +284,8 @@ class CheckoutController extends Controller
             DB::commit();
 
             return redirect()->route('checkout.success', $order)
-                ->with('success', 'تم إنشاء طلبك بنجاح!');
+                ->with('success', 'تم إنشاء طلبك بنجاح!')
+                ->with('celebrate', true);
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'حدث خطأ أثناء معالجة الطلب. يرجى المحاولة مرة أخرى.');
@@ -312,7 +314,7 @@ class CheckoutController extends Controller
         ]);
 
         $zone = \App\Models\ShippingZone::where('name', $request->governorate)->active()->first();
-        $fee = $zone ? $zone->fee : \App\Models\Setting::get('shipping_fee', 50);
+        $fee = $zone ? $zone->fee : \App\Models\Setting::get('shipping_fee', 0);
         $freeThreshold = \App\Models\Setting::get('shipping_free_threshold', 500);
 
         // Required subtotal from cart session if not passed

@@ -255,6 +255,24 @@
         </section>
     @endif
 
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CoffeeShop",
+      "name": "Empapy Caffe",
+      "image": "{{ asset('images/logo.png') }}",
+      "priceRange": "$$",
+      "description": "استمتع بتجربة قهوة استثنائية مع أجود أنواع البن المحمص بعناية.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Cairo",
+        "addressCountry": "EG"
+      },
+      "url": "{{ url('/') }}",
+      "telephone": "+201000000000"
+    }
+    </script>
 @endsection
 
 @push('styles')
@@ -421,8 +439,8 @@
         }
 
         /* =========================================
-                                                                   CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                                                   ========================================= */
+                                                                       CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                                                       ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;

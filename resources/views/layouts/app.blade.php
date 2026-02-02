@@ -10,7 +10,7 @@
     <script>
         // ✅ Service Worker Registration for PWA
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function () {
+            window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js')
                     .then(reg => console.log('✅ SW registered:', reg.scope))
                     .catch(err => console.log('❌ SW registration failed:', err));
@@ -32,7 +32,7 @@
 
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="{{ asset('manifest.json') }}">
-    <meta name="theme-color" content="#2C1810">
+    <meta name="theme-color" content="#C9A227">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="إمبابي كافيه">
@@ -47,8 +47,7 @@
     <link rel="apple-touch-icon" sizes="256x256" href="{{ asset('icons/ios/256.png') }}">
 
     <!-- SEO Meta Tags -->
-    <meta name="description"
-        content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
+    <meta name="description" content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
     <meta name="keywords" content="قهوة, كافيه, قهوة فاخرة, بن, إمبابي, espresso, coffee">
     <meta name="author" content="Empapy Caffe">
 
@@ -216,7 +215,7 @@
             return div.innerHTML;
         }
 
-        window.handleFirebaseMessage = function (payload) {
+        window.handleFirebaseMessage = function(payload) {
             console.log('[User Layout] Received Firebase Message:', payload);
             const {
                 notification,
@@ -304,6 +303,50 @@
     <script src="{{ asset('js/firebase-notifications.js') }}"></script>
 
     @stack('scripts')
+    <!-- Confetti Effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            @if (session('celebrate'))
+                var duration = 3 * 1000;
+                var animationEnd = Date.now() + duration;
+                var defaults = {
+                    startVelocity: 30,
+                    spread: 360,
+                    ticks: 60,
+                    zIndex: 9999
+                };
+
+                function random(min, max) {
+                    return Math.random() * (max - min) + min;
+                }
+
+                var interval = setInterval(function() {
+                    var timeLeft = animationEnd - Date.now();
+
+                    if (timeLeft <= 0) {
+                        return clearInterval(interval);
+                    }
+
+                    var particleCount = 50 * (timeLeft / duration);
+                    confetti(Object.assign({}, defaults, {
+                        particleCount,
+                        origin: {
+                            x: random(0.1, 0.3),
+                            y: Math.random() - 0.2
+                        }
+                    }));
+                    confetti(Object.assign({}, defaults, {
+                        particleCount,
+                        origin: {
+                            x: random(0.7, 0.9),
+                            y: Math.random() - 0.2
+                        }
+                    }));
+                }, 250);
+            @endif
+        });
+    </script>
 </body>
 
 </html>
