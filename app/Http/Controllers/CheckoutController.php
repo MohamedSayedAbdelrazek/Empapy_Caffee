@@ -201,14 +201,13 @@ class CheckoutController extends Controller
                     if ($coupon && $coupon->isValid()) {
                         $discount = $coupon->calculateDiscount($subtotal);
                         $couponCode = $coupon->code;
-
-                        // Increment usage count
-                        $coupon->incrementUsage();
+                        // Note: incrementUsage() will be called after order creation to avoid race condition
                     }
                 }
             }
 
-            $total = $subtotal + $shipping - $discount;
+            // Ensure total is never negative
+            $total = max(0, $subtotal + $shipping - $discount);
 
             // Create order
             $order = Order::create([
@@ -274,6 +273,11 @@ class CheckoutController extends Controller
             // Mark reward redemption as applied
             if ($redemption) {
                 $redemption->applyToOrder($order);
+            }
+
+            // Increment coupon usage AFTER order is successfully created (inside transaction)
+            if (isset($coupon) && $coupon) {
+                $coupon->incrementUsage();
             }
 
             DB::commit();
