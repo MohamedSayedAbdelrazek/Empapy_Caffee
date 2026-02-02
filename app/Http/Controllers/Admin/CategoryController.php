@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Artisan;
 
 class CategoryController extends Controller
 {
@@ -50,6 +51,9 @@ class CategoryController extends Controller
         }
 
         Category::create($validated);
+
+        // Clear cache automatically so changes appear immediately
+        Artisan::call('optimize:clear');
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'تم إضافة الفئة بنجاح');
@@ -104,6 +108,9 @@ class CategoryController extends Controller
 
         $category->update($validated);
 
+        // Clear cache automatically so changes appear immediately
+        Artisan::call('optimize:clear');
+
         return redirect()->route('admin.categories.index')
             ->with('success', 'تم تحديث الفئة بنجاح');
     }
@@ -118,6 +125,9 @@ class CategoryController extends Controller
         }
 
         $category->delete();
+
+        // Clear cache automatically so changes appear immediately
+        Artisan::call('optimize:clear');
 
         return redirect()->route('admin.categories.index')
             ->with('success', 'تم حذف الفئة بنجاح');

@@ -421,8 +421,8 @@
         }
 
         /* =========================================
-                                                               CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                                               ========================================= */
+                                                                   CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                                                   ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
