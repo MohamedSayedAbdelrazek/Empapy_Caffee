@@ -65,7 +65,8 @@
                                 class="reward-card {{ $reward->is_featured ? 'featured' : '' }} {{ $loyalty->available_points < $reward->points_required ? 'locked' : '' }}">
                                 <div class="reward-card-image">
                                     @if ($reward->image)
-                                        <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name }}" class="img-fluid">
+                                        <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name }}"
+                                            class="img-fluid">
                                     @else
                                         <span>{{ $reward->icon }}</span>
                                     @endif
@@ -120,7 +121,14 @@
                                     <span class="fs-4 me-3">{{ $redemption->reward->icon ?? '🎁' }}</span>
                                     <div>
                                         <h6 class="mb-0">{{ $redemption->reward->name }}</h6>
-                                        <small class="text-muted">كود: {{ $redemption->redemption_code }}</small>
+                                        <div class="d-flex align-items-center gap-2 mt-1">
+                                            <code class="bg-dark text-warning px-2 py-1 rounded"
+                                                style="font-size: 0.85rem;">{{ $redemption->redemption_code }}</code>
+                                            <button type="button" class="btn btn-sm btn-outline-success copy-code-btn"
+                                                data-code="{{ $redemption->redemption_code }}" title="نسخ الكود">
+                                                <i class="bi bi-clipboard"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                                 @if ($redemption->expires_at)
@@ -157,7 +165,8 @@
                                             </span>
                                             <p class="mb-0">{{ $transaction->description }}</p>
                                         </div>
-                                        <small class="transaction-meta">{{ $transaction->created_at->diffForHumans() }}</small>
+                                        <small
+                                            class="transaction-meta">{{ $transaction->created_at->diffForHumans() }}</small>
                                     </div>
                                 </div>
                             @endforeach
@@ -227,7 +236,7 @@
         <!-- Success Toast with Confetti -->
         <div class="confetti-container" id="confettiContainer"></div>
         <script>
-            document.addEventListener('DOMContentLoaded', function () {
+            document.addEventListener('DOMContentLoaded', function() {
                 // Show confetti
                 const colors = ['#FFD700', '#C9A227', '#8B4513', '#2ECC71', '#3498DB'];
                 const container = document.getElementById('confettiContainer');
@@ -249,3 +258,50 @@
         </script>
     @endif
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.copy-code-btn').forEach(btn => {
+                btn.addEventListener('click', async function() {
+                    const code = this.dataset.code;
+                    const icon = this.querySelector('i');
+
+                    try {
+                        await navigator.clipboard.writeText(code);
+
+                        // Visual feedback
+                        icon.className = 'bi bi-clipboard-check';
+                        this.classList.remove('btn-outline-success');
+                        this.classList.add('btn-success');
+
+                        // Show toast
+                        if (window.Toast) {
+                            window.Toast.success('تم النسخ!', 'تم نسخ الكود بنجاح');
+                        }
+
+                        // Reset after 2 seconds
+                        setTimeout(() => {
+                            icon.className = 'bi bi-clipboard';
+                            this.classList.remove('btn-success');
+                            this.classList.add('btn-outline-success');
+                        }, 2000);
+
+                    } catch (err) {
+                        // Fallback for older browsers
+                        const textArea = document.createElement('textarea');
+                        textArea.value = code;
+                        document.body.appendChild(textArea);
+                        textArea.select();
+                        document.execCommand('copy');
+                        document.body.removeChild(textArea);
+
+                        if (window.Toast) {
+                            window.Toast.success('تم النسخ!', 'تم نسخ الكود بنجاح');
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+@endpush
