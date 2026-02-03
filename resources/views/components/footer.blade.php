@@ -147,7 +147,7 @@
     <style>
         /* Creative Map Section Styling */
         .footer-map-section {
-            padding: 3rem 0 2rem;
+            padding: 2rem 0 1.5rem;
             background: linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.1) 100%);
         }
 
@@ -193,7 +193,7 @@
         }
 
         .compact-map-container {
-            height: 280px;
+            height: 220px;
             position: relative;
             overflow: hidden;
         }
@@ -245,7 +245,7 @@
             }
 
             .compact-map-container {
-                height: 250px;
+                height: 200px;
             }
 
             .map-header-compact {

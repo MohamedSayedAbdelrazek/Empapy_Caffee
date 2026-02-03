@@ -392,6 +392,14 @@
                         </button>
                     </div>
 
+                    {{-- Buy Now Button --}}
+                    <div class="mt-3">
+                        <a href="{{ route('checkout.index') }}" class="btn btn-outline-golden btn-lg w-100 buy-now-btn">
+                            <i class="bi bi-lightning-charge-fill me-2"></i>
+                            اشتر الآن
+                        </a>
+                    </div>
+
                     <!-- Wishlist Button -->
                     @auth
                         <div class="mt-3">

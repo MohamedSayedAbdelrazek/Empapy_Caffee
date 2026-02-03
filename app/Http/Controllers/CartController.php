@@ -120,11 +120,13 @@ class CartController extends Controller
     public function getCart()
     {
         $cartData = $this->cartService->getCartWithProducts();
+        $freeShippingThreshold = \App\Models\Setting::get('shipping_free_threshold', 500);
 
         return response()->json([
             'cartCount' => $cartData['count'],
             'cartTotal' => $cartData['total'],
-            'items' => $cartData['items']
+            'items' => $cartData['items'],
+            'freeShippingThreshold' => (float) $freeShippingThreshold
         ]);
     }
 }

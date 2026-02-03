@@ -348,17 +348,25 @@
             }
 
             function updateCartDisplay(cartData) {
-                // Update each item's subtotal
+                // Update each item's quantity and subtotal
                 cartData.items.forEach(item => {
-                    const row = document.querySelector(`[data-key="${item.key}"]`);
-                    if (row) {
-                        const subtotal = row.querySelector('.item-subtotal');
-                        if (subtotal) {
+                    const rows = document.querySelectorAll(`[data-key="${item.key}"]`);
+                    rows.forEach(row => {
+                        // Update subtotal
+                        const subtotals = row.querySelectorAll('.item-subtotal');
+                        subtotals.forEach(subtotal => {
                             subtotal.classList.add('cart-total-updating');
                             subtotal.textContent = formatNumber(item.subtotal) + ' ج.م';
-                            setTimeout(() => subtotal.classList.remove('cart-total-updating'), 300);
-                        }
-                    }
+                            setTimeout(() => subtotal.classList.remove(
+                                'cart-total-updating'), 300);
+                        });
+
+                        // Update quantity display in both mobile and desktop views
+                        const qtyDisplays = row.querySelectorAll('.qty-display');
+                        qtyDisplays.forEach(qtyDisplay => {
+                            qtyDisplay.textContent = item.quantity;
+                        });
+                    });
                 });
 
                 // Update cart subtotal

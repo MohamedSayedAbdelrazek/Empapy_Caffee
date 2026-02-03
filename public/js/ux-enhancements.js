@@ -149,13 +149,23 @@
         }
 
         cart(title, message, options = {}) {
-            return this.show({
+            const toast = this.show({
                 type: 'cart',
                 title,
-                message,
-                duration: 3000, // مدة أقصر بدون زر إضافي
+                message: message + '<div style="font-size:0.75rem;opacity:0.8;margin-top:4px;">اضغط لعرض السلة ←</div>',
+                duration: 3000,
                 ...options
             });
+            // Make cart toast clickable - navigates to cart page
+            if (toast) {
+                toast.style.cursor = 'pointer';
+                toast.addEventListener('click', (e) => {
+                    if (!e.target.closest('.toast-close')) {
+                        window.location.href = '/cart';
+                    }
+                });
+            }
+            return toast;
         }
 
         playSound(type) {
@@ -794,23 +804,34 @@
     // ========================================
 
     function createConfetti() {
-        const container = document.createElement('div');
-        container.className = 'confetti';
-        document.body.appendChild(container);
+        // Use canvas-confetti library for smoother performance
+        if (typeof confetti !== 'undefined') {
+            confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#C9A227', '#E8C547', '#A88B1F', '#FFD700', '#22C55E']
+            });
+        } else {
+            // Fallback to simple animation if library not loaded
+            const container = document.createElement('div');
+            container.className = 'confetti';
+            document.body.appendChild(container);
 
-        const colors = ['#C9A227', '#E8C547', '#22C55E', '#3B82F6', '#F59E0B'];
+            const colors = ['#C9A227', '#E8C547', '#22C55E', '#3B82F6', '#F59E0B'];
 
-        for (let i = 0; i < 50; i++) {
-            const confetti = document.createElement('div');
-            confetti.className = 'confetti-piece';
-            confetti.style.left = `${Math.random() * 100}vw`;
-            confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-            confetti.style.animationDelay = `${Math.random() * 2}s`;
-            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-            container.appendChild(confetti);
+            for (let i = 0; i < 50; i++) {
+                const confettiPiece = document.createElement('div');
+                confettiPiece.className = 'confetti-piece';
+                confettiPiece.style.left = `${Math.random() * 100}vw`;
+                confettiPiece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confettiPiece.style.animationDelay = `${Math.random() * 2}s`;
+                confettiPiece.style.transform = `rotate(${Math.random() * 360}deg)`;
+                container.appendChild(confettiPiece);
+            }
+
+            setTimeout(() => container.remove(), 3500);
         }
-
-        setTimeout(() => container.remove(), 3500);
     }
 
     // ========================================

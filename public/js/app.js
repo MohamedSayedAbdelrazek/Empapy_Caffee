@@ -218,27 +218,64 @@ function loadCartItems() {
                 // Build cart items HTML - SECURITY: All user content escaped
                 let html = '';
                 data.items.forEach(item => {
+                    const qty = parseInt(item.quantity) || 1;
                     html += `
-                    <div class="cart-item d-flex gap-3 mb-3 pb-3 border-bottom">
+                    <div class="cart-item d-flex gap-3 mb-3 pb-3 border-bottom" data-key="${escapeHtml(item.key)}">
                         <img src="${escapeHtml(item.image)}" alt="${escapeHtml(item.name_ar)}" class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                         <div class="flex-grow-1">
-                            <h6 class="mb-1 small text-body">${escapeHtml(item.name_ar)}</h6>
+                            <h6 class="mb-1 small text-white">${escapeHtml(item.name_ar)}</h6>
                             ${item.options && item.options.length > 0
                             ? `<div class="mb-1">
                                         ${item.options.map(opt => `<span class="badge bg-secondary" style="font-size: 0.65rem;">${escapeHtml(opt.label)}: ${escapeHtml(opt.value)}</span>`).join(' ')}
                                     </div>`
                             : ''
                         }
-                            <small class="text-muted">الكمية: ${parseInt(item.quantity) || 0}</small>
-                            <div class="text-warning fw-bold">${(parseFloat(item.subtotal) || 0).toLocaleString()} ج.م</div>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <div class="qty-controls d-flex align-items-center" style="background: rgba(255,255,255,0.1); border-radius: 6px; padding: 2px;">
+                                    <button class="btn btn-sm text-white px-2 py-0" onclick="updateCartDrawerQty('${escapeHtml(item.key)}', ${qty - 1})" ${qty <= 1 ? 'disabled' : ''}>
+                                        <i class="bi bi-dash"></i>
+                                    </button>
+                                    <span class="drawer-qty-display px-2 text-white" style="min-width: 24px; text-align: center;">${qty}</span>
+                                    <button class="btn btn-sm text-white px-2 py-0" onclick="updateCartDrawerQty('${escapeHtml(item.key)}', ${qty + 1})" ${qty >= 10 ? 'disabled' : ''}>
+                                        <i class="bi bi-plus"></i>
+                                    </button>
+                                </div>
+                                <span class="text-warning fw-bold drawer-item-subtotal">${(parseFloat(item.subtotal) || 0).toLocaleString()} ج.م</span>
+                            </div>
                         </div>
-                        <button class="btn btn-sm btn-outline-danger" onclick="removeFromCartDrawer('${escapeHtml(item.key)}')">
+                        <button class="btn btn-sm btn-outline-danger align-self-start" onclick="removeFromCartDrawer('${escapeHtml(item.key)}')">
                             <i class="bi bi-trash"></i>
                         </button>
                     </div>
                 `;
                 });
-                cartBody.innerHTML = html;
+
+                // Add free shipping progress bar (uses dynamic threshold from database)
+                const shippingThreshold = parseFloat(data.freeShippingThreshold) || 500;
+                const cartTotal = parseFloat(data.cartTotal) || 0;
+                const remaining = Math.max(0, shippingThreshold - cartTotal);
+                const progress = Math.min(100, (cartTotal / shippingThreshold) * 100);
+
+                let progressHTML = '';
+                if (remaining > 0) {
+                    progressHTML = `
+                    <div class="shipping-progress mb-3" style="background: rgba(255,255,255,0.1); border-radius: 12px; padding: 12px; margin-top: 20px;">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-white"><i class="bi bi-truck"></i> شحن مجاني</small>
+                            <small class="text-warning fw-bold">${remaining.toLocaleString()} ج.م متبقية</small>
+                        </div>
+                        <div class="progress" style="height: 6px; border-radius: 3px;">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: ${progress}%"></div>
+                        </div>
+                    </div>`;
+                } else {
+                    progressHTML = `
+                    <div class="shipping-progress mb-3 text-center" style="background: rgba(34, 197, 94, 0.15); border-radius: 12px; padding: 12px; margin-top: 20px;">
+                        <small class="text-white"><i class="bi bi-check-circle-fill text-success"></i> استمتع بالشحن المجاني!</small>
+                    </div>`;
+                }
+
+                cartBody.innerHTML = html + progressHTML;
 
                 // Show footer and update total
                 if (cartFooter) cartFooter.style.display = 'block';
@@ -256,6 +293,48 @@ function loadCartItems() {
             }
         })
         .catch(() => { /* Silent error */ });
+}
+
+/**
+ * Update cart drawer item quantity
+ */
+function updateCartDrawerQty(key, newQuantity) {
+    if (newQuantity < 1 || newQuantity > 10) return;
+
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+    const cartItem = document.querySelector(`.cart-item[data-key="${key}"]`);
+    if (!cartItem) return;
+
+    // Optimistic UI: update display immediately
+    const qtyDisplay = cartItem.querySelector('.drawer-qty-display');
+    if (qtyDisplay) qtyDisplay.textContent = newQuantity;
+
+    // Add loading state
+    cartItem.style.opacity = '0.6';
+
+    fetch('/cart/update', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({ key, quantity: newQuantity })
+    })
+        .then(r => r.json())
+        .then(data => {
+            cartItem.style.opacity = '1';
+            if (data.success) {
+                // Reload entire cart drawer to refresh all values
+                loadCartItems();
+                updateCartBadge(true);
+            }
+        })
+        .catch(() => {
+            cartItem.style.opacity = '1';
+            // Reload to revert to correct state
+            loadCartItems();
+        });
 }
 
 /**

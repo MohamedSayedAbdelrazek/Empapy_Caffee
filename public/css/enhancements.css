@@ -413,24 +413,24 @@
     color: #1a1a1a !important;
 }
 
-/* Cart item mobile layout */
-[data-theme="dark"] .cart-item h6 {
+/* Cart item in cart TABLE (not drawer) - keep dark text for readability */
+[data-theme="dark"] .cart-table .cart-item h6 {
     color: #1a1a1a !important;
 }
 
-[data-theme="dark"] .cart-item .text-muted {
+[data-theme="dark"] .cart-table .cart-item .text-muted {
     color: #666666 !important;
 }
 
-[data-theme="dark"] .cart-item .fw-bold {
+[data-theme="dark"] .cart-table .cart-item .fw-bold {
     color: #1a1a1a !important;
 }
 
-[data-theme="dark"] .cart-item .text-warning {
+[data-theme="dark"] .cart-table .cart-item .text-warning {
     color: #b8860b !important;
 }
 
-[data-theme="dark"] .cart-item .item-subtotal {
+[data-theme="dark"] .cart-table .cart-item .item-subtotal {
     color: #1a1a1a !important;
 }
 
