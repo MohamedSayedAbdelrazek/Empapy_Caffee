@@ -281,6 +281,17 @@ class CheckoutController extends Controller
                 $coupon->incrementUsage();
             }
 
+            // Save user info for next time if checkbox was checked
+            if ($request->boolean('save_info') && auth()->check()) {
+                $user = auth()->user();
+                $user->update([
+                    'phone' => $request->customer_phone,
+                    'address' => $request->shipping_address,
+                    'city' => $request->city,
+                    'governorate' => $request->governorate,
+                ]);
+            }
+
             DB::commit();
 
             return redirect()->route('checkout.success', $order)

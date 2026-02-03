@@ -62,6 +62,41 @@
                 <div class="row g-5">
                     <!-- Checkout Form -->
                     <div class="col-lg-7" data-aos="fade-up">
+
+                        {{-- Guest Checkout Notice --}}
+                        @guest
+                            <div class="alert alert-info border-0 mb-4"
+                                style="background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(201, 162, 39, 0.05)); border-right: 4px solid var(--gold) !important;">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="flex-shrink-0">
+                                        <i class="bi bi-gift fs-3" style="color: var(--gold);"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1"><i class="bi bi-check-circle text-success me-1"></i>يمكنك إتمام طلبك
+                                            بدون حساب</h6>
+                                        <p class="mb-2 small text-muted">
+                                            سيتم تنفيذ طلبك بشكل طبيعي كزائر. لكن بإنشاء حساب ستحصل على:
+                                        </p>
+                                        <ul class="mb-2 small" style="padding-right: 1rem;">
+                                            <li><strong>نقاط مكافآت</strong> على كل طلب</li>
+                                            <li><strong>حفظ بياناتك</strong> للطلبات القادمة</li>
+                                            <li><strong>تتبع طلباتك</strong> ومراجعة سجل المشتريات</li>
+                                        </ul>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ route('login') }}?redirect={{ urlencode(request()->url()) }}"
+                                                class="btn btn-sm btn-golden">
+                                                <i class="bi bi-box-arrow-in-left me-1"></i>تسجيل الدخول
+                                            </a>
+                                            <a href="{{ route('register') }}?redirect={{ urlencode(request()->url()) }}"
+                                                class="btn btn-sm btn-outline-secondary">
+                                                <i class="bi bi-person-plus me-1"></i>إنشاء حساب
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endguest
+
                         <div class="glass-card p-4 mb-4">
                             <h5 class="mb-4"><i class="bi bi-person me-2"></i>معلومات العميل</h5>
 
@@ -103,17 +138,16 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label">العنوان التفصيلي *</label>
-                                    <textarea name="shipping_address"
-                                        class="form-control @error('shipping_address') is-invalid @enderror" rows="3"
-                                        required
-                                        placeholder="الشارع، المبنى، الطابق، الشقة">{{ old('shipping_address', auth()->user()?->address) }}</textarea>
+                                    <textarea name="shipping_address" class="form-control @error('shipping_address') is-invalid @enderror" rows="3"
+                                        required placeholder="الشارع، المبنى، الطابق، الشقة">{{ old('shipping_address', auth()->user()?->address) }}</textarea>
                                     @error('shipping_address')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">المدينة *</label>
-                                    <input type="text" name="city" class="form-control @error('city') is-invalid @enderror"
+                                    <input type="text" name="city"
+                                        class="form-control @error('city') is-invalid @enderror"
                                         value="{{ old('city', auth()->user()?->city) }}" required>
                                     @error('city')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -127,7 +161,8 @@
                                         <option value="">اختر المحافظة</option>
                                         @php $userGov = old('governorate', auth()->user()?->governorate); @endphp
                                         @foreach ($shippingZones as $zone)
-                                            <option value="{{ $zone->name }}" {{ $userGov === $zone->name ? 'selected' : '' }}
+                                            <option value="{{ $zone->name }}"
+                                                {{ $userGov === $zone->name ? 'selected' : '' }}
                                                 data-fee="{{ $zone->fee }}">
                                                 {{ $zone->name }} ({{ number_format($zone->fee) }} ج.م)
                                             </option>
@@ -139,8 +174,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">ملاحظات إضافية</label>
-                                    <textarea name="notes" class="form-control" rows="2"
-                                        placeholder="أي تعليمات خاصة للتوصيل">{{ old('notes') }}</textarea>
+                                    <textarea name="notes" class="form-control" rows="2" placeholder="أي تعليمات خاصة للتوصيل">{{ old('notes') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -161,8 +195,8 @@
                                         </div>
                                     </div>
                                     <div class="form-check form-check-reverse m-0">
-                                        <input class="form-check-input payment-radio" type="radio" name="payment_method"
-                                            value="cash_on_delivery" id="cod" checked>
+                                        <input class="form-check-input payment-radio" type="radio"
+                                            name="payment_method" value="cash_on_delivery" id="cod" checked>
                                         <label class="form-check-label visually-hidden" for="cod">الدفع عند
                                             الاستلام</label>
                                     </div>
@@ -392,6 +426,18 @@
                                     ج.م</span>
                             </div>
 
+                            {{-- Save Info Checkbox - Only for logged-in users --}}
+                            @auth
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" name="save_info" id="saveInfoCheckbox"
+                                        value="1">
+                                    <label class="form-check-label small" for="saveInfoCheckbox">
+                                        <i class="bi bi-bookmark me-1"></i>
+                                        احفظ هذه المعلومات للمرة القادمة
+                                    </label>
+                                </div>
+                            @endauth
+
                             <button type="submit" class="btn btn-golden w-100 btn-lg">
                                 <i class="bi bi-check-circle me-2"></i>تأكيد الطلب
                             </button>
@@ -420,7 +466,7 @@
         let currentTotal = {{ $total }};
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Mark COD as active
             document.getElementById('cod-option').classList.add('active');
 
@@ -517,7 +563,7 @@
         }
 
         // Initialize on load if value exists
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('governorateSelect').value) {
                 updateShippingFee();
             }

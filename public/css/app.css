@@ -338,6 +338,8 @@ img {
     padding: 20px 0;
     transition: all var(--transition-normal);
     background: transparent;
+    position: relative;
+    z-index: 1000;
 }
 
 .navbar-main.scrolled {
