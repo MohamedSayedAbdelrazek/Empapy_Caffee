@@ -5,9 +5,9 @@
 @push('styles')
     <style>
         /* ==========================================
-                                                                                   🎨 PREMIUM KANBAN BOARD STYLES
-                                                                                   WOW-Factor Design with Glassmorphism
-                                                                                   ========================================== */
+                                                                                                   🎨 PREMIUM KANBAN BOARD STYLES
+                                                                                                   WOW-Factor Design with Glassmorphism
+                                                                                                   ========================================== */
 
         /* Main Container */
         .kanban-container {
@@ -503,9 +503,9 @@
         }
 
         /* ==========================================
-                   📱 MOBILE-FIRST RESPONSIVE DESIGN
-                   Tab-based navigation for phones
-                   ========================================== */
+                                   📱 MOBILE-FIRST RESPONSIVE DESIGN
+                                   Tab-based navigation for phones
+                                   ========================================== */
 
         /* Mobile Tab Navigation - Hidden on desktop */
         .mobile-tab-nav {
@@ -747,11 +747,112 @@
             .view-toggle {
                 display: none;
             }
+
+            /* Show mobile status actions on mobile */
+            .mobile-status-actions {
+                display: flex !important;
+            }
+        }
+
+        /* 📱 Mobile Status Change Buttons */
+        .mobile-status-actions {
+            display: none;
+            /* Hidden on desktop */
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .mobile-status-label {
+            font-size: 0.75rem;
+            color: var(--admin-text-muted);
+            margin-bottom: 4px;
+        }
+
+        .mobile-status-btns {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mobile-status-btn {
+            flex: 1;
+            min-width: 45px;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-status-btn.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .mobile-status-btn.pending:active {
+            background: rgba(245, 158, 11, 0.4);
+            transform: scale(0.95);
+        }
+
+        .mobile-status-btn.processing {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .mobile-status-btn.processing:active {
+            background: rgba(59, 130, 246, 0.4);
+            transform: scale(0.95);
+        }
+
+        .mobile-status-btn.shipped {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+
+        .mobile-status-btn.shipped:active {
+            background: rgba(139, 92, 246, 0.4);
+            transform: scale(0.95);
+        }
+
+        .mobile-status-btn.delivered {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .mobile-status-btn.delivered:active {
+            background: rgba(16, 185, 129, 0.4);
+            transform: scale(0.95);
+        }
+
+        .mobile-status-btn.cancelled {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .mobile-status-btn.cancelled:active {
+            background: rgba(239, 68, 68, 0.4);
+            transform: scale(0.95);
+        }
+
+        .mobile-status-btn.loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .mobile-status-btn.loading i {
+            animation: spin 1s linear infinite;
         }
 
         /* ==========================================
-                                                                                   🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
-                                                                                   ========================================== */
+                                                                                                   🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
+                                                                                                   ========================================== */
 
         .order-modal-overlay {
             position: fixed;
@@ -1405,9 +1506,9 @@
     <!-- Kanban Board -->
     <div class="kanban-container" id="kanbanBoard">
         @foreach ($statusConfig as $status => $config)
-            <div class="kanban-column status-{{ $status }}" data-status="{{ $status }}"
-                ondragover="handleDragOver(event)" ondrop="handleDrop(event, '{{ $status }}')"
-                ondragleave="handleDragLeave(event)">
+            <div class="kanban-column status-{{ $status }} {{ $loop->first ? 'mobile-active' : '' }}"
+                data-status="{{ $status }}" ondragover="handleDragOver(event)"
+                ondrop="handleDrop(event, '{{ $status }}')" ondragleave="handleDragLeave(event)">
 
                 <!-- Column Header -->
                 <div class="kanban-column-header">
@@ -1482,6 +1583,47 @@
                                 <button class="btn btn-outline-primary btn-sm" onclick="printOrder({{ $order->id }})">
                                     <i class="bi bi-printer"></i>
                                 </button>
+                            </div>
+
+                            <!-- 📱 Mobile Quick Status Change (visible only on mobile) -->
+                            <div class="mobile-status-actions" data-order-id="{{ $order->id }}"
+                                data-current-status="{{ $status }}">
+                                <div class="mobile-status-label">تغيير الحالة:</div>
+                                <div class="mobile-status-btns">
+                                    @if ($status !== 'pending')
+                                        <button class="mobile-status-btn pending"
+                                            onclick="mobileStatusChange({{ $order->id }}, 'pending')" title="انتظار">
+                                            <i class="bi bi-hourglass-split"></i>
+                                        </button>
+                                    @endif
+                                    @if ($status !== 'processing')
+                                        <button class="mobile-status-btn processing"
+                                            onclick="mobileStatusChange({{ $order->id }}, 'processing')"
+                                            title="تحضير">
+                                            <i class="bi bi-gear-fill"></i>
+                                        </button>
+                                    @endif
+                                    @if ($status !== 'shipped')
+                                        <button class="mobile-status-btn shipped"
+                                            onclick="mobileStatusChange({{ $order->id }}, 'shipped')" title="شحن">
+                                            <i class="bi bi-truck"></i>
+                                        </button>
+                                    @endif
+                                    @if ($status !== 'delivered')
+                                        <button class="mobile-status-btn delivered"
+                                            onclick="mobileStatusChange({{ $order->id }}, 'delivered')"
+                                            title="تسليم">
+                                            <i class="bi bi-check-circle-fill"></i>
+                                        </button>
+                                    @endif
+                                    @if ($status !== 'cancelled')
+                                        <button class="mobile-status-btn cancelled"
+                                            onclick="mobileStatusChange({{ $order->id }}, 'cancelled')"
+                                            title="إلغاء">
+                                            <i class="bi bi-x-circle-fill"></i>
+                                        </button>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @empty
@@ -1648,6 +1790,264 @@
 
 @push('scripts')
     <script>
+        // ==========================================
+        // 📱 MOBILE TAB NAVIGATION & SWIPE GESTURES
+        // ==========================================
+
+        const statusOrder = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+        let currentMobileTab = 'pending';
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        // Initialize mobile view on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initMobileView();
+            initSwipeGestures();
+            // Hide swipe hint after 5 seconds
+            setTimeout(() => {
+                const hint = document.getElementById('swipeHint');
+                if (hint) {
+                    hint.style.opacity = '0';
+                    hint.style.transition = 'opacity 0.3s ease';
+                    setTimeout(() => hint.style.display = 'none', 300);
+                }
+            }, 5000);
+        });
+
+        // Initialize mobile view
+        function initMobileView() {
+            if (window.innerWidth <= 768) {
+                // Show first column by default
+                const firstColumn = document.querySelector('.kanban-column');
+                if (firstColumn) {
+                    firstColumn.classList.add('mobile-active');
+                    currentMobileTab = firstColumn.dataset.status;
+                }
+            }
+        }
+
+        // Switch mobile tab
+        function switchMobileTab(status) {
+            currentMobileTab = status;
+
+            // Update tab buttons
+            document.querySelectorAll('.mobile-tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.status === status) {
+                    btn.classList.add('active');
+                    // Scroll tab into view
+                    btn.scrollIntoView({
+                        behavior: 'smooth',
+                        inline: 'center',
+                        block: 'nearest'
+                    });
+                }
+            });
+
+            // Update columns visibility
+            document.querySelectorAll('.kanban-column').forEach(col => {
+                col.classList.remove('mobile-active');
+                if (col.dataset.status === status) {
+                    col.classList.add('mobile-active');
+                    // Add entrance animation
+                    col.style.animation = 'none';
+                    col.offsetHeight; // Trigger reflow
+                    col.style.animation = 'slideIn 0.3s ease-out';
+                }
+            });
+
+            // Play subtle feedback sound
+            if (typeof playSound === 'function') {
+                playSound('pickup');
+            }
+        }
+
+        // Initialize swipe gestures
+        function initSwipeGestures() {
+            const kanbanBoard = document.getElementById('kanbanBoard');
+            if (!kanbanBoard) return;
+
+            kanbanBoard.addEventListener('touchstart', (e) => {
+                touchStartX = e.changedTouches[0].screenX;
+            }, {
+                passive: true
+            });
+
+            kanbanBoard.addEventListener('touchend', (e) => {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            }, {
+                passive: true
+            });
+        }
+
+        // Handle swipe gesture
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+
+            if (Math.abs(diff) < swipeThreshold) return;
+
+            const currentIndex = statusOrder.indexOf(currentMobileTab);
+
+            if (diff > 0) {
+                // Swiped left - go to next
+                const nextIndex = currentIndex + 1;
+                if (nextIndex < statusOrder.length) {
+                    switchMobileTab(statusOrder[nextIndex]);
+                }
+            } else {
+                // Swiped right - go to previous
+                const prevIndex = currentIndex - 1;
+                if (prevIndex >= 0) {
+                    switchMobileTab(statusOrder[prevIndex]);
+                }
+            }
+        }
+
+        // 📱 Mobile Status Change Function
+        async function mobileStatusChange(orderId, newStatus) {
+            const orderCard = document.querySelector(`[data-order-id="${orderId}"]`);
+            if (!orderCard) return;
+
+            const statusActionsDiv = orderCard.querySelector('.mobile-status-actions');
+            const currentStatus = statusActionsDiv?.dataset.currentStatus;
+
+            if (currentStatus === newStatus) return;
+
+            // Add loading state to button
+            const clickedBtn = orderCard.querySelector(`.mobile-status-btn.${newStatus}`);
+            if (clickedBtn) {
+                clickedBtn.classList.add('loading');
+                clickedBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i>';
+            }
+
+            try {
+                // Send AJAX request
+                const response = await fetch(`/admin/orders/${orderId}/status-ajax`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        status: newStatus
+                    })
+                });
+
+                if (response.ok) {
+                    // Success - Update counts
+                    updateColumnCounts(currentStatus, newStatus);
+
+                    // Play sound and confetti for delivered
+                    if (newStatus === 'delivered') {
+                        playSound('success');
+                        if (typeof createConfetti === 'function') {
+                            createConfetti();
+                        }
+                    } else if (newStatus === 'cancelled') {
+                        playSound('cancel');
+                    } else {
+                        playSound('drop');
+                    }
+
+                    // Remove card with animation
+                    orderCard.style.transition = 'all 0.3s ease';
+                    orderCard.style.opacity = '0';
+                    orderCard.style.transform = 'translateX(-100%)';
+
+                    setTimeout(() => {
+                        orderCard.remove();
+
+                        // Check if column is now empty
+                        const currentColumn = document.querySelector(`#column-${currentStatus}`);
+                        if (currentColumn && currentColumn.querySelectorAll('.order-card').length === 0) {
+                            currentColumn.innerHTML = `
+                                <div class="kanban-empty">
+                                    <i class="bi bi-inbox"></i>
+                                    <p>لا توجد طلبات</p>
+                                </div>
+                            `;
+                        }
+                    }, 300);
+
+                    // Show success toast
+                    showToast('✅ تم تحديث حالة الطلب بنجاح', 'success');
+
+                } else {
+                    throw new Error('Failed to update status');
+                }
+            } catch (error) {
+                console.error('Error updating status:', error);
+
+                // Restore button
+                if (clickedBtn) {
+                    clickedBtn.classList.remove('loading');
+                    // Restore icon based on status
+                    const icons = {
+                        'pending': 'hourglass-split',
+                        'processing': 'gear-fill',
+                        'shipped': 'truck',
+                        'delivered': 'check-circle-fill',
+                        'cancelled': 'x-circle-fill'
+                    };
+                    clickedBtn.innerHTML = `<i class="bi bi-${icons[newStatus]}"></i>`;
+                }
+
+                showToast('❌ حدث خطأ أثناء تحديث الحالة', 'error');
+            }
+        }
+
+        // Simple toast notification
+        function showToast(message, type = 'info') {
+            // Remove existing toasts
+            document.querySelectorAll('.mobile-toast').forEach(t => t.remove());
+
+            const toast = document.createElement('div');
+            toast.className = `mobile-toast ${type}`;
+            toast.innerHTML = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 80px;
+                left: 50%;
+                transform: translateX(-50%);
+                padding: 12px 24px;
+                border-radius: 12px;
+                background: ${type === 'success' ? 'rgba(16, 185, 129, 0.9)' : 'rgba(239, 68, 68, 0.9)'};
+                color: white;
+                font-size: 0.9rem;
+                font-weight: 600;
+                z-index: 10000;
+                animation: fadeInUp 0.3s ease;
+            `;
+
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'fadeOutDown 0.3s ease forwards';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // Add animations
+        const mobileStyles = document.createElement('style');
+        mobileStyles.textContent = `
+            @keyframes slideIn {
+                from { opacity: 0; transform: translateX(20px); }
+                to { opacity: 1; transform: translateX(0); }
+            }
+            @keyframes fadeInUp {
+                from { opacity: 0; transform: translate(-50%, 20px); }
+                to { opacity: 1; transform: translate(-50%, 0); }
+            }
+            @keyframes fadeOutDown {
+                from { opacity: 1; transform: translate(-50%, 0); }
+                to { opacity: 0; transform: translate(-50%, 20px); }
+            }
+        `;
+        document.head.appendChild(mobileStyles);
+
         // ==========================================
         // 🎮 KANBAN DRAG & DROP FUNCTIONALITY
         // ==========================================
@@ -2048,15 +2448,15 @@
                     <div class="modal-item-info">
                         <div class="modal-item-name">${item.name}</div>
                         ${item.options && item.options.length > 0 ? `
-                                                            <div class="modal-item-options">
-                                                                ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
+                                                                            <div class="modal-item-options">
+                                                                                ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
                                     <span class="option-badge">
                                         ${opt.label}: ${opt.value}
                                         ${opt.price ? ` <small class="text-success">(${opt.price})</small>` : ''}
                                     </span>
                                 `).join('')}
-                                                            </div>
-                                                        ` : ''}
+                                                                            </div>
+                                                                        ` : ''}
                     </div>
                     <div class="modal-item-quantity">×${item.quantity}</div>
                     <div class="modal-item-price">
