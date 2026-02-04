@@ -93,7 +93,63 @@
         </div>
     </section>
 
-    <!-- Cinematic Video Showcase Section -->
+    <!-- Empapy Video Section -->
+    <section class="empapy-video-section py-5" data-aos="fade-up">
+        <div class="container">
+            <div class="section-title text-center mb-4" data-aos="fade-up">
+                <h2>شاهد قصتنا</h2>
+                <p>اكتشف رحلة القهوة الاستثنائية معنا</p>
+            </div>
+            
+            <div class="video-container" data-aos="zoom-in" data-aos-delay="100">
+                <div class="video-wrapper">
+                    <video 
+                        id="empapyVideo"
+                        class="video-player"
+                        controls
+                        playsinline
+                        preload="metadata"
+                        poster="{{ asset('images/video-poster.jpg') }}"
+                        aria-label="فيديو إمبابي كافيه - رحلة القهوة"
+                    >
+                        <source src="{{ asset('assets/videos/Empapy_video.mp4') }}" type="video/mp4">
+                        <p class="video-fallback">
+                            عذراً، متصفحك لا يدعم تشغيل الفيديو. 
+                            <a href="{{ asset('assets/videos/Empapy_video.mp4') }}" download>
+                                اضغط هنا لتحميل الفيديو
+                            </a>
+                        </p>
+                    </video>
+                    
+                    <!-- Custom Play Button Overlay -->
+                    <button class="video-play-overlay" aria-label="تشغيل الفيديو" id="videoPlayBtn">
+                        <div class="play-btn-circle">
+                            <i class="bi bi-play-fill"></i>
+                        </div>
+                        <span class="play-text">اضغط للتشغيل</span>
+                    </button>
+                </div>
+                
+                <!-- Marketing Slogan -->
+                <div class="marketing-slogan" data-aos="fade-up" data-aos-delay="200">
+                    <div class="slogan-content">
+                        <i class="bi bi-cup-hot-fill slogan-icon"></i>
+                        <h3 class="slogan-text">
+                            <span class="slogan-highlight">كل رشفة</span> تحكي قصة شغف..
+                            <span class="slogan-sub">اكتشف طعم القهوة الأصيلة</span>
+                        </h3>
+                    </div>
+                    <div class="slogan-decoration">
+                        <span class="decoration-line"></span>
+                        <i class="bi bi-stars"></i>
+                        <span class="decoration-line"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Cinematic Video Showcase Section - COMMENTED OUT
     <section class="video-showcase-section" data-aos="fade-up">
         <!-- Image Background (replaced video) -->
         <div class="video-background">
@@ -154,6 +210,7 @@
             </div>
         </div>
     </section>
+    --}}
 
     <!-- Featured Products -->
     <section class="py-5 bg-white" id="featured">
@@ -929,6 +986,401 @@
                 display: none;
             }
         }
+
+        /* =========================================
+           EMPAPY VIDEO SECTION STYLES
+           ========================================= */
+        .empapy-video-section {
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c1810 50%, #1a1a1a 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .empapy-video-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(201, 162, 39, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .empapy-video-section .section-title h2 {
+            color: #ffffff;
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 15px;
+        }
+
+        .empapy-video-section .section-title p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        /* Video Container */
+        .video-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .video-wrapper {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(201, 162, 39, 0.3),
+                0 0 60px rgba(201, 162, 39, 0.1);
+            background: #000;
+        }
+
+        .video-player {
+            width: 100%;
+            height: auto;
+            display: block;
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            background: #000;
+        }
+
+        /* Custom Play Button Overlay */
+        .video-play-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            background: rgba(0, 0, 0, 0.4);
+            cursor: pointer;
+            border: none;
+            transition: all 0.4s ease;
+            z-index: 10;
+        }
+
+        .video-play-overlay:hover {
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .video-play-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .play-btn-circle {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold, #c9a227), #d4a84b);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 10px 40px rgba(201, 162, 39, 0.5),
+                0 0 30px rgba(201, 162, 39, 0.3);
+            transition: all 0.3s ease;
+            animation: playPulse 2s ease-in-out infinite;
+        }
+
+        .video-play-overlay:hover .play-btn-circle {
+            transform: scale(1.1);
+            box-shadow: 
+                0 15px 50px rgba(201, 162, 39, 0.6),
+                0 0 40px rgba(201, 162, 39, 0.4);
+        }
+
+        @keyframes playPulse {
+            0%, 100% {
+                box-shadow: 
+                    0 10px 40px rgba(201, 162, 39, 0.5),
+                    0 0 30px rgba(201, 162, 39, 0.3);
+            }
+            50% {
+                box-shadow: 
+                    0 10px 50px rgba(201, 162, 39, 0.7),
+                    0 0 50px rgba(201, 162, 39, 0.5);
+            }
+        }
+
+        .play-btn-circle i {
+            font-size: 2.5rem;
+            color: var(--espresso, #2c1810);
+            margin-left: 5px;
+        }
+
+        .play-text {
+            color: #ffffff;
+            font-size: 1rem;
+            font-weight: 600;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Marketing Slogan Styles */
+        .marketing-slogan {
+            text-align: center;
+            margin-top: 35px;
+            padding: 25px;
+        }
+
+        .slogan-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slogan-icon {
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--gold, #c9a227), #d4a84b, #f5e6a3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(201, 162, 39, 0.5));
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes iconFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .slogan-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.8;
+            margin: 0;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .slogan-highlight {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--gold, #c9a227), #f5e6a3, var(--gold, #c9a227));
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
+            font-weight: 800;
+            font-size: 2rem;
+        }
+
+        @keyframes shimmer {
+            0%, 100% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .slogan-sub {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 10px;
+            letter-spacing: 1px;
+        }
+
+        .slogan-decoration {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .decoration-line {
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold, #c9a227), transparent);
+        }
+
+        .slogan-decoration i {
+            color: var(--gold, #c9a227);
+            font-size: 1.2rem;
+            animation: starPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes starPulse {
+            0%, 100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* Marketing Slogan Responsive */
+        @media (max-width: 992px) {
+            .slogan-text {
+                font-size: 1.5rem;
+            }
+
+            .slogan-highlight {
+                font-size: 1.7rem;
+            }
+
+            .slogan-sub {
+                font-size: 1.1rem;
+            }
+
+            .slogan-icon {
+                font-size: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .marketing-slogan {
+                margin-top: 25px;
+                padding: 20px 15px;
+            }
+
+            .slogan-text {
+                font-size: 1.3rem;
+            }
+
+            .slogan-highlight {
+                font-size: 1.5rem;
+            }
+
+            .slogan-sub {
+                font-size: 1rem;
+            }
+
+            .slogan-icon {
+                font-size: 2.2rem;
+            }
+
+            .decoration-line {
+                width: 50px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .slogan-text {
+                font-size: 1.1rem;
+            }
+
+            .slogan-highlight {
+                font-size: 1.3rem;
+            }
+
+            .slogan-sub {
+                font-size: 0.9rem;
+            }
+
+            .slogan-icon {
+                font-size: 2rem;
+            }
+
+            .decoration-line {
+                width: 40px;
+            }
+        }
+
+        /* Video Fallback */
+        .video-fallback {
+            color: #ffffff;
+            text-align: center;
+            padding: 40px;
+            font-size: 1rem;
+        }
+
+        .video-fallback a {
+            color: var(--gold, #c9a227);
+            text-decoration: underline;
+            transition: color 0.3s ease;
+        }
+
+        .video-fallback a:hover {
+            color: #d4a84b;
+        }
+
+        /* Empapy Video Section Responsive Styles */
+        @media (max-width: 992px) {
+            .empapy-video-section .section-title h2 {
+                font-size: 1.9rem;
+            }
+
+            .video-container {
+                padding: 0 20px;
+            }
+
+            .play-btn-circle {
+                width: 75px;
+                height: 75px;
+            }
+
+            .play-btn-circle i {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .empapy-video-section {
+                padding: 40px 0;
+            }
+
+            .empapy-video-section .section-title h2 {
+                font-size: 1.6rem;
+            }
+
+            .empapy-video-section .section-title p {
+                font-size: 1rem;
+            }
+
+            .video-wrapper {
+                border-radius: 15px;
+            }
+
+            .play-btn-circle {
+                width: 65px;
+                height: 65px;
+            }
+
+            .play-btn-circle i {
+                font-size: 1.8rem;
+            }
+
+            .play-text {
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .empapy-video-section .section-title h2 {
+                font-size: 1.4rem;
+            }
+
+            .video-container {
+                padding: 0 10px;
+            }
+
+            .video-wrapper {
+                border-radius: 12px;
+            }
+
+            .play-btn-circle {
+                width: 55px;
+                height: 55px;
+            }
+
+            .play-btn-circle i {
+                font-size: 1.5rem;
+            }
+
+            .play-text {
+                font-size: 0.8rem;
+            }
+        }
     </style>
 @endpush
 
@@ -967,6 +1419,33 @@
                     }
                 }
             });
+
+            // Empapy Video Section - Play Button Handler
+            const empapyVideo = document.getElementById('empapyVideo');
+            const playBtn = document.getElementById('videoPlayBtn');
+
+            if (empapyVideo && playBtn) {
+                // Play button click handler
+                playBtn.addEventListener('click', function() {
+                    empapyVideo.play();
+                    playBtn.classList.add('hidden');
+                });
+
+                // Show overlay when video is paused
+                empapyVideo.addEventListener('pause', function() {
+                    playBtn.classList.remove('hidden');
+                });
+
+                // Hide overlay when video plays
+                empapyVideo.addEventListener('play', function() {
+                    playBtn.classList.add('hidden');
+                });
+
+                // Show overlay when video ends
+                empapyVideo.addEventListener('ended', function() {
+                    playBtn.classList.remove('hidden');
+                });
+            }
         });
     </script>
 @endpush
