@@ -121,53 +121,34 @@
 </head>
 
 <body>
-    <!-- ☕ Premium Announcement Bar - Seelaz-inspired -->
+    <!-- ☕ Premium Announcement Bar -->
     @php
         $announcements = \App\Models\Announcement::active()->ordered()->get();
     @endphp
 
     @if ($announcements->isNotEmpty())
-        <div class="announcement-bar loading" id="announcementBar">
-            <div class="announcement-track">
-                <div class="announcement-marquee" id="announcementMarquee">
+        <div class="announcement-bar" id="announcementBar">
+            <div class="announcement-wrapper">
+                <div class="announcement-track">
+                    {{-- First set of announcements --}}
                     @foreach ($announcements as $announcement)
                         <span class="announcement-item">
                             <i class="bi bi-stars"></i>
                             {{ $announcement->message_ar }}
                         </span>
-                        @if (!$loop->last)
-                            <span class="announcement-divider">✦</span>
-                        @endif
+                        <span class="announcement-divider">✦</span>
+                    @endforeach
+                    {{-- Duplicate for seamless loop --}}
+                    @foreach ($announcements as $announcement)
+                        <span class="announcement-item">
+                            <i class="bi bi-stars"></i>
+                            {{ $announcement->message_ar }}
+                        </span>
+                        <span class="announcement-divider">✦</span>
                     @endforeach
                 </div>
             </div>
         </div>
-
-        <script>
-            // 🎯 Infinite Scroll Marquee - Clone content for seamless loop
-            document.addEventListener('DOMContentLoaded', function() {
-                const bar = document.getElementById('announcementBar');
-                const marquee = document.getElementById('announcementMarquee');
-
-                if (!bar || !marquee) return;
-
-                // Clone the content for seamless infinite scroll
-                const clone = marquee.cloneNode(true);
-                clone.setAttribute('aria-hidden', 'true');
-                marquee.parentNode.appendChild(clone);
-
-                // Add divider between original and clone
-                const divider = document.createElement('span');
-                divider.className = 'announcement-divider';
-                divider.textContent = '✦';
-                divider.setAttribute('aria-hidden', 'true');
-                marquee.appendChild(divider);
-
-                // Show the bar
-                bar.classList.remove('loading');
-                bar.classList.add('ready');
-            });
-        </script>
     @endif
 
     <!-- Navbar -->

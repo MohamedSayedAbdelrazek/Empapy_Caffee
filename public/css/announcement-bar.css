@@ -1,8 +1,7 @@
 /**
  * ☕ Empapy Caffe - Premium Announcement Bar
- * Seelaz-inspired infinite scroll marquee
- * Works perfectly on all screen sizes
- * Supports light & dark modes
+ * Fixed infinite scroll for RTL Arabic
+ * v2.0 - Complete rewrite
  */
 
 /* ==========================================
@@ -14,9 +13,11 @@
     overflow: hidden;
     position: relative;
     z-index: 1050;
-    height: 38px;
+    height: 40px;
     display: flex;
     align-items: center;
+    direction: ltr;
+    /* Force LTR for animation, content stays RTL */
 }
 
 /* Light mode support */
@@ -28,58 +29,53 @@
 }
 
 /* ==========================================
-   MARQUEE TRACK - The scrolling container
+   MARQUEE WRAPPER
    ========================================== */
-.announcement-track {
+.announcement-wrapper {
     display: flex;
+    align-items: center;
     width: 100%;
     overflow: hidden;
-    mask-image: linear-gradient(to right,
-            transparent 0%,
-            black 5%,
-            black 95%,
-            transparent 100%);
-    -webkit-mask-image: linear-gradient(to right,
-            transparent 0%,
-            black 5%,
-            black 95%,
-            transparent 100%);
+    /* Fade edges */
+    mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
 }
 
 /* ==========================================
-   MARQUEE CONTENT - The animated wrapper
+   MARQUEE TRACK - Contains duplicated content
    ========================================== */
-.announcement-marquee {
+.announcement-track {
     display: flex;
     align-items: center;
-    animation: scroll-rtl 30s linear infinite;
+    flex-shrink: 0;
+    animation: marquee-scroll 25s linear infinite;
     will-change: transform;
 }
 
-/* Pause on hover for better UX */
-.announcement-bar:hover .announcement-marquee {
+/* Pause on hover */
+.announcement-bar:hover .announcement-track {
     animation-play-state: paused;
 }
 
 /* ==========================================
-   ANNOUNCEMENT ITEMS
+   INDIVIDUAL ITEMS
    ========================================== */
 .announcement-item {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 0 30px;
-    font-size: 0.875rem;
+    padding: 0 25px;
+    font-size: 0.9rem;
     font-weight: 500;
     white-space: nowrap;
     flex-shrink: 0;
-    letter-spacing: 0.02em;
+    direction: rtl;
+    /* Arabic text stays RTL */
 }
 
-.announcement-item i,
-.announcement-item .item-icon {
+.announcement-item i {
     color: #C9A227;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
 }
 
 [data-theme="light"] .announcement-item i,
@@ -87,11 +83,11 @@
     color: #B8860B;
 }
 
-/* Divider between items */
+/* Divider */
 .announcement-divider {
     color: #C9A227;
-    font-size: 0.7rem;
-    opacity: 0.6;
+    font-size: 0.75rem;
+    opacity: 0.5;
     flex-shrink: 0;
     padding: 0 5px;
 }
@@ -99,19 +95,19 @@
 [data-theme="light"] .announcement-divider,
 .light-mode .announcement-divider {
     color: #B8860B;
-    opacity: 0.5;
 }
 
 /* ==========================================
-   INFINITE SCROLL ANIMATION (RTL)
+   ANIMATION - Moves LEFT (for LTR container)
+   Content scrolls: right → left
    ========================================== */
-@keyframes scroll-rtl {
+@keyframes marquee-scroll {
     0% {
         transform: translateX(0);
     }
 
     100% {
-        transform: translateX(50%);
+        transform: translateX(-50%);
     }
 }
 
@@ -120,61 +116,39 @@
    ========================================== */
 @media (max-width: 768px) {
     .announcement-bar {
-        height: 34px;
+        height: 36px;
     }
 
     .announcement-item {
         font-size: 0.8rem;
-        padding: 0 20px;
-        gap: 6px;
+        padding: 0 18px;
     }
 
-    .announcement-divider {
-        font-size: 0.6rem;
-    }
-
-    .announcement-marquee {
-        animation-duration: 20s;
+    .announcement-track {
+        animation-duration: 18s;
     }
 }
 
 @media (max-width: 480px) {
     .announcement-bar {
-        height: 32px;
+        height: 34px;
     }
 
     .announcement-item {
         font-size: 0.75rem;
-        padding: 0 15px;
-    }
-
-    .announcement-marquee {
-        animation-duration: 15s;
-    }
-}
-
-/* ==========================================
-   REDUCED MOTION SUPPORT
-   ========================================== */
-@media (prefers-reduced-motion: reduce) {
-    .announcement-marquee {
-        animation: none;
+        padding: 0 14px;
     }
 
     .announcement-track {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        animation-duration: 14s;
     }
 }
 
 /* ==========================================
-   LOADING STATE (before JS clones content)
+   REDUCED MOTION
    ========================================== */
-.announcement-bar.loading {
-    opacity: 0;
-}
-
-.announcement-bar.ready {
-    opacity: 1;
-    transition: opacity 0.3s ease;
+@media (prefers-reduced-motion: reduce) {
+    .announcement-track {
+        animation: none;
+    }
 }
