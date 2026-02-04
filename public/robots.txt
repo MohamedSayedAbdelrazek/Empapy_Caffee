@@ -1,15 +1,25 @@
-# Empapy Caffe Robots.txt
-# SEO Optimization
+# Robots.txt for Empapy Caffe
+# https://empapy.com
 
+# Allow all search engines
 User-agent: *
+Allow: /
+
+# Allow Google specifically
+User-agent: Googlebot
 Allow: /
 
 # Disallow admin and private areas
 Disallow: /admin/
-Disallow: /checkout/
-Disallow: /account/
-Disallow: /cart/
 Disallow: /api/
+Disallow: /sanctum/
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+Disallow: /checkout/
 
-# Sitemap location
-Sitemap: https://empapy-caffe.com/sitemap.xml
+# Point to sitemap
+Sitemap: https://empapy.com/sitemap.xml
+
+# Crawl-delay (optional - be nice to your server)
+Crawl-delay: 1

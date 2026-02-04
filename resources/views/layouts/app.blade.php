@@ -7,6 +7,9 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'إمبابي كافيه - قهوة فاخرة')</title>
 
+    <!-- Google Search Console Verification -->
+    <meta name="google-site-verification" content="1-K9hEmL-oDOLLF4eGYd2TsRlKdmvbEfSGwx79k-Tus" />
+
     <script>
         // ✅ Service Worker Registration for PWA
         if ('serviceWorker' in navigator) {
@@ -46,26 +49,69 @@
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('icons/ios/180.png') }}">
     <link rel="apple-touch-icon" sizes="256x256" href="{{ asset('icons/ios/256.png') }}">
 
-    <!-- SEO Meta Tags -->
-    <meta name="description" content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
-    <meta name="keywords" content="قهوة, كافيه, قهوة فاخرة, بن, إمبابي, espresso, coffee">
-    <meta name="author" content="Empapy Caffe">
+    <!-- ====== SEO Meta Tags - Enhanced for Google Ranking ====== -->
+    <meta name="description" content="@yield('meta_description', 'إمبابي كافيه | Empapy Coffee - أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي، توصيل سريع. تسوق الآن!')">
+
+    <!-- All keyword variations for search -->
+    <meta name="keywords"
+        content="إمبابي كافيه, امبابي كافيه, بن امبابي, قهوة امبابي, إمبابي قهوة, امبابي قهوة, empapy coffee, empapy cafe, empapy caffe, embaby coffee, embaby cafe, embaby caffe, embabay coffee, embabay caffe, قهوة فاخرة, بن فاخر, قهوة مصر, بن مصري, coffee egypt, premium coffee, قهوة تركي, قهوة عربي, espresso">
+
+    <meta name="author" content="Empapy Caffe | إمبابي كافيه">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
+
+    <!-- Site name for Google -->
+    <meta name="application-name" content="إمبابي كافيه - Empapy Caffe">
+    <meta name="apple-mobile-web-app-title" content="إمبابي كافيه">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
+    <meta property="og:site_name" content="إمبابي كافيه - Empapy Caffe">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="@yield('og_title', 'إمبابي كافيه - قهوة فاخرة')">
-    <meta property="og:description" content="@yield('meta_description', 'أجود أنواع القهوة الفاخرة من حول العالم')">
+    <meta property="og:title" content="@yield('og_title', 'إمبابي كافيه | Empapy Coffee - قهوة وبن فاخر')">
+    <meta property="og:description" content="@yield('meta_description', 'أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي. توصيل سريع لجميع المحافظات.')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     <meta property="og:locale" content="ar_EG">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('og_title', 'إمبابي كافيه')">
-    <meta name="twitter:description" content="@yield('meta_description', 'أجود أنواع القهوة الفاخرة')">
+    <meta name="twitter:site" content="@empapycaffe">
+    <meta name="twitter:title" content="@yield('og_title', 'إمبابي كافيه | Empapy Coffee')">
+    <meta name="twitter:description" content="@yield('meta_description', 'أجود أنواع البن والقهوة الفاخرة في مصر')">
 
     <!-- Canonical URL -->
     <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Alternate language versions (helps with different spellings) -->
+    <link rel="alternate" hreflang="ar" href="{{ url()->current() }}">
+    <link rel="alternate" hreflang="ar-EG" href="{{ url()->current() }}">
+
+    <!-- JSON-LD Structured Data for Google -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CoffeeStore",
+        "name": "إمبابي كافيه - Empapy Caffe",
+        "alternateName": ["Empapy Coffee", "Embaby Caffe", "قهوة امبابي", "بن امبابي", "امبابي كافيه"],
+        "url": "{{ config('app.url') }}",
+        "logo": "{{ asset('images/logo.png') }}",
+        "image": "{{ asset('images/og-image.jpg') }}",
+        "description": "أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي، توصيل سريع.",
+        "telephone": "+201151579225",
+        "address": {
+            "@type": "PostalAddress",
+            "addressCountry": "EG",
+            "addressLocality": "Egypt"
+        },
+        "priceRange": "$$",
+        "servesCuisine": "Coffee",
+        "sameAs": [
+            "https://www.facebook.com/profile.php?id=61559046937280",
+            "https://www.instagram.com/empapy_coffee",
+            "https://www.tiktok.com/@empapy_coffe"
+        ]
+    }
+    </script>
 
     <!-- Google Fonts - Cairo for Arabic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
