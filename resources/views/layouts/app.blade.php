@@ -10,7 +10,7 @@
     <script>
         // ✅ Service Worker Registration for PWA
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function () {
+            window.addEventListener('load', function() {
                 navigator.serviceWorker.register('/sw.js')
                     .then(reg => console.log('✅ SW registered:', reg.scope))
                     .catch(err => console.log('❌ SW registration failed:', err));
@@ -47,8 +47,7 @@
     <link rel="apple-touch-icon" sizes="256x256" href="{{ asset('icons/ios/256.png') }}">
 
     <!-- SEO Meta Tags -->
-    <meta name="description"
-        content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
+    <meta name="description" content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة الفاخرة من حول العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
     <meta name="keywords" content="قهوة, كافيه, قهوة فاخرة, بن, إمبابي, espresso, coffee">
     <meta name="author" content="Empapy Caffe">
 
@@ -122,30 +121,53 @@
 </head>
 
 <body>
-    <!-- Dynamic Announcement Bar -->
+    <!-- ☕ Premium Announcement Bar - Seelaz-inspired -->
     @php
         $announcements = \App\Models\Announcement::active()->ordered()->get();
     @endphp
 
     @if ($announcements->isNotEmpty())
-        <div class="announcement-bar" id="announcementBar">
+        <div class="announcement-bar loading" id="announcementBar">
             <div class="announcement-track">
-                <div class="announcement-content">
-                    {{-- Repeat 4 times for seamless loop on all screen sizes --}}
-                    @for ($i = 0; $i < 4; $i++)
-                        @foreach ($announcements as $announcement)
-                            <span class="announcement-item">
-                                {{ $announcement->message_ar }}
-                            </span>
-                            <span class="announcement-divider">☕</span>
-                        @endforeach
-                    @endfor
+                <div class="announcement-marquee" id="announcementMarquee">
+                    @foreach ($announcements as $announcement)
+                        <span class="announcement-item">
+                            <i class="bi bi-stars"></i>
+                            {{ $announcement->message_ar }}
+                        </span>
+                        @if (!$loop->last)
+                            <span class="announcement-divider">✦</span>
+                        @endif
+                    @endforeach
                 </div>
             </div>
-            <button class="announcement-close" id="announcementCloseBtn" aria-label="إخفاء شريط الإعلانات">
-                <i class="bi bi-x"></i>
-            </button>
         </div>
+
+        <script>
+            // 🎯 Infinite Scroll Marquee - Clone content for seamless loop
+            document.addEventListener('DOMContentLoaded', function() {
+                const bar = document.getElementById('announcementBar');
+                const marquee = document.getElementById('announcementMarquee');
+
+                if (!bar || !marquee) return;
+
+                // Clone the content for seamless infinite scroll
+                const clone = marquee.cloneNode(true);
+                clone.setAttribute('aria-hidden', 'true');
+                marquee.parentNode.appendChild(clone);
+
+                // Add divider between original and clone
+                const divider = document.createElement('span');
+                divider.className = 'announcement-divider';
+                divider.textContent = '✦';
+                divider.setAttribute('aria-hidden', 'true');
+                marquee.appendChild(divider);
+
+                // Show the bar
+                bar.classList.remove('loading');
+                bar.classList.add('ready');
+            });
+        </script>
     @endif
 
     <!-- Navbar -->
@@ -216,7 +238,7 @@
             return div.innerHTML;
         }
 
-        window.handleFirebaseMessage = function (payload) {
+        window.handleFirebaseMessage = function(payload) {
             console.log('[User Layout] Received Firebase Message:', payload);
             const {
                 notification,
