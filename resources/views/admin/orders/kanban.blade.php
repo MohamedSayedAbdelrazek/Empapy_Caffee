@@ -5,9 +5,9 @@
 @push('styles')
     <style>
         /* ==========================================
-                                                                           🎨 PREMIUM KANBAN BOARD STYLES
-                                                                           WOW-Factor Design with Glassmorphism
-                                                                           ========================================== */
+                                                                                   🎨 PREMIUM KANBAN BOARD STYLES
+                                                                                   WOW-Factor Design with Glassmorphism
+                                                                                   ========================================== */
 
         /* Main Container */
         .kanban-container {
@@ -502,22 +502,256 @@
             box-shadow: 0 0 30px rgba(16, 185, 129, 0.5) !important;
         }
 
-        /* Responsive */
+        /* ==========================================
+                   📱 MOBILE-FIRST RESPONSIVE DESIGN
+                   Tab-based navigation for phones
+                   ========================================== */
+
+        /* Mobile Tab Navigation - Hidden on desktop */
+        .mobile-tab-nav {
+            display: none;
+            overflow-x: auto;
+            gap: 8px;
+            padding: 10px 0;
+            margin-bottom: 15px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .mobile-tab-nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        .mobile-tab-btn {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: var(--admin-text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .mobile-tab-btn i {
+            font-size: 1rem;
+        }
+
+        .mobile-tab-btn.active {
+            background: var(--admin-primary);
+            color: #1a1a2e;
+            border-color: var(--admin-primary);
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.3);
+        }
+
+        .mobile-tab-btn.active.status-pending {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+        }
+
+        .mobile-tab-btn.active.status-processing {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+        }
+
+        .mobile-tab-btn.active.status-shipped {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+        }
+
+        .mobile-tab-btn.active.status-delivered {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .mobile-tab-btn.active.status-cancelled {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+
+        .mobile-tab-count {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .mobile-tab-btn.active .mobile-tab-count {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Swipe hint animation */
+        @keyframes swipeHint {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(-5px);
+            }
+        }
+
+        .swipe-hint {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 8px 15px;
+            background: rgba(201, 162, 39, 0.1);
+            border-radius: 20px;
+            color: var(--admin-primary);
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+            animation: swipeHint 2s infinite;
+        }
+
+        .swipe-hint i {
+            font-size: 1rem;
+        }
+
+        /* Responsive Breakpoints */
         @media (max-width: 768px) {
-            .kanban-column {
-                flex: 0 0 280px;
-                min-width: 280px;
+
+            /* Show mobile navigation */
+            .mobile-tab-nav {
+                display: flex;
+            }
+
+            .swipe-hint {
+                display: flex;
+            }
+
+            /* Hide stats on very small screens */
+            .kanban-stats {
+                display: none;
             }
 
             .kanban-header {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 10px;
+            }
+
+            .kanban-header .page-title-admin {
+                font-size: 1.3rem;
+            }
+
+            .kanban-header .page-subtitle-admin {
+                display: none;
+            }
+
+            /* Transform kanban to single column view */
+            .kanban-container {
+                flex-direction: column;
+                gap: 0;
+                overflow-x: visible;
+                padding: 0;
+            }
+
+            .kanban-column {
+                flex: 1 1 auto;
+                min-width: 100%;
+                width: 100%;
+                max-height: none;
+                border-radius: 16px;
+                margin-bottom: 10px;
+                display: none;
+                /* Hidden by default */
+            }
+
+            .kanban-column.mobile-active {
+                display: flex;
+            }
+
+            .kanban-column-header {
+                padding: 15px;
+            }
+
+            .column-title {
+                font-size: 1rem;
+            }
+
+            .column-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
+            }
+
+            .kanban-column-body {
+                min-height: 300px;
+                max-height: 60vh;
+            }
+
+            .order-card {
+                padding: 14px;
+            }
+
+            .order-card:hover {
+                transform: none;
+            }
+
+            .order-number {
+                font-size: 0.9rem;
+            }
+
+            .customer-avatar {
+                width: 32px;
+                height: 32px;
+                font-size: 0.8rem;
+            }
+
+            .customer-info h6 {
+                font-size: 0.85rem;
+            }
+
+            .order-total {
+                padding-top: 10px;
+            }
+
+            .total-amount {
+                font-size: 1rem;
+            }
+
+            /* Quick action buttons - stack on mobile */
+            .quick-actions {
+                flex-wrap: wrap;
+            }
+
+            .quick-action-btn {
+                flex: 1 1 45%;
+                min-width: 100px;
+            }
+        }
+
+        /* Very small screens (< 480px) */
+        @media (max-width: 480px) {
+            .mobile-tab-btn {
+                padding: 10px 14px;
+                font-size: 0.8rem;
+            }
+
+            .mobile-tab-btn span.tab-label {
+                display: none;
+            }
+
+            .order-detail-item {
+                font-size: 0.7rem;
+                padding: 5px 8px;
+            }
+
+            .view-toggle {
+                display: none;
             }
         }
 
         /* ==========================================
-                                                                           🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
-                                                                           ========================================== */
+                                                                                   🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
+                                                                                   ========================================== */
 
         .order-modal-overlay {
             position: fixed;
@@ -1149,6 +1383,25 @@
         </div>
     </div>
 
+    <!-- 📱 Mobile Tab Navigation (visible only on phones) -->
+    <div class="mobile-tab-nav" id="mobileTabNav">
+        @foreach ($statusConfig as $status => $config)
+            <button class="mobile-tab-btn status-{{ $status }} {{ $loop->first ? 'active' : '' }}"
+                data-status="{{ $status }}" onclick="switchMobileTab('{{ $status }}')">
+                <i class="{{ $config['icon'] }}"></i>
+                <span class="tab-label">{{ $config['label'] }}</span>
+                <span class="mobile-tab-count"
+                    id="mobile-count-{{ $status }}">{{ count($ordersByStatus[$status]) }}</span>
+            </button>
+        @endforeach
+    </div>
+
+    <!-- Swipe Hint -->
+    <div class="swipe-hint" id="swipeHint">
+        <i class="bi bi-hand-index-thumb"></i>
+        <span>اسحب يميناً أو يساراً للتنقل بين الحالات</span>
+    </div>
+
     <!-- Kanban Board -->
     <div class="kanban-container" id="kanbanBoard">
         @foreach ($statusConfig as $status => $config)
@@ -1546,6 +1799,17 @@
                 toCount.textContent = parseInt(toCount.textContent) + 1;
             }
 
+            // Update mobile tab counts
+            const mobileFromCount = document.getElementById(`mobile-count-${fromStatus}`);
+            const mobileToCount = document.getElementById(`mobile-count-${toStatus}`);
+
+            if (mobileFromCount) {
+                mobileFromCount.textContent = parseInt(mobileFromCount.textContent) - 1;
+            }
+            if (mobileToCount) {
+                mobileToCount.textContent = parseInt(mobileToCount.textContent) + 1;
+            }
+
             // Check if source column is now empty
             const fromColumn = document.querySelector(`#column-${fromStatus}`);
             if (fromColumn && fromColumn.querySelectorAll('.order-card').length === 0) {
@@ -1784,15 +2048,15 @@
                     <div class="modal-item-info">
                         <div class="modal-item-name">${item.name}</div>
                         ${item.options && item.options.length > 0 ? `
-                                                    <div class="modal-item-options">
-                                                        ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
+                                                            <div class="modal-item-options">
+                                                                ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
                                     <span class="option-badge">
                                         ${opt.label}: ${opt.value}
                                         ${opt.price ? ` <small class="text-success">(${opt.price})</small>` : ''}
                                     </span>
                                 `).join('')}
-                                                    </div>
-                                                ` : ''}
+                                                            </div>
+                                                        ` : ''}
                     </div>
                     <div class="modal-item-quantity">×${item.quantity}</div>
                     <div class="modal-item-price">

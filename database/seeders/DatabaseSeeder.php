@@ -17,25 +17,14 @@ class DatabaseSeeder extends Seeder
     {
         // Create Admin User
         User::create([
-            'name' => 'مدير النظام',
+            'name' => 'أحمد صلاح',
             'email' => 'admin@empapy.com',
-            'password' => bcrypt('password'),
+            'password' => bcrypt('ahmedsalah123'),
             'role' => 'admin',
-            'phone' => '+20 100 123 4567',
+            'phone' => '+201151579225',
         ]);
 
-        // Create Test Customer
-        User::create([
-            'name' => 'أحمد محمد',
-            'email' => 'customer@empapy.com',
-            'password' => bcrypt('password'),
-            'role' => 'customer',
-            'phone' => '+20 100 987 6543',
-            'address' => '15 شارع التحرير، وسط البلد',
-            'city' => 'القاهرة',
-            'governorate' => 'القاهرة',
-        ]);
-
+        
         // Create Categories (Arabic only - no name_ar column)
         $categories = [
             [
