@@ -1,7 +1,7 @@
 /**
  * ☕ Empapy Caffe - Premium Announcement Bar
- * Professional RTL infinite scroll marquee
- * v3.0 - Enters from RIGHT, exits LEFT
+ * Professional RTL marquee - RIGHT to LEFT
+ * v4.0 - FIXED DIRECTION
  */
 
 /* ==========================================
@@ -16,7 +16,6 @@
     height: 40px;
     display: flex;
     align-items: center;
-    direction: rtl; /* RTL for Arabic */
 }
 
 /* Light mode support */
@@ -28,7 +27,7 @@
 }
 
 /* ==========================================
-   MARQUEE WRAPPER - Full width container
+   MARQUEE WRAPPER
    ========================================== */
 .announcement-wrapper {
     position: relative;
@@ -39,14 +38,14 @@
     align-items: center;
 }
 
-/* Fade edges for premium look */
+/* Fade edges */
 .announcement-wrapper::before,
 .announcement-wrapper::after {
     content: '';
     position: absolute;
     top: 0;
     bottom: 0;
-    width: 50px;
+    width: 40px;
     z-index: 2;
     pointer-events: none;
 }
@@ -72,14 +71,19 @@
 }
 
 /* ==========================================
-   MARQUEE TRACK - The animated element
+   MARQUEE TRACK - Animated container
    ========================================== */
 .announcement-track {
     display: flex;
     align-items: center;
     white-space: nowrap;
     will-change: transform;
-    animation: marquee-rtl 25s linear infinite;
+    /* 
+     * Animation goes from 0% to -50%
+     * This moves content from RIGHT to LEFT
+     * Content is duplicated so loop is seamless
+     */
+    animation: marquee-move 30s linear infinite;
 }
 
 /* Pause on hover */
@@ -99,7 +103,6 @@
     font-weight: 500;
     white-space: nowrap;
     flex-shrink: 0;
-    direction: rtl;
 }
 
 .announcement-item i {
@@ -127,16 +130,16 @@
 }
 
 /* ==========================================
-   RTL ANIMATION
-   Moves from RIGHT (start off-screen) to LEFT
-   -50% because content is duplicated (2x)
+   ANIMATION: RIGHT → LEFT
+   translateX(-50%) moves content LEFT
    ========================================== */
-@keyframes marquee-rtl {
+@keyframes marquee-move {
     0% {
         transform: translateX(0%);
     }
+
     100% {
-        transform: translateX(50%);
+        transform: translateX(-50%);
     }
 }
 
@@ -155,12 +158,12 @@
     }
 
     .announcement-track {
-        animation-duration: 18s;
+        animation-duration: 20s;
     }
 
     .announcement-wrapper::before,
     .announcement-wrapper::after {
-        width: 30px;
+        width: 25px;
     }
 }
 
@@ -180,12 +183,12 @@
 
     .announcement-wrapper::before,
     .announcement-wrapper::after {
-        width: 20px;
+        width: 15px;
     }
 }
 
 /* ==========================================
-   REDUCED MOTION - Accessibility
+   REDUCED MOTION
    ========================================== */
 @media (prefers-reduced-motion: reduce) {
     .announcement-track {

@@ -9,7 +9,7 @@ try {
 }
 
 // 2. PWA Caching Strategy (Cache First, Network Fallback)
-const CACHE_NAME = 'empapy-v9-rtl-marquee';
+const CACHE_NAME = 'empapy-v10-direction-fix';
 const urlsToCache = [
   '/',
   '/css/app.css',
