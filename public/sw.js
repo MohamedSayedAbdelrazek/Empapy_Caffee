@@ -9,7 +9,7 @@ try {
 }
 
 // 2. PWA Caching Strategy (Cache First, Network Fallback)
-const CACHE_NAME = 'empapy-v7-announcement-bar-fix';
+const CACHE_NAME = 'empapy-v8-network-first-css';
 const urlsToCache = [
   '/',
   '/css/app.css',
@@ -78,8 +78,11 @@ self.addEventListener('fetch', event => {
   const isNavigationRequest = event.request.mode === 'navigate'
     || (event.request.headers.get('accept') && event.request.headers.get('accept').includes('text/html'));
 
-  // Check if this is a static asset
-  const isStaticAsset = /\.(css|js|png|jpg|jpeg|gif|svg|woff|woff2|ttf|ico|webp)$/i.test(url.pathname);
+  // Check if this is a CSS or JS file (use Network First for fresh updates)
+  const isCssOrJs = /\.(css|js)$/i.test(url.pathname) || url.search.includes('?v=');
+
+  // Check if this is a static asset (images, fonts)
+  const isStaticAsset = /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|ico|webp)$/i.test(url.pathname);
 
   if (isNavigationRequest) {
     // NETWORK FIRST for HTML pages - ensures fresh content after login/logout
@@ -100,8 +103,25 @@ self.addEventListener('fetch', event => {
           return caches.match(event.request);
         })
     );
+  } else if (isCssOrJs) {
+    // NETWORK FIRST for CSS/JS - ensures fresh styles and scripts
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+          if (response && response.status === 200) {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(event.request);
+        })
+    );
   } else if (isStaticAsset) {
-    // CACHE FIRST for static assets (CSS, JS, images)
+    // CACHE FIRST for images/fonts (they rarely change)
     event.respondWith(
       caches.match(event.request)
         .then(response => {
