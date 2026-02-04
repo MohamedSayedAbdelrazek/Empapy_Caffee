@@ -5,9 +5,9 @@
 @push('styles')
     <style>
         /* ==========================================
-                                                                                                   🎨 PREMIUM KANBAN BOARD STYLES
-                                                                                                   WOW-Factor Design with Glassmorphism
-                                                                                                   ========================================== */
+                                                                                                       🎨 PREMIUM KANBAN BOARD STYLES
+                                                                                                       WOW-Factor Design with Glassmorphism
+                                                                                                       ========================================== */
 
         /* Main Container */
         .kanban-container {
@@ -503,9 +503,9 @@
         }
 
         /* ==========================================
-                                   📱 MOBILE-FIRST RESPONSIVE DESIGN
-                                   Tab-based navigation for phones
-                                   ========================================== */
+                                       📱 MOBILE-FIRST RESPONSIVE DESIGN
+                                       Tab-based navigation for phones
+                                       ========================================== */
 
         /* Mobile Tab Navigation - Hidden on desktop */
         .mobile-tab-nav {
@@ -851,8 +851,8 @@
         }
 
         /* ==========================================
-                                                                                                   🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
-                                                                                                   ========================================== */
+                                                                                                       🎯 ORDER DETAILS MODAL - PREMIUM DESIGN
+                                                                                                       ========================================== */
 
         .order-modal-overlay {
             position: fixed;
@@ -1393,24 +1393,138 @@
             }
         }
 
-        /* Responsive */
+        /* 📱 Modal Mobile Responsive - Fixed Scrolling */
         @media (max-width: 600px) {
+            .order-modal-overlay {
+                padding: 0;
+                align-items: flex-end;
+            }
+
             .order-modal {
-                max-height: 95vh;
+                max-height: 90vh;
+                height: 90vh;
                 border-radius: 20px 20px 0 0;
                 margin-top: auto;
+                display: flex;
+                flex-direction: column;
+            }
+
+            .order-modal-header {
+                flex-shrink: 0;
+                padding: 16px 20px;
+            }
+
+            .order-modal-title h3 {
+                font-size: 1.1rem;
+            }
+
+            .order-modal-body {
+                flex: 1;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                max-height: none;
+            }
+
+            .order-modal-footer {
+                flex-shrink: 0;
+                padding: 15px 20px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+                background: rgba(26, 26, 46, 0.98);
+                position: sticky;
+                bottom: 0;
+            }
+
+            .quick-actions-title {
+                font-size: 0.8rem;
+                margin-bottom: 10px;
+            }
+
+            .quick-actions {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .quick-action-btn {
+                min-width: auto;
+                padding: 12px 10px;
+                font-size: 0.8rem;
+            }
+
+            .quick-action-btn span {
+                display: none;
+            }
+
+            .quick-action-btn i {
+                font-size: 1.2rem;
             }
 
             .customer-grid {
                 grid-template-columns: 1fr;
             }
 
-            .quick-actions {
-                flex-direction: column;
+            .modal-section {
+                padding: 15px 20px;
             }
 
-            .quick-action-btn {
-                min-width: 100%;
+            .modal-section-title {
+                font-size: 0.8rem;
+            }
+
+            /* Fix product item layout on mobile */
+            .modal-item {
+                padding: 10px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+
+            .modal-item-image {
+                width: 40px;
+                height: 40px;
+                flex-shrink: 0;
+            }
+
+            .modal-item-info {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .modal-item-name {
+                font-size: 0.85rem;
+                word-break: break-word;
+            }
+
+            .modal-item-quantity {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+                min-width: 40px;
+            }
+
+            .modal-item-price {
+                min-width: auto;
+                text-align: right;
+            }
+
+            .modal-item-price .unit {
+                font-size: 0.7rem;
+            }
+
+            .modal-item-price .total {
+                font-size: 0.85rem;
+            }
+
+            .modal-item-options {
+                width: 100%;
+                margin-top: 6px;
+            }
+
+            .option-badge {
+                font-size: 0.65rem;
+                padding: 3px 6px;
+            }
+
+            .summary-row {
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -2448,15 +2562,15 @@
                     <div class="modal-item-info">
                         <div class="modal-item-name">${item.name}</div>
                         ${item.options && item.options.length > 0 ? `
-                                                                            <div class="modal-item-options">
-                                                                                ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
+                                                                                <div class="modal-item-options">
+                                                                                    ${item.options.filter(opt => opt.value && opt.value !== 'null' && opt.value !== '').map(opt => `
                                     <span class="option-badge">
                                         ${opt.label}: ${opt.value}
                                         ${opt.price ? ` <small class="text-success">(${opt.price})</small>` : ''}
                                     </span>
                                 `).join('')}
-                                                                            </div>
-                                                                        ` : ''}
+                                                                                </div>
+                                                                            ` : ''}
                     </div>
                     <div class="modal-item-quantity">×${item.quantity}</div>
                     <div class="modal-item-price">

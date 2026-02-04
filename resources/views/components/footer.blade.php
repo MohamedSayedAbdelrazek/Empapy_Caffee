@@ -8,7 +8,7 @@
                 fill="#1a1a1a" />
         </svg>
     </div>
- 
+
 
     <div class="footer-content">
         <div class="container">
@@ -26,9 +26,13 @@
                     </p>
                     <div class="social-links">
                         <a href="https://www.facebook.com/profile.php?id=61559046937280" target="_blank"
-                            class="social-link"><i class="bi bi-facebook"></i></a>
-                        <a href="https://wa.me/201151579225" target="_blank" class="social-link"><i
+                            class="social-link" title="فيسبوك"><i class="bi bi-facebook"></i></a>
+                        <a href="https://wa.me/201151579225" target="_blank" class="social-link" title="واتساب"><i
                                 class="bi bi-whatsapp"></i></a>
+                        <a href="https://www.instagram.com/empapy_coffee" target="_blank" class="social-link"
+                            title="انستجرام"><i class="bi bi-instagram"></i></a>
+                        <a href="https://www.tiktok.com/@empapy_coffe" target="_blank" class="social-link"
+                            title="تيك توك"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
 
@@ -92,13 +96,13 @@
                         </li>
                     </ul>
 
-                   
+
                 </div>
-                
+
             </div>
         </div>
     </div>
- <!-- Creative Map Section -->
+    <!-- Creative Map Section -->
     <div class="footer-map-section" data-aos="fade-up">
         <div class="container">
             <div class="row justify-content-center">
@@ -143,7 +147,7 @@
             </div>
         </div>
     </div>
-  
+
     <style>
         /* Creative Map Section Styling */
         .footer-map-section {
