@@ -94,8 +94,8 @@
     <!-- UX Enhancements CSS -->
     <link rel="stylesheet" href="{{ asset('css/ux-enhancements.css') }}">
 
-    <!-- Announcement Bar CSS (v7 - cache bust) -->
-    <link rel="stylesheet" href="{{ asset('css/announcement-bar.css') }}?v=7">
+    <!-- Announcement Bar CSS (v9 - RTL professional) -->
+    <link rel="stylesheet" href="{{ asset('css/announcement-bar.css') }}?v=9">
 
     <!-- Loyalty System CSS -->
     <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">

@@ -1,7 +1,7 @@
 /**
  * ☕ Empapy Caffe - Premium Announcement Bar
- * Fixed infinite scroll for RTL Arabic
- * v2.0 - Complete rewrite
+ * Professional RTL infinite scroll marquee
+ * v3.0 - Enters from RIGHT, exits LEFT
  */
 
 /* ==========================================
@@ -16,8 +16,7 @@
     height: 40px;
     display: flex;
     align-items: center;
-    direction: ltr;
-    /* Force LTR for animation, content stays RTL */
+    direction: rtl; /* RTL for Arabic */
 }
 
 /* Light mode support */
@@ -29,27 +28,58 @@
 }
 
 /* ==========================================
-   MARQUEE WRAPPER
+   MARQUEE WRAPPER - Full width container
    ========================================== */
 .announcement-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
     display: flex;
     align-items: center;
-    width: 100%;
-    overflow: hidden;
-    /* Fade edges */
-    mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+}
+
+/* Fade edges for premium look */
+.announcement-wrapper::before,
+.announcement-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.announcement-wrapper::before {
+    right: 0;
+    background: linear-gradient(to left, #2C1810 0%, transparent 100%);
+}
+
+.announcement-wrapper::after {
+    left: 0;
+    background: linear-gradient(to right, #1a1a1a 0%, transparent 100%);
+}
+
+[data-theme="light"] .announcement-wrapper::before,
+.light-mode .announcement-wrapper::before {
+    background: linear-gradient(to left, #fff8e7 0%, transparent 100%);
+}
+
+[data-theme="light"] .announcement-wrapper::after,
+.light-mode .announcement-wrapper::after {
+    background: linear-gradient(to right, #f8f5f0 0%, transparent 100%);
 }
 
 /* ==========================================
-   MARQUEE TRACK - Contains duplicated content
+   MARQUEE TRACK - The animated element
    ========================================== */
 .announcement-track {
     display: flex;
     align-items: center;
-    flex-shrink: 0;
-    animation: marquee-scroll 25s linear infinite;
+    white-space: nowrap;
     will-change: transform;
+    animation: marquee-rtl 25s linear infinite;
 }
 
 /* Pause on hover */
@@ -63,14 +93,13 @@
 .announcement-item {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 25px;
+    gap: 10px;
+    padding: 0 30px;
     font-size: 0.9rem;
     font-weight: 500;
     white-space: nowrap;
     flex-shrink: 0;
     direction: rtl;
-    /* Arabic text stays RTL */
 }
 
 .announcement-item i {
@@ -87,7 +116,7 @@
 .announcement-divider {
     color: #C9A227;
     font-size: 0.75rem;
-    opacity: 0.5;
+    opacity: 0.6;
     flex-shrink: 0;
     padding: 0 5px;
 }
@@ -98,16 +127,16 @@
 }
 
 /* ==========================================
-   ANIMATION - Moves LEFT (for LTR container)
-   Content scrolls: right → left
+   RTL ANIMATION
+   Moves from RIGHT (start off-screen) to LEFT
+   -50% because content is duplicated (2x)
    ========================================== */
-@keyframes marquee-scroll {
+@keyframes marquee-rtl {
     0% {
-        transform: translateX(0);
+        transform: translateX(0%);
     }
-
     100% {
-        transform: translateX(-50%);
+        transform: translateX(50%);
     }
 }
 
@@ -121,11 +150,17 @@
 
     .announcement-item {
         font-size: 0.8rem;
-        padding: 0 18px;
+        padding: 0 20px;
+        gap: 8px;
     }
 
     .announcement-track {
         animation-duration: 18s;
+    }
+
+    .announcement-wrapper::before,
+    .announcement-wrapper::after {
+        width: 30px;
     }
 }
 
@@ -136,16 +171,21 @@
 
     .announcement-item {
         font-size: 0.75rem;
-        padding: 0 14px;
+        padding: 0 15px;
     }
 
     .announcement-track {
-        animation-duration: 14s;
+        animation-duration: 15s;
+    }
+
+    .announcement-wrapper::before,
+    .announcement-wrapper::after {
+        width: 20px;
     }
 }
 
 /* ==========================================
-   REDUCED MOTION
+   REDUCED MOTION - Accessibility
    ========================================== */
 @media (prefers-reduced-motion: reduce) {
     .announcement-track {
