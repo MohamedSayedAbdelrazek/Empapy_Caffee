@@ -30,6 +30,7 @@ class Product extends Model
         'has_weight_options',
         'has_roast_options',
         'has_additive_options',
+        'has_flavor_options',
     ];
 
     protected $casts = [
@@ -41,6 +42,7 @@ class Product extends Model
         'has_weight_options' => 'boolean',
         'has_roast_options' => 'boolean',
         'has_additive_options' => 'boolean',
+        'has_flavor_options' => 'boolean',
     ];
 
     /**
@@ -137,11 +139,31 @@ class Product extends Model
     }
 
     /**
+     * Get flavor option for this product
+     */
+    public function flavorOption(): HasMany
+    {
+        return $this->hasMany(ProductOption::class)->where('type', ProductOption::TYPE_FLAVOR);
+    }
+
+    /**
      * Check if product has any options
      */
     public function getHasOptionsAttribute(): bool
     {
-        return $this->has_weight_options || $this->has_roast_options || $this->has_additive_options;
+        return $this->has_weight_options || $this->has_roast_options || $this->has_additive_options || $this->has_flavor_options;
+    }
+
+    /**
+     * Get flavor values for this product
+     */
+    public function getFlavorValuesAttribute()
+    {
+        if (!$this->has_flavor_options) {
+            return collect();
+        }
+
+        return $this->flavorOption()->with('values')->get()->flatMap->values;
     }
 
     /**
@@ -190,19 +212,27 @@ class Product extends Model
      */
     public function getStartingPriceAttribute(): float
     {
-        // If no weight options, use product base price
-        if (!$this->has_weight_options) {
-            $basePrice = $this->current_price;
-        } else {
-            // Weight options: get the minimum/default weight PRICE (not modifier)
+        // If weight/flavor options exist, base price comes from them
+        if ($this->has_weight_options) {
+            // Weight options: get the default weight PRICE
             $weightValues = $this->weight_values;
             if ($weightValues->isNotEmpty()) {
                 $default = $weightValues->where('is_default', true)->first();
-                // The price_modifier for weight IS the full price
                 $basePrice = $default ? $default->price_modifier : $weightValues->min('price_modifier');
             } else {
                 $basePrice = $this->current_price;
             }
+        } elseif ($this->has_flavor_options) {
+            // Flavor options: get the default flavor PRICE
+            $flavorValues = $this->flavor_values;
+            if ($flavorValues->isNotEmpty()) {
+                $default = $flavorValues->where('is_default', true)->first();
+                $basePrice = $default ? $default->price_modifier : $flavorValues->min('price_modifier');
+            } else {
+                $basePrice = $this->current_price;
+            }
+        } else {
+            $basePrice = $this->current_price;
         }
 
         $additionalModifiers = 0;
@@ -233,10 +263,13 @@ class Product extends Model
      */
     public function getMinPriceAttribute(): float
     {
-        // Base: lowest weight price or product price
+        // Base: lowest weight/flavor price or product price
         if ($this->has_weight_options) {
             $weightValues = $this->weight_values;
             $basePrice = $weightValues->isNotEmpty() ? $weightValues->min('price_modifier') : $this->current_price;
+        } elseif ($this->has_flavor_options) {
+            $flavorValues = $this->flavor_values;
+            $basePrice = $flavorValues->isNotEmpty() ? $flavorValues->min('price_modifier') : $this->current_price;
         } else {
             $basePrice = $this->current_price;
         }
@@ -267,10 +300,13 @@ class Product extends Model
      */
     public function getMaxPriceAttribute(): float
     {
-        // Base: highest weight price or product price
+        // Base: highest weight/flavor price or product price
         if ($this->has_weight_options) {
             $weightValues = $this->weight_values;
             $basePrice = $weightValues->isNotEmpty() ? $weightValues->max('price_modifier') : $this->current_price;
+        } elseif ($this->has_flavor_options) {
+            $flavorValues = $this->flavor_values;
+            $basePrice = $flavorValues->isNotEmpty() ? $flavorValues->max('price_modifier') : $this->current_price;
         } else {
             $basePrice = $this->current_price;
         }
@@ -300,7 +336,7 @@ class Product extends Model
      * Calculate price with selected options
      * 
      * NEW LOGIC:
-     * - If weight option selected: use its price_modifier AS the base price
+     * - If weight/flavor option selected: use its price_modifier AS the base price
      * - Roast/Additive modifiers are ADDED to this
      */
     public function calculatePriceWithOptions(array $selectedOptionValueIds): float
@@ -314,19 +350,24 @@ class Product extends Model
         $finalPrice = $this->current_price;
         $weightValueId = null;
 
-        // 1. Find the weight first (it sets the base price)
+        // 1. Find the weight or flavor first (it sets the base price)
         foreach ($values as $value) {
-            if ($value->option->type === ProductOption::TYPE_WEIGHT) {
-                // Weight: the price_modifier IS the full price
+            if ($value->option->type === ProductOption::TYPE_WEIGHT || $value->option->type === ProductOption::TYPE_FLAVOR) {
+                // Weight/Flavor: the price_modifier IS the full price
                 $finalPrice = $value->price_modifier;
-                $weightValueId = $value->id;
-                break; // Assuming only one weight can be selected
+
+                if ($value->option->type === ProductOption::TYPE_WEIGHT) {
+                    $weightValueId = $value->id;
+                }
+                // We assume only one base price setter (weight OR flavor) usually applies
+                // If both, the last one visited would overwrite, or we could break.
+                // Given the current structure, let's allow overwrite but practically it's one or the other.
             }
         }
 
         // 2. Add modifiers
         foreach ($values as $value) {
-            if ($value->option->type === ProductOption::TYPE_WEIGHT) {
+            if ($value->option->type === ProductOption::TYPE_WEIGHT || $value->option->type === ProductOption::TYPE_FLAVOR) {
                 continue; // Already handled
             }
 

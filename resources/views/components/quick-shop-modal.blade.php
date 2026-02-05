@@ -458,6 +458,11 @@
                 html += renderOptionGroup('weight', 'الوزن', optionsByType.weight, true);
             }
 
+            // Flavor Options (uses full price like weight)
+            if (optionsByType.flavor) {
+                html += renderOptionGroup('flavor', 'النكهة', optionsByType.flavor, true);
+            }
+
             // Roast Options
             if (optionsByType.roast) {
                 html += renderOptionGroup('roast', 'التحميص', optionsByType.roast, false);
@@ -583,24 +588,27 @@
         if (!currentProductData) return;
 
         const optionValueIds = Object.values(selectedOptions);
-        // If we have a weight selected, the base price is usually overridden by the weight price
+        // If we have a weight or flavor selected, the base price is usually overridden
         // But we start with calculatedPrice = 0 and build it up
-        let calculatedPrice = 0;
+        let calculatedPrice = currentProductData.current_price;
 
-        // 1. Determine Base Price (Weight or Default Product Price)
+        // 1. Determine Base Price (Weight overrides product price)
         if (selectedOptions.weight) {
             const weightOption = currentProductData.options.find(opt => opt.id === selectedOptions.weight);
             if (weightOption) {
                 calculatedPrice = weightOption.price_modifier;
-            } else {
-                calculatedPrice = currentProductData.current_price;
             }
-        } else {
-            // No weight selected (or product has no weight options), use base price
-            calculatedPrice = currentProductData.current_price;
         }
 
-        // 2. Add Modifiers (Roast & Additive)
+        // 2. Flavor also overrides base price (like weight)
+        if (selectedOptions.flavor) {
+            const flavorOption = currentProductData.options.find(opt => opt.id === selectedOptions.flavor);
+            if (flavorOption) {
+                calculatedPrice = flavorOption.price_modifier;
+            }
+        }
+
+        // 3. Add Modifiers (Roast & Additive)
         ['roast', 'additive'].forEach(type => {
             if (selectedOptions[type]) {
                 const optionId = selectedOptions[type];

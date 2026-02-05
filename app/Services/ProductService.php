@@ -210,6 +210,13 @@ class ProductService
                 $this->deleteOptionType($product, ProductOption::TYPE_ADDITIVE);
             }
 
+            // Sync flavor options
+            if (isset($optionsData['flavor_values']) && $product->has_flavor_options) {
+                $this->syncOptionType($product, ProductOption::TYPE_FLAVOR, $optionsData['flavor_values']);
+            } else {
+                $this->deleteOptionType($product, ProductOption::TYPE_FLAVOR);
+            }
+
             // Sync additive weight prices matrix
             if (isset($optionsData['additive_weight_prices']) && $product->has_weight_options && $product->has_additive_options) {
                 $this->syncAdditiveWeightPrices($product, $optionsData['additive_weight_prices']);
@@ -366,6 +373,7 @@ class ProductService
             ProductOption::TYPE_WEIGHT => 'Weight',
             ProductOption::TYPE_ROAST => 'Roasting Level',
             ProductOption::TYPE_ADDITIVE => 'Additives',
+            ProductOption::TYPE_FLAVOR => 'Flavor',
             default => $type,
         };
     }
@@ -379,6 +387,7 @@ class ProductService
             ProductOption::TYPE_WEIGHT => 'الوزن',
             ProductOption::TYPE_ROAST => 'التحميص',
             ProductOption::TYPE_ADDITIVE => 'الإضافات',
+            ProductOption::TYPE_FLAVOR => 'النكهة',
             default => $type,
         };
     }
@@ -392,6 +401,7 @@ class ProductService
             ProductOption::TYPE_WEIGHT => 1,
             ProductOption::TYPE_ROAST => 2,
             ProductOption::TYPE_ADDITIVE => 3,
+            ProductOption::TYPE_FLAVOR => 4,
             default => 99,
         };
     }

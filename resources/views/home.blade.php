@@ -100,27 +100,20 @@
                 <h2>شاهد قصتنا</h2>
                 <p>اكتشف رحلة القهوة الاستثنائية معنا</p>
             </div>
-            
+
             <div class="video-container" data-aos="zoom-in" data-aos-delay="100">
                 <div class="video-wrapper">
-                    <video 
-                        id="empapyVideo"
-                        class="video-player"
-                        controls
-                        playsinline
-                        preload="metadata"
-                        poster="{{ asset('images/video-poster.jpg') }}"
-                        aria-label="فيديو إمبابي كافيه - رحلة القهوة"
-                    >
+                    <video id="empapyVideo" class="video-player" controls playsinline preload="metadata"
+                        poster="{{ asset('images/video-poster.jpg') }}" aria-label="فيديو إمبابي كافيه - رحلة القهوة">
                         <source src="{{ asset('assets/videos/Empapy_video.mp4') }}" type="video/mp4">
                         <p class="video-fallback">
-                            عذراً، متصفحك لا يدعم تشغيل الفيديو. 
+                            عذراً، متصفحك لا يدعم تشغيل الفيديو.
                             <a href="{{ asset('assets/videos/Empapy_video.mp4') }}" download>
                                 اضغط هنا لتحميل الفيديو
                             </a>
                         </p>
                     </video>
-                    
+
                     <!-- Custom Play Button Overlay -->
                     <button class="video-play-overlay" aria-label="تشغيل الفيديو" id="videoPlayBtn">
                         <div class="play-btn-circle">
@@ -129,7 +122,7 @@
                         <span class="play-text">اضغط للتشغيل</span>
                     </button>
                 </div>
-                
+
                 <!-- Marketing Slogan -->
                 <div class="marketing-slogan" data-aos="fade-up" data-aos-delay="200">
                     <div class="slogan-content">
@@ -496,8 +489,8 @@
         }
 
         /* =========================================
-                                                                           CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                                                           ========================================= */
+                                                                               CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                                                               ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
@@ -988,8 +981,8 @@
         }
 
         /* =========================================
-           EMPAPY VIDEO SECTION STYLES
-           ========================================= */
+               EMPAPY VIDEO SECTION STYLES
+               ========================================= */
         .empapy-video-section {
             background: linear-gradient(135deg, #1a1a1a 0%, #2c1810 50%, #1a1a1a 100%);
             position: relative;
@@ -1026,7 +1019,7 @@
             position: relative;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 
+            box-shadow:
                 0 25px 80px rgba(0, 0, 0, 0.5),
                 0 0 0 1px rgba(201, 162, 39, 0.3),
                 0 0 60px rgba(201, 162, 39, 0.1);
@@ -1075,7 +1068,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 
+            box-shadow:
                 0 10px 40px rgba(201, 162, 39, 0.5),
                 0 0 30px rgba(201, 162, 39, 0.3);
             transition: all 0.3s ease;
@@ -1084,19 +1077,22 @@
 
         .video-play-overlay:hover .play-btn-circle {
             transform: scale(1.1);
-            box-shadow: 
+            box-shadow:
                 0 15px 50px rgba(201, 162, 39, 0.6),
                 0 0 40px rgba(201, 162, 39, 0.4);
         }
 
         @keyframes playPulse {
-            0%, 100% {
-                box-shadow: 
+
+            0%,
+            100% {
+                box-shadow:
                     0 10px 40px rgba(201, 162, 39, 0.5),
                     0 0 30px rgba(201, 162, 39, 0.3);
             }
+
             50% {
-                box-shadow: 
+                box-shadow:
                     0 10px 50px rgba(201, 162, 39, 0.7),
                     0 0 50px rgba(201, 162, 39, 0.5);
             }
@@ -1140,9 +1136,12 @@
         }
 
         @keyframes iconFloat {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(0);
             }
+
             50% {
                 transform: translateY(-8px);
             }
@@ -1170,9 +1169,12 @@
         }
 
         @keyframes shimmer {
-            0%, 100% {
+
+            0%,
+            100% {
                 background-position: 0% 50%;
             }
+
             50% {
                 background-position: 100% 50%;
             }
@@ -1208,10 +1210,13 @@
         }
 
         @keyframes starPulse {
-            0%, 100% {
+
+            0%,
+            100% {
                 opacity: 0.6;
                 transform: scale(1);
             }
+
             50% {
                 opacity: 1;
                 transform: scale(1.2);

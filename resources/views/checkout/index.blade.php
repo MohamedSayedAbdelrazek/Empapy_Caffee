@@ -372,6 +372,15 @@
                                             class="rounded" style="width: 60px; height: 60px; object-fit: cover;">
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1 small">{{ $item['product']->name }}</h6>
+                                            @if (!empty($item['options']))
+                                                <div class="small text-muted mb-1" style="font-size: 0.8rem;">
+                                                    @foreach ($item['options'] as $option)
+                                                        <span class="d-block">
+                                                            {{ $option['label'] }}: {{ $option['value'] }}
+                                                        </span>
+                                                    @endforeach
+                                                </div>
+                                            @endif
                                             <small class="text-muted">الكمية: {{ $item['quantity'] }}</small>
                                         </div>
                                         <span class="fw-bold">{{ number_format($item['subtotal']) }} ج.م</span>

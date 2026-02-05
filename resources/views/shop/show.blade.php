@@ -247,6 +247,7 @@
                                     $weightValues = $product->weight_values;
                                     $roastValues = $product->roast_values;
                                     $additiveValues = $product->additive_values;
+                                    $flavorValues = $product->flavor_values;
                                     $basePrice = $product->current_price;
                                 @endphp
 
@@ -332,6 +333,33 @@
                                         </div>
                                         <input type="hidden" name="selected_additive" id="selected_additive"
                                             value="{{ $additiveValues->firstWhere('is_default', true)?->id ?? $additiveValues->first()?->id }}">
+                                    </div>
+                                @endif
+
+                                {{-- Flavor Options --}}
+                                @if ($product->has_flavor_options && $flavorValues->isNotEmpty())
+                                    <div class="option-group glass-card p-3 mb-3">
+                                        <h6 class="option-title mb-3">
+                                            <i class="bi bi-palette text-gold me-2"></i>
+                                            النكهة
+                                        </h6>
+                                        <div class="option-pills d-flex flex-wrap gap-2">
+                                            @foreach ($flavorValues as $value)
+                                                <button type="button"
+                                                    class="option-pill flavor {{ $value->is_default ? 'active' : '' }}"
+                                                    data-option-type="flavor" data-option-id="{{ $value->id }}"
+                                                    data-price-modifier="{{ $value->price_modifier }}"
+                                                    data-value="{{ $value->value }}">
+                                                    <span class="option-value">{{ $value->value }}</span>
+                                                    {{-- Flavor shows full price (like weight) --}}
+                                                    <span class="option-price-tag">
+                                                        {{ number_format($value->price_modifier) }} ج.م
+                                                    </span>
+                                                </button>
+                                            @endforeach
+                                        </div>
+                                        <input type="hidden" name="selected_flavor" id="selected_flavor"
+                                            value="{{ $flavorValues->firstWhere('is_default', true)?->id ?? $flavorValues->first()?->id }}">
                                     </div>
                                 @endif
 
@@ -1372,26 +1400,36 @@
 
                 // Calculate and update dynamic price
                 function updateDynamicPrice() {
-                    let weightPrice = basePrice; // Default to product base if no weight option
+                    let finalPrice = basePrice; // Default to product base
                     let additionalModifiers = 0;
                     const breakdown = [];
 
-                    // 1. Find selected weight first to support matrix lookups
+                    // 1. Find selected weight first (weight overrides base price)
                     const activeWeightPill = document.querySelector(
                         '.option-pill.active[data-option-type="weight"]');
                     let selectedWeightId = null;
 
                     if (activeWeightPill) {
                         // Weight: the price_modifier IS the full price
-                        weightPrice = parseFloat(activeWeightPill.dataset.priceModifier || 0);
+                        finalPrice = parseFloat(activeWeightPill.dataset.priceModifier || 0);
                         selectedWeightId = activeWeightPill.dataset.optionId;
-                        breakdown.push(`${activeWeightPill.dataset.value}: ${formatNumber(weightPrice)} ج.م`);
+                        breakdown.push(`${activeWeightPill.dataset.value}: ${formatNumber(finalPrice)} ج.م`);
                     }
 
-                    // 2. Process other options
+                    // 2. Find selected flavor (flavor also overrides base price like weight)
+                    const activeFlavorPill = document.querySelector(
+                        '.option-pill.active[data-option-type="flavor"]');
+
+                    if (activeFlavorPill) {
+                        // Flavor: the price_modifier IS the full price (like weight)
+                        finalPrice = parseFloat(activeFlavorPill.dataset.priceModifier || 0);
+                        breakdown.push(`${activeFlavorPill.dataset.value}: ${formatNumber(finalPrice)} ج.م`);
+                    }
+
+                    // 3. Process other options (roast, additive - these ADD to the price)
                     document.querySelectorAll('.option-pill.active').forEach(pill => {
                         const type = pill.dataset.optionType;
-                        if (type === 'weight') return; // Handled above
+                        if (type === 'weight' || type === 'flavor') return; // Handled above
 
                         let modifier = parseFloat(pill.dataset.priceModifier || 0);
                         const value = pill.dataset.value;
@@ -1412,7 +1450,7 @@
                         }
                     });
 
-                    const finalPrice = weightPrice + additionalModifiers;
+                    finalPrice = finalPrice + additionalModifiers;
 
                     // Animate price change
                     if (dynamicPriceEl) {

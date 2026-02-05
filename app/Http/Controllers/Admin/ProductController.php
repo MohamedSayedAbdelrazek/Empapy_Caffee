@@ -59,6 +59,7 @@ class ProductController extends Controller
         $validated['has_weight_options'] = $request->has('has_weight_options');
         $validated['has_roast_options'] = $request->has('has_roast_options');
         $validated['has_additive_options'] = $request->has('has_additive_options');
+        $validated['has_flavor_options'] = $request->has('has_flavor_options');
 
         // Handle main image upload
         if ($request->hasFile('image')) {
@@ -78,6 +79,7 @@ class ProductController extends Controller
             'weight_values' => $request->input('weight_values', []),
             'roast_values' => $request->input('roast_values', []),
             'additive_values' => $request->input('additive_values', []),
+            'flavor_values' => $request->input('flavor_values', []),
             'additive_weight_prices' => $request->input('additive_weight_prices', []),
         ]);
 
@@ -111,13 +113,15 @@ class ProductController extends Controller
         $weightValues = $product->weight_values;
         $roastValues = $product->roast_values;
         $additiveValues = $product->additive_values;
+        $flavorValues = $product->flavor_values;
 
         return view('admin.products.edit', compact(
             'product',
             'categories',
             'weightValues',
             'roastValues',
-            'additiveValues'
+            'additiveValues',
+            'flavorValues'
         ));
     }
 
@@ -135,6 +139,7 @@ class ProductController extends Controller
         $validated['has_weight_options'] = $request->has('has_weight_options');
         $validated['has_roast_options'] = $request->has('has_roast_options');
         $validated['has_additive_options'] = $request->has('has_additive_options');
+        $validated['has_flavor_options'] = $request->has('has_flavor_options');
 
         // Handle main image upload
         if ($request->hasFile('image')) {
@@ -160,6 +165,7 @@ class ProductController extends Controller
             'weight_values' => $request->input('weight_values', []),
             'roast_values' => $request->input('roast_values', []),
             'additive_values' => $request->input('additive_values', []),
+            'flavor_values' => $request->input('flavor_values', []),
             'additive_weight_prices' => $request->input('additive_weight_prices', []),
         ]);
 

@@ -63,6 +63,7 @@ class CartService
                         'weight' => 'الوزن',
                         'roast' => 'التحميص',
                         'additive' => 'الإضافات',
+                        'flavor' => 'النكهة',
                         'size' => 'الحجم',
                     ];
 

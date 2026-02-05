@@ -15,6 +15,7 @@ class ProductOption extends Model
     const TYPE_WEIGHT = 'weight';
     const TYPE_ROAST = 'roast';
     const TYPE_ADDITIVE = 'additive';
+    const TYPE_FLAVOR = 'flavor';
 
     protected $fillable = [
         'product_id',
@@ -62,6 +63,7 @@ class ProductOption extends Model
             self::TYPE_WEIGHT => 'الوزن',
             self::TYPE_ROAST => 'التحميص',
             self::TYPE_ADDITIVE => 'الإضافات',
+            self::TYPE_FLAVOR => 'النكهة',
             default => $this->type,
         };
     }
@@ -88,5 +90,13 @@ class ProductOption extends Model
     public function scopeAdditives($query)
     {
         return $query->where('type', self::TYPE_ADDITIVE);
+    }
+
+    /**
+     * Scope for flavor options
+     */
+    public function scopeFlavors($query)
+    {
+        return $query->where('type', self::TYPE_FLAVOR);
     }
 }

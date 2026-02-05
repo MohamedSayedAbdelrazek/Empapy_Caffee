@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Services\CartService;
 use App\Services\FirebaseNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,37 +13,26 @@ use Illuminate\Support\Facades\Log;
 
 class CheckoutController extends Controller
 {
+    protected CartService $cartService;
+
+    public function __construct(CartService $cartService)
+    {
+        $this->cartService = $cartService;
+    }
     /**
      * Display checkout page
      */
     public function index()
     {
-        $cart = session()->get('cart', []);
+        $cartData = $this->cartService->getCartWithProducts();
 
-        if (empty($cart)) {
+        if ($cartData['count'] === 0) {
             return redirect()->route('cart.index')
                 ->with('error', 'سلة التسوق فارغة');
         }
 
-        $cartItems = [];
-        $subtotal = 0;
-
-        foreach ($cart as $key => $item) {
-            $product = Product::find($item['product_id']);
-            if ($product) {
-                $options = $item['options'] ?? [];
-                $optionValueIds = array_values($options);
-                $unitPrice = $product->calculatePriceWithOptions($optionValueIds);
-
-                $cartItems[] = [
-                    'product' => $product,
-                    'quantity' => $item['quantity'],
-                    'subtotal' => $unitPrice * $item['quantity'],
-                    'options' => $options
-                ];
-                $subtotal += $unitPrice * $item['quantity'];
-            }
-        }
+        $cartItems = $cartData['items'];
+        $subtotal = $cartData['total'];
 
         // Create view data
         $shippingZones = \App\Models\ShippingZone::active()->ordered()->get();
@@ -331,15 +321,7 @@ class CheckoutController extends Controller
         // Required subtotal from cart session if not passed
         $subtotal = $request->subtotal;
         if (!$subtotal) {
-            $cart = session()->get('cart', []);
-            $subtotal = 0;
-            foreach ($cart as $item) {
-                $product = Product::find($item['product_id']);
-                if ($product) {
-                    $unitPrice = $product->calculatePriceWithOptions(array_values($item['options'] ?? []));
-                    $subtotal += $unitPrice * $item['quantity'];
-                }
-            }
+            $subtotal = $this->cartService->getCartTotal();
         }
 
         $shipping = $subtotal >= $freeThreshold ? 0 : $fee;
