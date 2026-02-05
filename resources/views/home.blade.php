@@ -93,50 +93,102 @@
         </div>
     </section>
 
-    <!-- Empapy Video Section -->
-    <section class="empapy-video-section py-5" data-aos="fade-up">
-        <div class="container">
-            <div class="section-title text-center mb-4" data-aos="fade-up">
-                <h2>شاهد قصتنا</h2>
-                <p>اكتشف رحلة القهوة الاستثنائية معنا</p>
+    <!-- 🎬 Cinematic Video Showcase Section -->
+    <section class="cinema-video-section" data-aos="fade-up">
+        <!-- Animated Background -->
+        <div class="cinema-bg">
+            <div class="cinema-gradient"></div>
+            <div class="floating-particles" id="videoParticles"></div>
+        </div>
+
+        <div class="container position-relative">
+            <!-- Cinematic Title -->
+            <div class="cinema-header text-center" data-aos="fade-down">
+                <div class="cinema-badge">
+                    <i class="bi bi-film"></i>
+                    <span>تجربة سينمائية</span>
+                </div>
+                <h2 class="cinema-title">
+                    <span class="title-line">شاهد</span>
+                    <span class="title-gold">قصتنا</span>
+                </h2>
+                <p class="cinema-subtitle">رحلة من حبة البن إلى فنجانك</p>
             </div>
 
-            <div class="video-container" data-aos="zoom-in" data-aos-delay="100">
-                <div class="video-wrapper">
-                    <video id="empapyVideo" class="video-player" controls playsinline preload="metadata"
+            <!-- Cinema Frame -->
+            <div class="cinema-frame" data-aos="zoom-in" data-aos-delay="200">
+                <!-- Decorative Corners -->
+                <div class="frame-corner top-left"></div>
+                <div class="frame-corner top-right"></div>
+                <div class="frame-corner bottom-left"></div>
+                <div class="frame-corner bottom-right"></div>
+
+                <!-- Glow Effect -->
+                <div class="frame-glow"></div>
+
+                <!-- Video Container -->
+                <div class="cinema-video-wrapper">
+                    <video id="empapyVideo" class="cinema-video" playsinline preload="metadata"
                         poster="{{ asset('images/video-poster.jpg') }}" aria-label="فيديو إمبابي كافيه - رحلة القهوة">
                         <source src="{{ asset('assets/videos/Empapy_video.mp4') }}" type="video/mp4">
-                        <p class="video-fallback">
-                            عذراً، متصفحك لا يدعم تشغيل الفيديو.
-                            <a href="{{ asset('assets/videos/Empapy_video.mp4') }}" download>
-                                اضغط هنا لتحميل الفيديو
-                            </a>
-                        </p>
                     </video>
 
-                    <!-- Custom Play Button Overlay -->
-                    <button class="video-play-overlay" aria-label="تشغيل الفيديو" id="videoPlayBtn">
-                        <div class="play-btn-circle">
-                            <i class="bi bi-play-fill"></i>
+                    <!-- Custom Play Button with Sound Waves -->
+                    <div class="cinema-play-overlay" id="cinemaPlayBtn">
+                        <!-- Sound Wave Animation -->
+                        <div class="sound-waves">
+                            <span class="wave"></span>
+                            <span class="wave"></span>
+                            <span class="wave"></span>
                         </div>
-                        <span class="play-text">اضغط للتشغيل</span>
-                    </button>
+
+                        <!-- Play Button -->
+                        <div class="cinema-play-btn">
+                            <div class="play-ring"></div>
+                            <div class="play-icon">
+                                <i class="bi bi-play-fill"></i>
+                            </div>
+                        </div>
+
+                        <span class="cinema-play-text">اضغط لتشغيل الفيديو</span>
+                    </div>
+
+                    <!-- Video Controls Overlay (appears on hover when playing) -->
+                    <div class="cinema-controls" id="cinemaControls">
+                        <button class="control-btn" id="cinemaPauseBtn">
+                            <i class="bi bi-pause-fill"></i>
+                        </button>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                        <button class="control-btn" id="cinemaFullscreen">
+                            <i class="bi bi-fullscreen"></i>
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Marketing Slogan -->
-                <div class="marketing-slogan" data-aos="fade-up" data-aos-delay="200">
-                    <div class="slogan-content">
-                        <i class="bi bi-cup-hot-fill slogan-icon"></i>
-                        <h3 class="slogan-text">
-                            <span class="slogan-highlight">كل رشفة</span> تحكي قصة شغف..
-                            <span class="slogan-sub">اكتشف طعم القهوة الأصيلة</span>
-                        </h3>
+                <!-- Film Strip Decoration -->
+                <div class="film-strip top"></div>
+                <div class="film-strip bottom"></div>
+            </div>
+
+            <!-- Premium Slogan -->
+            <div class="cinema-slogan" data-aos="fade-up" data-aos-delay="400">
+                <div class="slogan-wrapper">
+                    <div class="slogan-icon-box">
+                        <i class="bi bi-cup-hot-fill"></i>
                     </div>
-                    <div class="slogan-decoration">
-                        <span class="decoration-line"></span>
-                        <i class="bi bi-stars"></i>
-                        <span class="decoration-line"></span>
+                    <div class="slogan-text-box">
+                        <p class="slogan-main">
+                            <span class="gold-text">كل رشفة</span> تحكي قصة شغف
+                        </p>
+                        <p class="slogan-sub">اكتشف طعم القهوة الأصيلة من إمبابي</p>
                     </div>
+                </div>
+                <div class="slogan-divider">
+                    <span class="divider-line"></span>
+                    <i class="bi bi-stars"></i>
+                    <span class="divider-line"></span>
                 </div>
             </div>
         </div>
@@ -489,8 +541,8 @@
         }
 
         /* =========================================
-                                                                               CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                                                               ========================================= */
+                                                                                           CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                                                                           ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
@@ -981,158 +1033,473 @@
         }
 
         /* =========================================
-               EMPAPY VIDEO SECTION STYLES
-               ========================================= */
-        .empapy-video-section {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2c1810 50%, #1a1a1a 100%);
+                           🎬 CINEMATIC VIDEO SECTION STYLES
+                   ========================================= */
+        .cinema-video-section {
             position: relative;
+            padding: 80px 0;
             overflow: hidden;
+            background: linear-gradient(180deg, #0d0d0d 0%, #1a1208 50%, #0d0d0d 100%);
         }
 
-        .empapy-video-section::before {
-            content: '';
+        /* Animated Background */
+        .cinema-bg {
             position: absolute;
             inset: 0;
-            background: radial-gradient(circle at 50% 0%, rgba(201, 162, 39, 0.1) 0%, transparent 50%);
             pointer-events: none;
         }
 
-        .empapy-video-section .section-title h2 {
-            color: #ffffff;
-            font-size: 2.2rem;
+        .cinema-gradient {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse at 50% 0%, rgba(201, 162, 39, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 20% 80%, rgba(201, 162, 39, 0.08) 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 80%, rgba(201, 162, 39, 0.08) 0%, transparent 40%);
+        }
+
+        /* Floating Particles */
+        .floating-particles {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .floating-particles .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: radial-gradient(circle, rgba(201, 162, 39, 0.8), transparent);
+            border-radius: 50%;
+            animation: floatParticle 8s ease-in-out infinite;
+        }
+
+        @keyframes floatParticle {
+
+            0%,
+            100% {
+                transform: translateY(0) scale(1);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* Cinema Header */
+        .cinema-header {
+            margin-bottom: 50px;
+        }
+
+        .cinema-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.05));
+            border: 1px solid rgba(201, 162, 39, 0.3);
+            padding: 8px 20px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .cinema-badge i {
+            color: #c9a227;
+            font-size: 1rem;
+        }
+
+        .cinema-badge span {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .cinema-title {
+            font-size: 3rem;
             font-weight: 800;
             margin-bottom: 15px;
+            line-height: 1.3;
         }
 
-        .empapy-video-section .section-title p {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.1rem;
+        .cinema-title .title-line {
+            color: #ffffff;
+            display: block;
         }
 
-        /* Video Container */
-        .video-container {
-            max-width: 1000px;
-            margin: 0 auto;
+        .cinema-title .title-gold {
+            display: inline-block;
+            background: linear-gradient(135deg, #c9a227 0%, #f5e6a3 50%, #c9a227 100%);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: goldShimmer 3s ease-in-out infinite;
         }
 
-        .video-wrapper {
+        @keyframes goldShimmer {
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+        }
+
+        .cinema-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            margin: 0;
+        }
+
+        /* Cinema Frame */
+        .cinema-frame {
             position: relative;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow:
-                0 25px 80px rgba(0, 0, 0, 0.5),
-                0 0 0 1px rgba(201, 162, 39, 0.3),
-                0 0 60px rgba(201, 162, 39, 0.1);
-            background: #000;
+            max-width: 1200px;
+            /* Increased from 1000px */
+            width: 95%;
+            /* Take up more space on smaller screens */
+            margin: 0 auto;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.1), rgba(0, 0, 0, 0.3));
+            border-radius: 24px;
+            border: 2px solid rgba(201, 162, 39, 0.3);
         }
 
-        .video-player {
+        /* Decorative Corners */
+        .frame-corner {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-color: #c9a227;
+            border-style: solid;
+            z-index: 5;
+            transition: all 0.4s ease;
+        }
+
+        .frame-corner.top-left {
+            top: -2px;
+            left: -2px;
+            border-width: 4px 0 0 4px;
+            border-radius: 20px 0 0 0;
+        }
+
+        .frame-corner.top-right {
+            top: -2px;
+            right: -2px;
+            border-width: 4px 4px 0 0;
+            border-radius: 0 20px 0 0;
+        }
+
+        .frame-corner.bottom-left {
+            bottom: -2px;
+            left: -2px;
+            border-width: 0 0 4px 4px;
+            border-radius: 0 0 0 20px;
+        }
+
+        .frame-corner.bottom-right {
+            bottom: -2px;
+            right: -2px;
+            border-width: 0 4px 4px 0;
+            border-radius: 0 0 20px 0;
+        }
+
+        .cinema-frame:hover .frame-corner {
+            width: 60px;
+            height: 60px;
+            filter: drop-shadow(0 0 10px rgba(201, 162, 39, 0.5));
+        }
+
+        /* Frame Glow */
+        .frame-glow {
+            position: absolute;
+            inset: -20px;
+            background: radial-gradient(ellipse at center, rgba(201, 162, 39, 0.1), transparent 70%);
+            border-radius: 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cinema-frame:hover .frame-glow {
+            opacity: 1;
+        }
+
+        /* Film Strip Decoration */
+        .film-strip {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: repeating-linear-gradient(90deg,
+                    rgba(201, 162, 39, 0.3) 0px,
+                    rgba(201, 162, 39, 0.3) 20px,
+                    transparent 20px,
+                    transparent 30px);
+            z-index: 5;
+        }
+
+        .film-strip.top {
+            top: 5px;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .film-strip.bottom {
+            bottom: 5px;
+            border-radius: 0 0 20px 20px;
+        }
+
+        /* Video Wrapper */
+        .cinema-video-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+            box-shadow:
+                0 30px 60px rgba(0, 0, 0, 0.5),
+                inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+        }
+
+        .cinema-video {
             width: 100%;
             height: auto;
             display: block;
             aspect-ratio: 16 / 9;
             object-fit: cover;
-            background: #000;
         }
 
-        /* Custom Play Button Overlay */
-        .video-play-overlay {
+        /* Play Overlay */
+        .cinema-play-overlay {
             position: absolute;
             inset: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 15px;
-            background: rgba(0, 0, 0, 0.4);
+            gap: 20px;
+            background: rgba(0, 0, 0, 0.5);
             cursor: pointer;
-            border: none;
             transition: all 0.4s ease;
             z-index: 10;
         }
 
-        .video-play-overlay:hover {
-            background: rgba(0, 0, 0, 0.3);
+        .cinema-play-overlay:hover {
+            background: rgba(0, 0, 0, 0.4);
         }
 
-        .video-play-overlay.hidden {
+        .cinema-play-overlay.hidden {
             opacity: 0;
             pointer-events: none;
         }
 
-        .play-btn-circle {
+        /* Sound Waves Animation */
+        .sound-waves {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .sound-waves .wave {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 2px solid rgba(201, 162, 39, 0.3);
+            position: absolute;
+            animation: waveExpand 2s ease-out infinite;
+        }
+
+        .sound-waves .wave:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+
+        .sound-waves .wave:nth-child(3) {
+            animation-delay: 1s;
+        }
+
+        @keyframes waveExpand {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(2);
+                opacity: 0;
+            }
+        }
+
+        /* Play Button */
+        .cinema-play-btn {
+            position: relative;
+            z-index: 2;
+        }
+
+        .play-ring {
+            position: absolute;
+            inset: -15px;
+            border-radius: 50%;
+            border: 2px solid rgba(201, 162, 39, 0.5);
+            animation: ringPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes ringPulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        .play-icon {
             width: 90px;
             height: 90px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--gold, #c9a227), #d4a84b);
+            background: linear-gradient(135deg, #c9a227, #d4a84b);
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow:
                 0 10px 40px rgba(201, 162, 39, 0.5),
-                0 0 30px rgba(201, 162, 39, 0.3);
+                0 0 30px rgba(201, 162, 39, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
-            animation: playPulse 2s ease-in-out infinite;
         }
 
-        .video-play-overlay:hover .play-btn-circle {
+        .cinema-play-overlay:hover .play-icon {
             transform: scale(1.1);
             box-shadow:
-                0 15px 50px rgba(201, 162, 39, 0.6),
-                0 0 40px rgba(201, 162, 39, 0.4);
+                0 15px 50px rgba(201, 162, 39, 0.7),
+                0 0 40px rgba(201, 162, 39, 0.5);
         }
 
-        @keyframes playPulse {
-
-            0%,
-            100% {
-                box-shadow:
-                    0 10px 40px rgba(201, 162, 39, 0.5),
-                    0 0 30px rgba(201, 162, 39, 0.3);
-            }
-
-            50% {
-                box-shadow:
-                    0 10px 50px rgba(201, 162, 39, 0.7),
-                    0 0 50px rgba(201, 162, 39, 0.5);
-            }
-        }
-
-        .play-btn-circle i {
+        .play-icon i {
             font-size: 2.5rem;
-            color: var(--espresso, #2c1810);
+            color: #1a1208;
             margin-left: 5px;
         }
 
-        .play-text {
+        .cinema-play-text {
             color: #ffffff;
             font-size: 1rem;
             font-weight: 600;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
+            letter-spacing: 1px;
         }
 
-        /* Marketing Slogan Styles */
-        .marketing-slogan {
-            text-align: center;
-            margin-top: 35px;
-            padding: 25px;
-        }
-
-        .slogan-content {
+        /* Custom Video Controls */
+        .cinema-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             display: flex;
-            flex-direction: column;
             align-items: center;
             gap: 15px;
+            padding: 15px 20px;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 15;
         }
 
-        .slogan-icon {
-            font-size: 3rem;
-            background: linear-gradient(135deg, var(--gold, #c9a227), #d4a84b, #f5e6a3);
+        .cinema-video-wrapper:hover .cinema-controls,
+        .cinema-controls.visible {
+            opacity: 1;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(201, 162, 39, 0.2);
+            color: #c9a227;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .control-btn:hover {
+            background: #c9a227;
+            color: #1a1208;
+            transform: scale(1.1);
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #c9a227, #f5e6a3);
+            border-radius: 3px;
+            transition: width 0.1s linear;
+        }
+
+        /* Cinema Slogan */
+        .cinema-slogan {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .slogan-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .slogan-icon-box {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(201, 162, 39, 0.2), rgba(201, 162, 39, 0.05));
+            border: 2px solid rgba(201, 162, 39, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: iconFloat 3s ease-in-out infinite;
+        }
+
+        .slogan-icon-box i {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #c9a227, #f5e6a3);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            filter: drop-shadow(0 0 20px rgba(201, 162, 39, 0.5));
-            animation: iconFloat 3s ease-in-out infinite;
         }
 
         @keyframes iconFloat {
@@ -1147,64 +1514,46 @@
             }
         }
 
-        .slogan-text {
+        .slogan-text-box {
+            text-align: right;
+        }
+
+        .slogan-main {
             font-size: 1.8rem;
             font-weight: 700;
             color: #ffffff;
-            line-height: 1.8;
-            margin: 0;
-            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin: 0 0 5px 0;
         }
 
-        .slogan-highlight {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--gold, #c9a227), #f5e6a3, var(--gold, #c9a227));
-            background-size: 200% 200%;
+        .slogan-main .gold-text {
+            background: linear-gradient(135deg, #c9a227, #f5e6a3);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: shimmer 3s ease-in-out infinite;
-            font-weight: 800;
-            font-size: 2rem;
-        }
-
-        @keyframes shimmer {
-
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
         }
 
         .slogan-sub {
-            display: block;
-            font-size: 1.2rem;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.8);
-            margin-top: 10px;
-            letter-spacing: 1px;
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0;
         }
 
-        .slogan-decoration {
+        .slogan-divider {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
-            margin-top: 25px;
+            margin-top: 30px;
         }
 
-        .decoration-line {
+        .divider-line {
             width: 80px;
             height: 2px;
-            background: linear-gradient(90deg, transparent, var(--gold, #c9a227), transparent);
+            background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.5), transparent);
         }
 
-        .slogan-decoration i {
-            color: var(--gold, #c9a227);
+        .slogan-divider i {
+            color: #c9a227;
             font-size: 1.2rem;
             animation: starPulse 2s ease-in-out infinite;
         }
@@ -1223,167 +1572,134 @@
             }
         }
 
-        /* Marketing Slogan Responsive */
+        /* Responsive Styles */
         @media (max-width: 992px) {
-            .slogan-text {
-                font-size: 1.5rem;
+            .cinema-video-section {
+                padding: 60px 0;
             }
 
-            .slogan-highlight {
-                font-size: 1.7rem;
-            }
-
-            .slogan-sub {
-                font-size: 1.1rem;
-            }
-
-            .slogan-icon {
+            .cinema-title {
                 font-size: 2.5rem;
             }
-        }
 
-        @media (max-width: 768px) {
-            .marketing-slogan {
-                margin-top: 25px;
-                padding: 20px 15px;
+            .cinema-frame {
+                padding: 12px;
             }
 
-            .slogan-text {
-                font-size: 1.3rem;
-            }
-
-            .slogan-highlight {
-                font-size: 1.5rem;
-            }
-
-            .slogan-sub {
-                font-size: 1rem;
-            }
-
-            .slogan-icon {
-                font-size: 2.2rem;
-            }
-
-            .decoration-line {
-                width: 50px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .slogan-text {
-                font-size: 1.1rem;
-            }
-
-            .slogan-highlight {
-                font-size: 1.3rem;
-            }
-
-            .slogan-sub {
-                font-size: 0.9rem;
-            }
-
-            .slogan-icon {
-                font-size: 2rem;
-            }
-
-            .decoration-line {
-                width: 40px;
-            }
-        }
-
-        /* Video Fallback */
-        .video-fallback {
-            color: #ffffff;
-            text-align: center;
-            padding: 40px;
-            font-size: 1rem;
-        }
-
-        .video-fallback a {
-            color: var(--gold, #c9a227);
-            text-decoration: underline;
-            transition: color 0.3s ease;
-        }
-
-        .video-fallback a:hover {
-            color: #d4a84b;
-        }
-
-        /* Empapy Video Section Responsive Styles */
-        @media (max-width: 992px) {
-            .empapy-video-section .section-title h2 {
-                font-size: 1.9rem;
-            }
-
-            .video-container {
-                padding: 0 20px;
-            }
-
-            .play-btn-circle {
+            .play-icon {
                 width: 75px;
                 height: 75px;
             }
 
-            .play-btn-circle i {
+            .play-icon i {
                 font-size: 2rem;
+            }
+
+            .slogan-main {
+                font-size: 1.5rem;
             }
         }
 
         @media (max-width: 768px) {
-            .empapy-video-section {
-                padding: 40px 0;
+            .cinema-video-section {
+                padding: 50px 0;
             }
 
-            .empapy-video-section .section-title h2 {
-                font-size: 1.6rem;
+            .cinema-header {
+                margin-bottom: 35px;
             }
 
-            .empapy-video-section .section-title p {
+            .cinema-title {
+                font-size: 2rem;
+            }
+
+            .cinema-subtitle {
                 font-size: 1rem;
             }
 
-            .video-wrapper {
-                border-radius: 15px;
+            .cinema-frame {
+                padding: 10px;
+                border-radius: 16px;
             }
 
-            .play-btn-circle {
+            .frame-corner {
+                width: 25px;
+                height: 25px;
+            }
+
+            .film-strip {
+                display: none;
+            }
+
+            .play-icon {
                 width: 65px;
                 height: 65px;
             }
 
-            .play-btn-circle i {
+            .play-icon i {
                 font-size: 1.8rem;
             }
 
-            .play-text {
+            .cinema-play-text {
+                font-size: 0.9rem;
+            }
+
+            .slogan-wrapper {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .slogan-text-box {
+                text-align: center;
+            }
+
+            .slogan-icon-box {
+                width: 60px;
+                height: 60px;
+            }
+
+            .slogan-main {
+                font-size: 1.3rem;
+            }
+
+            .slogan-sub {
                 font-size: 0.9rem;
             }
         }
 
         @media (max-width: 480px) {
-            .empapy-video-section .section-title h2 {
-                font-size: 1.4rem;
+            .cinema-title {
+                font-size: 1.6rem;
             }
 
-            .video-container {
-                padding: 0 10px;
+            .cinema-badge {
+                padding: 6px 15px;
             }
 
-            .video-wrapper {
-                border-radius: 12px;
+            .cinema-badge span {
+                font-size: 0.8rem;
             }
 
-            .play-btn-circle {
+            .play-icon {
                 width: 55px;
                 height: 55px;
             }
 
-            .play-btn-circle i {
+            .play-icon i {
                 font-size: 1.5rem;
             }
 
-            .play-text {
+            .sound-waves .wave {
+                width: 80px;
+                height: 80px;
+            }
+
+            .cinema-play-text {
                 font-size: 0.8rem;
+            }
+
+            .divider-line {
+                width: 50px;
             }
         }
     </style>
@@ -1391,66 +1707,152 @@
 
 @push('scripts')
     <script>
-        // Video Play/Pause Toggle
+        // 🎬 Cinematic Video Section Controller
         document.addEventListener('DOMContentLoaded', function() {
-            const video = document.getElementById('showcaseVideo');
+
+            // ========== Floating Particles ==========
+            const particlesContainer = document.getElementById('videoParticles');
+            if (particlesContainer) {
+                const particleCount = 20;
+
+                for (let i = 0; i < particleCount; i++) {
+                    const particle = document.createElement('span');
+                    particle.className = 'particle';
+                    particle.style.left = Math.random() * 100 + '%';
+                    particle.style.top = Math.random() * 100 + '%';
+                    particle.style.animationDelay = Math.random() * 8 + 's';
+                    particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                    particlesContainer.appendChild(particle);
+                }
+            }
+
+            // ========== Video Controls ==========
+            const video = document.getElementById('empapyVideo');
+            const playOverlay = document.getElementById('cinemaPlayBtn');
+            const controls = document.getElementById('cinemaControls');
+            const pauseBtn = document.getElementById('cinemaPauseBtn');
+            const fullscreenBtn = document.getElementById('cinemaFullscreen');
+            const progressFill = document.getElementById('progressFill');
+            const progressBar = document.querySelector('.progress-bar');
+
+            if (video && playOverlay) {
+                // Play button click
+                playOverlay.addEventListener('click', function() {
+                    video.play();
+                    playOverlay.classList.add('hidden');
+                    if (controls) controls.classList.add('visible');
+                });
+
+                // Pause button click
+                if (pauseBtn) {
+                    pauseBtn.addEventListener('click', function() {
+                        togglePlay();
+                    });
+                }
+
+                // Click on video to toggle play/pause
+                video.addEventListener('click', function() {
+                    togglePlay();
+                });
+
+                function togglePlay() {
+                    if (video.paused) {
+                        video.play();
+                        if (pauseBtn) pauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+                    } else {
+                        video.pause();
+                        if (pauseBtn) pauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+                    }
+                }
+
+                // Fullscreen button
+                if (fullscreenBtn) {
+                    fullscreenBtn.addEventListener('click', function() {
+                        if (video.requestFullscreen) {
+                            video.requestFullscreen();
+                        } else if (video.webkitRequestFullscreen) {
+                            video.webkitRequestFullscreen();
+                        } else if (video.msRequestFullscreen) {
+                            video.msRequestFullscreen();
+                        }
+                    });
+                }
+
+                // Progress bar update
+                video.addEventListener('timeupdate', function() {
+                    if (progressFill && video.duration) {
+                        const progress = (video.currentTime / video.duration) * 100;
+                        progressFill.style.width = progress + '%';
+                    }
+                });
+
+                // Click on progress bar to seek
+                if (progressBar) {
+                    progressBar.addEventListener('click', function(e) {
+                        const rect = progressBar.getBoundingClientRect();
+                        const clickPosition = (e.clientX - rect.left) / rect.width;
+                        video.currentTime = clickPosition * video.duration;
+                    });
+                }
+
+                // Video events
+                video.addEventListener('pause', function() {
+                    if (pauseBtn) pauseBtn.innerHTML = '<i class="bi bi-play-fill"></i>';
+                });
+
+                video.addEventListener('play', function() {
+                    playOverlay.classList.add('hidden');
+                    if (pauseBtn) pauseBtn.innerHTML = '<i class="bi bi-pause-fill"></i>';
+                });
+
+                video.addEventListener('ended', function() {
+                    playOverlay.classList.remove('hidden');
+                    if (controls) controls.classList.remove('visible');
+                    if (progressFill) progressFill.style.width = '0%';
+                });
+
+                // Double click to fullscreen
+                video.addEventListener('dblclick', function() {
+                    if (video.requestFullscreen) {
+                        video.requestFullscreen();
+                    }
+                });
+            }
+
+            // ========== Legacy Video Toggle (for other sections) ==========
+            const showcaseVideo = document.getElementById('showcaseVideo');
             const toggleBtn = document.getElementById('videoToggle');
             const playPauseIcon = document.getElementById('playPauseIcon');
 
-            if (video && toggleBtn && playPauseIcon) {
+            if (showcaseVideo && toggleBtn && playPauseIcon) {
                 toggleBtn.addEventListener('click', function() {
-                    if (video.paused) {
-                        video.play();
+                    if (showcaseVideo.paused) {
+                        showcaseVideo.play();
                         playPauseIcon.classList.remove('bi-play-fill');
                         playPauseIcon.classList.add('bi-pause-fill');
                     } else {
-                        video.pause();
+                        showcaseVideo.pause();
                         playPauseIcon.classList.remove('bi-pause-fill');
                         playPauseIcon.classList.add('bi-play-fill');
                     }
                 });
             }
 
-            // Parallax effect on scroll
+            // ========== Parallax Effect ==========
             window.addEventListener('scroll', function() {
-                const section = document.querySelector('.video-showcase-section');
-                if (section && video) {
+                const section = document.querySelector('.cinema-video-section');
+                if (section) {
                     const rect = section.getBoundingClientRect();
                     const scrollPercent = (window.innerHeight - rect.top) / (window.innerHeight + rect
                         .height);
-                    if (scrollPercent > 0 && scrollPercent < 1) {
-                        const scale = 1.05 + (scrollPercent * 0.08);
-                        video.style.transform = `scale(${scale})`;
+
+                    // Subtle glow intensity on scroll
+                    const frameGlow = section.querySelector('.frame-glow');
+                    if (frameGlow && scrollPercent > 0.2 && scrollPercent < 0.8) {
+                        frameGlow.style.opacity = Math.min(1, (scrollPercent - 0.2) * 2);
                     }
                 }
             });
-
-            // Empapy Video Section - Play Button Handler
-            const empapyVideo = document.getElementById('empapyVideo');
-            const playBtn = document.getElementById('videoPlayBtn');
-
-            if (empapyVideo && playBtn) {
-                // Play button click handler
-                playBtn.addEventListener('click', function() {
-                    empapyVideo.play();
-                    playBtn.classList.add('hidden');
-                });
-
-                // Show overlay when video is paused
-                empapyVideo.addEventListener('pause', function() {
-                    playBtn.classList.remove('hidden');
-                });
-
-                // Hide overlay when video plays
-                empapyVideo.addEventListener('play', function() {
-                    playBtn.classList.add('hidden');
-                });
-
-                // Show overlay when video ends
-                empapyVideo.addEventListener('ended', function() {
-                    playBtn.classList.remove('hidden');
-                });
-            }
         });
     </script>
 @endpush
