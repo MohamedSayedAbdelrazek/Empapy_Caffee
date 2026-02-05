@@ -29,7 +29,7 @@
                     @forelse($categories as $category)
                         <tr>
                             <td>
-                                <img src="{{ $category->image }}" alt="{{ $category->name }}" class="rounded"
+                                <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="rounded"
                                     style="width: 50px; height: 50px; object-fit: cover;">
                             </td>
                             <td>
