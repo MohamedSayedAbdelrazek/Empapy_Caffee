@@ -75,18 +75,39 @@ class HomeController extends Controller
      */
     public function submitContact(Request $request)
     {
+        // Validate form inputs
         $validated = $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:100',
             'subject' => 'required|string|max:200',
             'message' => 'required|string|max:2000',
+            'recaptcha_token' => config('recaptcha.enabled') ? 'required|string' : 'nullable',
         ], [
             'name.required' => 'يرجى إدخال الاسم',
             'email.required' => 'يرجى إدخال البريد الإلكتروني',
             'email.email' => 'البريد الإلكتروني غير صالح',
             'subject.required' => 'يرجى إدخال الموضوع',
             'message.required' => 'يرجى إدخال الرسالة',
+            'recaptcha_token.required' => 'فشل التحقق من reCAPTCHA. يرجى تحديث الصفحة والمحاولة مرة أخرى.',
         ]);
+
+        // Verify reCAPTCHA token
+        if (config('recaptcha.enabled') && config('recaptcha.secret_key')) {
+            $recaptchaService = new \App\Services\RecaptchaService();
+            $recaptchaResult = $recaptchaService->verify($request->input('recaptcha_token', ''), 'contact');
+            
+            if (!$recaptchaResult['success']) {
+                \Log::warning('[Contact Form] reCAPTCHA failed', [
+                    'ip' => $request->ip(),
+                    'email' => $validated['email'],
+                    'score' => $recaptchaResult['score'] ?? 0,
+                ]);
+                
+                return back()
+                    ->withInput()
+                    ->withErrors(['recaptcha_token' => $recaptchaResult['error'] ?? 'فشل التحقق. يرجى المحاولة مرة أخرى.']);
+            }
+        }
 
         $contact = ContactMessage::create([
             'user_id' => auth()->id(),

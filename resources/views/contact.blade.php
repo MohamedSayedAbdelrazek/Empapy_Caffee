@@ -2,6 +2,13 @@
 
 @section('title', 'تواصل معنا - إمبابي كافيه')
 
+@push('head')
+    {{-- Google reCAPTCHA v3 --}}
+    @if(config('recaptcha.enabled') && config('recaptcha.site_key'))
+        <script src="https://www.google.com/recaptcha/api.js?render={{ config('recaptcha.site_key') }}"></script>
+    @endif
+@endpush
+
 @section('content')
     <!-- Page Header -->
     <div class="page-header">
@@ -135,10 +142,28 @@
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+                                {{-- reCAPTCHA Hidden Token --}}
+                                @if(config('recaptcha.enabled') && config('recaptcha.site_key'))
+                                    <input type="hidden" name="recaptcha_token" id="recaptcha_token">
+                                    @error('recaptcha_token')
+                                        <div class="col-12">
+                                            <div class="alert alert-danger py-2">
+                                                <i class="bi bi-shield-exclamation me-2"></i>{{ $message }}
+                                            </div>
+                                        </div>
+                                    @enderror
+                                @endif
+
                                 <div class="col-12">
-                                    <button type="submit" class="btn btn-golden btn-lg">
+                                    <button type="submit" class="btn btn-golden btn-lg" id="submitBtn">
                                         <i class="bi bi-send me-2"></i>إرسال الرسالة
                                     </button>
+                                    @if(config('recaptcha.enabled') && config('recaptcha.site_key'))
+                                        <small class="d-block text-muted mt-2">
+                                            <i class="bi bi-shield-check me-1"></i>محمي بواسطة Google reCAPTCHA
+                                        </small>
+                                    @endif
                                 </div>
                             </div>
                         </form>
@@ -213,5 +238,62 @@
         .map-container:hover {
             filter: grayscale(0);
         }
+
+        /* reCAPTCHA badge positioning */
+        .grecaptcha-badge {
+            visibility: hidden;
+        }
     </style>
+@endpush
+
+@push('scripts')
+    {{-- reCAPTCHA Token Generation --}}
+    @if(config('recaptcha.enabled') && config('recaptcha.site_key'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.querySelector('form[action*="contact"]');
+                const submitBtn = document.getElementById('submitBtn');
+                const tokenField = document.getElementById('recaptcha_token');
+                
+                if (form && tokenField && typeof grecaptcha !== 'undefined') {
+                    // Get token when page loads
+                    grecaptcha.ready(function() {
+                        refreshToken();
+                    });
+                    
+                    // Refresh token every 2 minutes (tokens expire after 2 min)
+                    setInterval(refreshToken, 110000);
+                    
+                    // Get fresh token before form submission
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>جاري التحقق...';
+                        
+                        grecaptcha.ready(function() {
+                            grecaptcha.execute('{{ config('recaptcha.site_key') }}', {action: 'contact'})
+                                .then(function(token) {
+                                    tokenField.value = token;
+                                    form.submit();
+                                })
+                                .catch(function(error) {
+                                    console.error('reCAPTCHA error:', error);
+                                    submitBtn.disabled = false;
+                                    submitBtn.innerHTML = '<i class="bi bi-send me-2"></i>إرسال الرسالة';
+                                    alert('حدث خطأ في التحقق. يرجى تحديث الصفحة والمحاولة مرة أخرى.');
+                                });
+                        });
+                    });
+                    
+                    function refreshToken() {
+                        grecaptcha.execute('{{ config('recaptcha.site_key') }}', {action: 'contact'})
+                            .then(function(token) {
+                                tokenField.value = token;
+                            });
+                    }
+                }
+            });
+        </script>
+    @endif
 @endpush

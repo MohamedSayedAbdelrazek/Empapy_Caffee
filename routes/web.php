@@ -81,6 +81,11 @@ Route::post('/track', [App\Http\Controllers\OrderTrackingController::class, 'sea
 Route::middleware('auth')->group(function () {
     Route::get('/my-orders', [App\Http\Controllers\OrderTrackingController::class, 'myOrders'])->name('orders.my-orders');
     Route::get('/my-orders/{order}', [App\Http\Controllers\OrderTrackingController::class, 'show'])->name('orders.show');
+    
+    // Order Cancellation - Rate limited for security (5 attempts per minute)
+    Route::post('/my-orders/{order}/cancel', [App\Http\Controllers\OrderTrackingController::class, 'cancel'])
+        ->name('orders.cancel')
+        ->middleware('throttle:5,1');
 });
 
 // Wishlist Routes

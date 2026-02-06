@@ -19,6 +19,20 @@
 
     <section class="py-5">
         <div class="container">
+            {{-- Success/Error Alerts --}}
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert" data-aos="fade-down">
+                    <i class="bi bi-check-circle me-2"></i>{{ session('success') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق"></button>
+                </div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert" data-aos="fade-down">
+                    <i class="bi bi-exclamation-circle me-2"></i>{{ session('error') }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="إغلاق"></button>
+                </div>
+            @endif
+
             @if ($orders->count() > 0)
                 <div class="row g-4">
                     @foreach ($orders as $order)
@@ -48,7 +62,7 @@
                                             @endif
                                         </small>
                                     </div>
-                                    <div class="d-flex gap-2">
+                                    <div class="d-flex gap-2 flex-wrap">
                                         <a href="{{ route('orders.show', $order) }}"
                                             class="btn btn-sm btn-outline-secondary">
                                             <i class="bi bi-eye me-1"></i>التفاصيل
@@ -57,6 +71,13 @@
                                             class="btn btn-sm btn-golden">
                                             <i class="bi bi-geo-alt me-1"></i>تتبع
                                         </a>
+                                        @if ($order->canBeCancelled())
+                                            <button type="button" 
+                                                    class="btn btn-sm btn-outline-danger"
+                                                    onclick="confirmCancelOrder('{{ route('orders.cancel', $order) }}', '{{ $order->order_number }}')">
+                                                <i class="bi bi-x-circle me-1"></i>إلغاء
+                                            </button>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
@@ -129,5 +150,80 @@
             color: #fff;
             border-color: rgba(255, 255, 255, 0.3);
         }
+
+        /* Cancel button styles */
+        .btn-outline-danger {
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.5);
+            background: transparent;
+        }
+
+        .btn-outline-danger:hover {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        [data-theme="dark"] .btn-outline-danger {
+            color: #f87171;
+            border-color: rgba(248, 113, 113, 0.4);
+        }
+
+        [data-theme="dark"] .btn-outline-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+            border-color: rgba(248, 113, 113, 0.6);
+        }
     </style>
+@endpush
+
+@push('scripts')
+    {{-- Cancel Order Confirmation --}}
+    <script>
+        function confirmCancelOrder(cancelUrl, orderNumber) {
+            // Use SweetAlert2 if available, otherwise use native confirm
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'إلغاء الطلب؟',
+                    html: `<p>هل أنت متأكد من إلغاء الطلب <strong>${orderNumber}</strong>؟</p><p class="text-muted small">لا يمكن التراجع عن هذا الإجراء.</p>`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#ef4444',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'نعم، إلغاء الطلب',
+                    cancelButtonText: 'تراجع',
+                    reverseButtons: true
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        submitCancelForm(cancelUrl);
+                    }
+                });
+            } else {
+                // Fallback to native confirm
+                if (confirm(`هل أنت متأكد من إلغاء الطلب ${orderNumber}؟`)) {
+                    submitCancelForm(cancelUrl);
+                }
+            }
+        }
+
+        function submitCancelForm(cancelUrl) {
+            // Create and submit form
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = cancelUrl;
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '_token';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+            }
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 @endpush

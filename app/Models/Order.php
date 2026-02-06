@@ -11,6 +11,23 @@ class Order extends Model
 {
     use HasFactory;
 
+    /**
+     * Order Status Constants
+     * Used for consistent status references across the application
+     */
+    const STATUS_PENDING = 'pending';
+    const STATUS_PROCESSING = 'processing';
+    const STATUS_SHIPPED = 'shipped';
+    const STATUS_DELIVERED = 'delivered';
+    const STATUS_CANCELLED = 'cancelled';
+
+    /**
+     * Statuses that allow customer cancellation
+     * Only pending orders can be cancelled by customers
+     * Once processing starts, customer must contact support
+     */
+    const CANCELLABLE_STATUSES = [self::STATUS_PENDING];
+
     protected $fillable = [
         'order_number',
         'user_id',
@@ -128,5 +145,41 @@ class Order extends Model
     public function scopeCompleted($query)
     {
         return $query->where('status', 'delivered');
+    }
+
+    /**
+     * Check if order can be cancelled by customer
+     * Only orders in CANCELLABLE_STATUSES can be cancelled
+     * 
+     * @return bool
+     */
+    public function canBeCancelled(): bool
+    {
+        return in_array($this->status, self::CANCELLABLE_STATUSES, true);
+    }
+
+    /**
+     * Check if order is already cancelled
+     * 
+     * @return bool
+     */
+    public function isCancelled(): bool
+    {
+        return $this->status === self::STATUS_CANCELLED;
+    }
+
+    /**
+     * Check if order belongs to the specified user
+     * Used for ownership validation before any sensitive action
+     * 
+     * @param int|null $userId
+     * @return bool
+     */
+    public function belongsToUser(?int $userId): bool
+    {
+        if ($userId === null) {
+            return false;
+        }
+        return $this->user_id === $userId;
     }
 }

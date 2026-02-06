@@ -93,6 +93,22 @@
                             </svg>متابعة التسوق
                         </a>
                     </div>
+
+                    {{-- Cancel Order Button - Only for authenticated users with pending orders --}}
+                    @auth
+                        @if ($order->canBeCancelled())
+                            <div class="mt-4 pt-3 border-top">
+                                <button type="button" 
+                                        class="btn btn-outline-danger btn-sm"
+                                        onclick="confirmCancelOrder('{{ route('orders.cancel', $order) }}', '{{ $order->order_number }}')">
+                                    <i class="bi bi-x-circle me-1"></i>إلغاء الطلب
+                                </button>
+                                <small class="d-block text-muted mt-2">
+                                    يمكنك إلغاء الطلب قبل بدء التحضير فقط
+                                </small>
+                            </div>
+                        @endif
+                    @endauth
                 </div>
             </div>
         </div>
@@ -196,5 +212,65 @@
                 }, 1000);
             @endif
             });
+
+        // Cancel Order Confirmation
+        function confirmCancelOrder(cancelUrl, orderNumber) {
+            Swal.fire({
+                title: 'إلغاء الطلب؟',
+                html: `<p>هل أنت متأكد من إلغاء الطلب <strong>${orderNumber}</strong>؟</p><p class="text-muted small">لا يمكن التراجع عن هذا الإجراء.</p>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'نعم، إلغاء الطلب',
+                cancelButtonText: 'تراجع',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Create and submit form
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = cancelUrl;
+                    
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                    if (csrfToken) {
+                        const csrfInput = document.createElement('input');
+                        csrfInput.type = 'hidden';
+                        csrfInput.name = '_token';
+                        csrfInput.value = csrfToken;
+                        form.appendChild(csrfInput);
+                    }
+                    
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
     </script>
+@endpush
+
+@push('styles')
+    <style>
+        .btn-outline-danger {
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.5);
+            background: transparent;
+        }
+
+        .btn-outline-danger:hover {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+            border-color: #ef4444;
+        }
+
+        [data-theme="dark"] .btn-outline-danger {
+            color: #f87171;
+            border-color: rgba(248, 113, 113, 0.4);
+        }
+
+        [data-theme="dark"] .btn-outline-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #fca5a5;
+        }
+    </style>
 @endpush
