@@ -3,7 +3,7 @@
     <div class="sidebar-header">
         <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : route('admin.orders.index') }}"
             class="sidebar-brand">
-            <x-optimized-image src="logo.webp" alt="إمبابي كافيه" class="sidebar-logo"
+            <x-optimized-image :src="asset('logo.webp')" alt="إمبابي كافيه" class="sidebar-logo"
                 style="height: 40px; width: auto; border-radius: 6px;" />
             <span class="brand-text">إمبابي كافيه</span>
         </a>
