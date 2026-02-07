@@ -80,7 +80,11 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progre
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/storage \
     && chmod -R 775 /var/www/html/bootstrap/cache \
+    && mkdir -p /var/www/html/public/uploads/products \
+    && mkdir -p /var/www/html/public/uploads/categories \
     && mkdir -p /var/www/html/storage/app/public/avatars \
+    && chown -R www-data:www-data /var/www/html/public/uploads \
+    && chmod -R 775 /var/www/html/public/uploads \
     && chown -R www-data:www-data /var/www/html/storage/app/public/avatars
 
 # Create storage link
