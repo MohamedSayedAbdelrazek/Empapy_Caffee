@@ -60,10 +60,10 @@ class OptimizedImage extends Component
 
         // Generate WebP path
         $webpPath = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '.webp', $src);
-        
+
         // Check if file exists
         $publicPath = public_path(ltrim($webpPath, '/'));
-        
+
         if (file_exists($publicPath)) {
             return $webpPath;
         }

@@ -126,7 +126,16 @@
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 
-    <!-- Google Fonts - Cairo (optimized weights) -->
+    <!-- Preload Critical LCP Font (Cairo) -->
+    <link rel="preload" href="https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hD45W1TOQlPmYw.woff2" 
+          as="font" type="font/woff2" crossorigin>
+
+    <!-- Preload LCP Image (Hero Background) - Only on Home Page -->
+    @if(request()->routeIs('home'))
+    <link rel="preload" href="{{ asset('images/hero-bg.webp') }}" as="image" type="image/webp" fetchpriority="high">
+    @endif
+
+    <!-- Google Fonts - Cairo (optimized weights, display swap) -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Critical CSS (Inlined for faster FCP) -->
@@ -315,14 +324,14 @@
     <!-- Quick Shop Modal -->
     @include('components.quick-shop-modal')
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Bootstrap JS (Deferred - not render-blocking) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" defer></script>
 
     <!-- AOS JS (Deferred) -->
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
 
-    <!-- Custom JS -->
-    <script src="{{ asset('js/app.js') }}"></script>
+    <!-- Custom JS (Deferred) -->
+    <script src="{{ asset('js/app.js') }}" defer></script>
 
     <!-- UI Enhancements JS (Deferred) -->
     <script src="{{ asset('js/enhancements.js') }}" defer></script>
@@ -365,9 +374,9 @@
     <!-- PWA Service Worker & Install Prompt (Deferred) -->
     <script src="{{ asset('js/pwa.js') }}" defer></script>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
+    <!-- Firebase SDKs (Deferred - loaded after main content) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js" defer></script>
 
     <!-- Firebase Push Notifications -->
     <script>
