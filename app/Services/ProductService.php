@@ -85,7 +85,7 @@ class ProductService
         // Upload and convert to WebP
         $customName = 'product_' . time() . '_' . Str::random(8);
         $result = ImageService::uploadAndConvert($image, 'uploads/products', $customName);
-        
+
         return $result['path'];
     }
 
@@ -127,7 +127,7 @@ class ProductService
             ImageService::delete($imagePath);
             return true;
         }
-        
+
         // Handle old storage path for backward compatibility
         $storagePath = str_replace('/storage/', '', $imagePath);
 
@@ -255,11 +255,13 @@ class ProductService
         // Create new matrix entries
         foreach ($matrixData as $additiveIndex => $weightPrices) {
             $additiveValue = $additiveValues->get($additiveIndex);
-            if (!$additiveValue) continue;
+            if (!$additiveValue)
+                continue;
 
             foreach ($weightPrices as $weightIndex => $priceModifier) {
                 $weightValue = $weightValues->get($weightIndex);
-                if (!$weightValue) continue;
+                if (!$weightValue)
+                    continue;
 
                 // Only create entry if price is set and not zero
                 $price = floatval($priceModifier);

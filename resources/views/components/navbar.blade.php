@@ -3,8 +3,8 @@
     <div class="container">
         <!-- Logo -->
         <a class="navbar-brand" href="{{ route('home') }}">
-            <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه" class="navbar-logo"
-                style="height: 45px; width: auto; border-radius: 8px;">
+            <x-optimized-image src="logo.webp" alt="إمبابي كافيه" class="navbar-logo"
+                style="height: 45px; width: auto; border-radius: 8px;" />
             <span class="brand-text">إمبابي كافيه</span>
         </a>
 

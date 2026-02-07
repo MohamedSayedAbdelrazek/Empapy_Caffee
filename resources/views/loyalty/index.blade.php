@@ -65,8 +65,8 @@
                                 class="reward-card {{ $reward->is_featured ? 'featured' : '' }} {{ $loyalty->available_points < $reward->points_required ? 'locked' : '' }}">
                                 <div class="reward-card-image">
                                     @if ($reward->image)
-                                        <img src="{{ asset('storage/' . $reward->image) }}" alt="{{ $reward->name }}"
-                                            class="img-fluid">
+                                        <x-optimized-image :src="asset('storage/' . $reward->image)" :alt="$reward->name"
+                                            class="img-fluid" />
                                     @else
                                         <span>{{ $reward->icon }}</span>
                                     @endif

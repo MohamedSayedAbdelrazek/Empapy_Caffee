@@ -20,8 +20,8 @@
         <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6" data-aos="fade-up">
-                    <img src="{{ asset('images/about-coffee.jpg') }}" alt="About Empapy Caffe"
-                        class="rounded-4 w-100 shadow-lg">
+                    <x-optimized-image src="images/about-coffee.webp" alt="About Empapy Caffe"
+                        class="rounded-4 w-100 shadow-lg" />
                 </div>
                 <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
                     <h2 class="mb-4">قصتنا</h2>

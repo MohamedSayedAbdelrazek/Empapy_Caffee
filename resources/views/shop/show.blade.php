@@ -82,8 +82,8 @@
                                         مميز
                                     </span>
                                 @endif
-                                <img src="{{ $product->image }}" alt="{{ $product->name }}" id="gallery-main-image"
-                                    class="main-product-image">
+                                <x-optimized-image :src="$product->image" :alt="$product->name" id="gallery-main-image"
+                                    class="main-product-image" />
 
                                 @php
                                     $allImages = collect([$product->image]);
@@ -116,7 +116,7 @@
                                     @foreach ($allImages as $index => $image)
                                         <div class="gallery-thumb {{ $index === 0 ? 'active' : '' }}"
                                             data-index="{{ $index }}" data-image="{{ $image }}">
-                                            <img src="{{ $image }}" alt="صورة {{ $index + 1 }}">
+                                            <x-optimized-image :src="$image" alt="صورة {{ $index + 1 }}" />
                                         </div>
                                     @endforeach
                                 </div>
@@ -519,8 +519,8 @@
         </div>
         <div class="lightbox-content">
             <div class="zoom-container" id="zoomContainer">
-                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="lightbox-image"
-                    id="lightbox-image">
+                <x-optimized-image :src="$product->image" :alt="$product->name" class="lightbox-image"
+                    id="lightbox-image" />
             </div>
             @if ($allImages->count() > 1)
                 <button class="lightbox-nav prev" onclick="lightboxPrev()" aria-label="Previous">
@@ -536,7 +536,7 @@
                 @foreach ($allImages as $index => $image)
                     <div class="lightbox-thumb {{ $index === 0 ? 'active' : '' }}" data-index="{{ $index }}"
                         onclick="lightboxGoTo({{ $index }})">
-                        <img src="{{ $image }}" alt="Thumbnail {{ $index + 1 }}">
+                        <x-optimized-image :src="$image" alt="Thumbnail {{ $index + 1 }}" />
                     </div>
                 @endforeach
             </div>

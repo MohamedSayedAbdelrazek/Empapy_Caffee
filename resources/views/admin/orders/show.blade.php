@@ -35,8 +35,8 @@
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
                                             @if ($item->product)
-                                                <img src="{{ $item->product->image }}" class="rounded"
-                                                    style="width: 45px; height: 45px; object-fit: cover;">
+                                                <x-optimized-image :src="$item->product->image" class="rounded"
+                                                    style="width: 45px; height: 45px; object-fit: cover;" />
                                             @endif
                                             <div>
                                                 <strong>{{ $item->product_name }}</strong>

@@ -160,8 +160,8 @@
                 </div>
                 @forelse($bestSellers as $product)
                     <div class="d-flex align-items-center gap-3 mb-3 pb-3 border-bottom border-secondary">
-                        <img src="{{ $product->image }}" alt="{{ $product->name }}" class="rounded"
-                            style="width: 50px; height: 50px; object-fit: cover;">
+                        <x-optimized-image :src="$product->image" :alt="$product->name" class="rounded"
+                            style="width: 50px; height: 50px; object-fit: cover;" />
                         <div class="flex-grow-1">
                             <h6 class="mb-1 small">{{ $product->name }}</h6>
                             <small class="text-muted">{{ number_format($product->price) }} ج.م</small>

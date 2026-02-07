@@ -26,9 +26,9 @@
     <script>
         // ✅ Service Worker Registration for PWA (deferred to after load)
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 // Delay SW registration to prioritize critical resources
-                setTimeout(function() {
+                setTimeout(function () {
                     navigator.serviceWorker.register('/sw.js')
                         .then(reg => console.log('✅ SW registered:', reg.scope))
                         .catch(err => console.log('❌ SW registration failed:', err));
@@ -54,7 +54,8 @@
     <link rel="apple-touch-icon" sizes="256x256" href="{{ asset('icons/ios/256.png') }}">
 
     <!-- ====== SEO Meta Tags - Enhanced for Google Ranking ====== -->
-    <meta name="description" content="@yield('meta_description', 'إمبابي كافيه | Empapy Coffee - أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي، توصيل سريع. تسوق الآن!')">
+    <meta name="description"
+        content="@yield('meta_description', 'إمبابي كافيه | Empapy Coffee - أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي، توصيل سريع. تسوق الآن!')">
 
     <!-- All keyword variations for search -->
     <meta name="keywords"
@@ -73,7 +74,8 @@
     <meta property="og:site_name" content="إمبابي كافيه - Empapy Caffe">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('og_title', 'إمبابي كافيه | Empapy Coffee - قهوة وبن فاخر')">
-    <meta property="og:description" content="@yield('meta_description', 'أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي. توصيل سريع لجميع المحافظات.')">
+    <meta property="og:description"
+        content="@yield('meta_description', 'أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي. توصيل سريع لجميع المحافظات.')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     <meta property="og:locale" content="ar_EG">
 
@@ -129,27 +131,91 @@
 
     <!-- Critical CSS (Inlined for faster FCP) -->
     <style>
-        :root{--espresso:#2C1810;--dark-roast:#3D2317;--gold:#C9A227;--cream:#FFF8E7;--font-primary:'Cairo',sans-serif}
-        *,*::before,*::after{box-sizing:border-box}
-        body{font-family:var(--font-primary);background-color:var(--cream);color:var(--espresso);line-height:1.7;overflow-x:hidden;margin:0}
-        .hero-section{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--espresso) 0%,var(--dark-roast) 100%)}
-        .hero-bg{position:absolute;inset:0;z-index:0}
-        .hero-bg img{width:100%;height:100%;object-fit:cover;opacity:0.4}
-        .hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(44,24,16,0.95) 0%,rgba(61,35,23,0.9) 100%);z-index:1}
-        .hero-content{position:relative;z-index:10;color:#fff;padding-top:100px}
-        .btn-golden{background:linear-gradient(135deg,var(--gold) 0%,#E8C547 50%,var(--gold) 100%);color:var(--espresso);border:none;padding:12px 30px;border-radius:50px;font-weight:600}
+        :root {
+            --espresso: #2C1810;
+            --dark-roast: #3D2317;
+            --gold: #C9A227;
+            --cream: #FFF8E7;
+            --font-primary: 'Cairo', sans-serif
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box
+        }
+
+        body {
+            font-family: var(--font-primary);
+            background-color: var(--cream);
+            color: var(--espresso);
+            line-height: 1.7;
+            overflow-x: hidden;
+            margin: 0
+        }
+
+        .hero-section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--espresso) 0%, var(--dark-roast) 100%)
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            z-index: 0
+        }
+
+        .hero-bg img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.4
+        }
+
+        .hero-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(44, 24, 16, 0.95) 0%, rgba(61, 35, 23, 0.9) 100%);
+            z-index: 1
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            color: #fff;
+            padding-top: 100px
+        }
+
+        .btn-golden {
+            background: linear-gradient(135deg, var(--gold) 0%, #E8C547 50%, var(--gold) 100%);
+            color: var(--espresso);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 600
+        }
     </style>
 
     <!-- Bootstrap 5 RTL (Critical CSS) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
 
     <!-- Bootstrap Icons (Deferred - Non-blocking) -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"></noscript>
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    </noscript>
 
     <!-- AOS - Animate On Scroll (Deferred) -->
-    <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
+    <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    </noscript>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -167,19 +233,28 @@
     <link rel="stylesheet" href="{{ asset('css/announcement-bar.css') }}?v=10">
 
     <!-- Loyalty System CSS (Deferred - loaded after page render) -->
-    <link rel="preload" href="{{ asset('css/loyalty.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/loyalty.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('css/loyalty.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
+    </noscript>
 
     <!-- User Dropdown Menu CSS -->
     <link rel="stylesheet" href="{{ asset('css/user-dropdown.css') }}">
 
     <!-- PWA Install Prompt CSS (Deferred) -->
-    <link rel="preload" href="{{ asset('css/pwa-install.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('css/pwa-install.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}">
+    </noscript>
 
     <!-- Firebase Notifications CSS (Deferred) -->
-    <link rel="preload" href="{{ asset('css/firebase-notifications.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
-    <noscript><link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}"></noscript>
+    <link rel="preload" href="{{ asset('css/firebase-notifications.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
+    </noscript>
 
     <!-- Product Card CSS (extracted for better caching) -->
     <link rel="stylesheet" href="{{ asset('css/product-card.css') }}">
@@ -254,7 +329,7 @@
 
     <script>
         // Initialize AOS after deferred script loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             if (typeof AOS !== 'undefined') {
                 AOS.init({
                     duration: 800,
@@ -265,7 +340,7 @@
             }
         });
         // Fallback for when AOS loads after DOMContentLoaded
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             if (typeof AOS !== 'undefined' && !window.aosInitialized) {
                 AOS.init({
                     duration: 800,
@@ -307,7 +382,7 @@
             return div.innerHTML;
         }
 
-        window.handleFirebaseMessage = function(payload) {
+        window.handleFirebaseMessage = function (payload) {
             console.log('[User Layout] Received Firebase Message:', payload);
             const {
                 notification,

@@ -40,9 +40,9 @@
                                                 <td colspan="5" class="d-md-none p-3">
                                                     <!-- Mobile Card Layout -->
                                                     <div class="d-flex gap-3">
-                                                        <img src="{{ $item['product']->image }}"
-                                                            alt="{{ $item['product']->name }}" class="rounded"
-                                                            style="width: 80px; height: 80px; object-fit: cover; flex-shrink: 0;">
+                                                        <x-optimized-image :src="$item['product']->image"
+                                                            :alt="$item['product']->name" class="rounded"
+                                                            style="width: 80px; height: 80px; object-fit: cover; flex-shrink: 0;" />
                                                         <div class="flex-grow-1">
                                                             <h6 class="mb-1">{{ $item['product']->name }}</h6>
                                                             <small
@@ -97,9 +97,9 @@
                                                 <!-- Desktop Table Layout -->
                                                 <td class="d-none d-md-table-cell">
                                                     <div class="d-flex align-items-center gap-3">
-                                                        <img src="{{ $item['product']->image }}"
-                                                            alt="{{ $item['product']->name }}" class="rounded"
-                                                            style="width: 80px; height: 80px; object-fit: cover;">
+                                                        <x-optimized-image :src="$item['product']->image"
+                                                            :alt="$item['product']->name" class="rounded"
+                                                            style="width: 80px; height: 80px; object-fit: cover;" />
                                                         <div>
                                                             <h6 class="mb-1">{{ $item['product']->name }}</h6>
                                                             <small

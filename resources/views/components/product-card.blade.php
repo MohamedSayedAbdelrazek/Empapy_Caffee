@@ -26,8 +26,8 @@
         <!-- Product Image with Skeleton Loading -->
         <div class="product-image-wrapper">
             <div class="skeleton-placeholder skeleton" style="position: absolute; inset: 0; z-index: 1;"></div>
-            <img src="{{ $product->image }}" alt="{{ $product->name }}" loading="lazy"
-                onload="this.previousElementSibling.style.display='none'; this.classList.add('loaded');">
+            <x-optimized-image :src="$product->image" :alt="$product->name" loading="lazy"
+                onload="this.previousElementSibling.style.display='none'; this.classList.add('loaded');" />
         </div>
 
         <!-- Quick Actions -->

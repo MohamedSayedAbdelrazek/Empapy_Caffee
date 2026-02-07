@@ -16,8 +16,8 @@
                 <!-- About -->
                 <div class="col-lg-4" data-aos="fade-up">
                     <div class="footer-brand mb-4">
-                        <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه" class="footer-logo"
-                            style="height: 50px; width: auto; border-radius: 8px;">
+                        <x-optimized-image src="logo.webp" alt="إمبابي كافيه" class="footer-logo"
+                            style="height: 50px; width: auto; border-radius: 8px;" />
                         <span class="brand-text">إمبابي كافيه</span>
                     </div>
                     <p class="footer-about">

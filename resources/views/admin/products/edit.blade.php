@@ -429,7 +429,7 @@
                         <input type="file" name="image" id="imageInput" accept="image/*" class="d-none">
                         @if ($product->image)
                             <div id="mainImagePreview" class="image-preview">
-                                <img src="{{ $product->image }}" alt="{{ $product->name }}" id="previewImg">
+                                <x-optimized-image :src="$product->image" :alt="$product->name" id="previewImg" />
                                 <button type="button" class="btn btn-sm btn-danger remove-image" onclick="removeMainImage()">
                                     <i class="bi bi-x"></i>
                                 </button>
@@ -478,7 +478,7 @@
                         @if ($product->gallery)
                             @foreach ($product->gallery as $galleryImage)
                                 <div class="gallery-item">
-                                    <img src="{{ $galleryImage }}" alt="Gallery">
+                                    <x-optimized-image :src="$galleryImage" alt="Gallery" />
                                 </div>
                             @endforeach
                         @endif

@@ -37,8 +37,8 @@
                             @if ($category->image)
                                 <div class="mb-3">
                                     <p class="text-muted small mb-2">الصورة الحالية:</p>
-                                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}"
-                                        class="img-thumbnail" style="max-height: 150px;">
+                                    <x-optimized-image :src="asset($category->image)" :alt="$category->name"
+                                        class="img-thumbnail" style="max-height: 150px;" />
                                 </div>
                             @endif
                             <input type="file" name="image" class="form-control @error('image') is-invalid @enderror"

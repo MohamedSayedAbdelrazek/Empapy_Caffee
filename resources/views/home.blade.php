@@ -76,8 +76,7 @@
                     <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                         <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="category-card-vertical">
                             <div class="card-image">
-                                <img src="{{ $category->image }}" alt="{{ $category->name }}" loading="lazy"
-                                    decoding="async">
+                                <x-optimized-image :src="$category->image" :alt="$category->name" loading="lazy" decoding="async" />
                                 <div class="card-overlay"></div>
                                 <div class="card-shine"></div>
                             </div>

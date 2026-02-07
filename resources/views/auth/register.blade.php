@@ -10,8 +10,8 @@
                     <div class="text-center mb-5">
                         <a href="{{ route('home') }}"
                             class="d-inline-flex align-items-center gap-3 text-white text-decoration-none">
-                            <img src="{{ asset('logo.jpg') }}" alt="إمبابي كافيه"
-                                style="height: 70px; width: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+                            <x-optimized-image src="logo.webp" alt="إمبابي كافيه"
+                                style="height: 70px; width: auto; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.3);" />
                             <span style="font-size: 1.8rem; font-weight: 800;">إمبابي كافيه</span>
                         </a>
                     </div>

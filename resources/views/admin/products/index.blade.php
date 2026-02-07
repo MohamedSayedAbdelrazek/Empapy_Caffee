@@ -63,8 +63,8 @@
                     @forelse($products as $product)
                         <tr>
                             <td>
-                                <img src="{{ $product->image }}" alt="{{ $product->name }}" class="rounded"
-                                    style="width: 45px; height: 45px; object-fit: cover;">
+                                <x-optimized-image :src="$product->image" :alt="$product->name" class="rounded"
+                                    style="width: 45px; height: 45px; object-fit: cover;" />
                             </td>
                             <td>
                                 <strong>{{ $product->name }}</strong>
