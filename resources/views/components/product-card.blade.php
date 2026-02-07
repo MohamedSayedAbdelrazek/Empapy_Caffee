@@ -27,6 +27,7 @@
         <div class="product-image-wrapper">
             <div class="skeleton-placeholder skeleton" style="position: absolute; inset: 0; z-index: 1;"></div>
             <x-optimized-image :src="$product->image" :alt="$product->name" loading="lazy"
+                :width="300" :height="300"
                 onload="this.previousElementSibling.style.display='none'; this.classList.add('loaded');" />
         </div>
 

@@ -127,16 +127,21 @@
     <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 
     <!-- Preload Critical LCP Font (Cairo) -->
-    <link rel="preload" href="https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hD45W1TOQlPmYw.woff2" 
-          as="font" type="font/woff2" crossorigin>
+    <link rel="preload"
+        href="https://fonts.gstatic.com/s/cairo/v28/SLXgc1nY6HkvangtZmpQdkhzfH5lkSs2SgRjCAGMQ1z0hD45W1TOQlPmYw.woff2"
+        as="font" type="font/woff2" crossorigin>
 
     <!-- Preload LCP Image (Hero Background) - Only on Home Page -->
     @if(request()->routeIs('home'))
-    <link rel="preload" href="{{ asset('images/hero-bg.webp') }}" as="image" type="image/webp" fetchpriority="high">
+        <link rel="preload" href="{{ asset('images/hero-bg.webp') }}" as="image" type="image/webp" fetchpriority="high">
     @endif
 
-    <!-- Google Fonts - Cairo (optimized weights, display swap) -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Cairo (Non-blocking with preload) -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+    </noscript>
 
     <!-- Critical CSS (Inlined for faster FCP) -->
     <style>
@@ -226,20 +231,35 @@
         <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
     </noscript>
 
-    <!-- Custom CSS -->
+    <!-- Custom CSS (Critical - keep sync) -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
-    <!-- UI Enhancements CSS -->
-    <link rel="stylesheet" href="{{ asset('css/enhancements.css') }}">
+    <!-- Product Card CSS (Critical for LCP - keep sync) -->
+    <link rel="stylesheet" href="{{ asset('css/product-card.css') }}">
 
-    <!-- Creative Premium Effects CSS -->
-    <link rel="stylesheet" href="{{ asset('css/creative-effects.css') }}">
-
-    <!-- UX Enhancements CSS -->
-    <link rel="stylesheet" href="{{ asset('css/ux-enhancements.css') }}">
-
-    <!-- Announcement Bar CSS (v10 - direction fixed) -->
+    <!-- Announcement Bar CSS (Above-fold, keep sync) -->
     <link rel="stylesheet" href="{{ asset('css/announcement-bar.css') }}?v=10">
+
+    <!-- UI Enhancements CSS (Deferred - non-critical) -->
+    <link rel="preload" href="{{ asset('css/enhancements.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/enhancements.css') }}">
+    </noscript>
+
+    <!-- Creative Premium Effects CSS (Deferred - non-critical) -->
+    <link rel="preload" href="{{ asset('css/creative-effects.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/creative-effects.css') }}">
+    </noscript>
+
+    <!-- UX Enhancements CSS (Deferred - non-critical) -->
+    <link rel="preload" href="{{ asset('css/ux-enhancements.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/ux-enhancements.css') }}">
+    </noscript>
 
     <!-- Loyalty System CSS (Deferred - loaded after page render) -->
     <link rel="preload" href="{{ asset('css/loyalty.css') }}" as="style"
@@ -248,8 +268,12 @@
         <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
     </noscript>
 
-    <!-- User Dropdown Menu CSS -->
-    <link rel="stylesheet" href="{{ asset('css/user-dropdown.css') }}">
+    <!-- User Dropdown Menu CSS (Deferred - non-critical) -->
+    <link rel="preload" href="{{ asset('css/user-dropdown.css') }}" as="style"
+        onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="{{ asset('css/user-dropdown.css') }}">
+    </noscript>
 
     <!-- PWA Install Prompt CSS (Deferred) -->
     <link rel="preload" href="{{ asset('css/pwa-install.css') }}" as="style"
@@ -264,9 +288,6 @@
     <noscript>
         <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
     </noscript>
-
-    <!-- Product Card CSS (extracted for better caching) -->
-    <link rel="stylesheet" href="{{ asset('css/product-card.css') }}">
 
     @stack('styles')
     <script>
@@ -476,7 +497,7 @@
             });
         }
     </script>
-    <script src="{{ asset('js/firebase-notifications.js') }}"></script>
+    <script src="{{ asset('js/firebase-notifications.js') }}" defer></script>
 
     @stack('scripts')
 </body>

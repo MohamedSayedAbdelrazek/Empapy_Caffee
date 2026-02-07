@@ -61,11 +61,18 @@ class OptimizedImage extends Component
         // Generate WebP path
         $webpPath = preg_replace('/\.(jpg|jpeg|png|gif)$/i', '.webp', $src);
 
-        // Check if file exists
+        // Check via public_path (works for /uploads/... and symlinked /storage/...)
         $publicPath = public_path(ltrim($webpPath, '/'));
-
         if (file_exists($publicPath)) {
             return $webpPath;
+        }
+
+        // Check via storage_path for /storage/ URLs (Docker symlink may not resolve)
+        if (str_starts_with($webpPath, '/storage/')) {
+            $storagePath = storage_path('app/public/' . substr($webpPath, 9));
+            if (file_exists($storagePath)) {
+                return $webpPath;
+            }
         }
 
         return null;
