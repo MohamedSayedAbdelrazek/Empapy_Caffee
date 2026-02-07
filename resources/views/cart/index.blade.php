@@ -59,13 +59,11 @@
                                                                 </div>
                                                             @endif
 
-                                                            <div
-                                                                class="d-flex justify-content-between align-items-center mt-2">
+                                                            <div class="d-flex justify-content-between align-items-center mt-2">
                                                                 <span
                                                                     class="fw-bold text-warning">{{ number_format($item['price']) }}
                                                                     ج.م</span>
-                                                                <div class="quantity-controls"
-                                                                    data-key="{{ $item['key'] }}"
+                                                                <div class="quantity-controls" data-key="{{ $item['key'] }}"
                                                                     style="transform: scale(0.85);">
                                                                     <button type="button" class="qty-btn-modern"
                                                                         data-action="decrease">
@@ -81,13 +79,11 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div
-                                                                class="d-flex justify-content-between align-items-center mt-2">
+                                                            <div class="d-flex justify-content-between align-items-center mt-2">
                                                                 <span
                                                                     class="fw-bold item-subtotal">{{ number_format($item['subtotal']) }}
                                                                     ج.م</span>
-                                                                <button
-                                                                    class="btn btn-sm btn-outline-danger remove-item-btn">
+                                                                <button class="btn btn-sm btn-outline-danger remove-item-btn">
                                                                     <i class="bi bi-trash"></i>
                                                                 </button>
                                                             </div>
@@ -122,13 +118,11 @@
                                                 </td>
                                                 <td class="d-none d-md-table-cell">
                                                     <div class="quantity-controls" data-key="{{ $item['key'] }}">
-                                                        <button type="button" class="qty-btn-modern"
-                                                            data-action="decrease">
+                                                        <button type="button" class="qty-btn-modern" data-action="decrease">
                                                             <i class="bi bi-dash"></i>
                                                         </button>
                                                         <div class="qty-display">{{ $item['quantity'] }}</div>
-                                                        <button type="button" class="qty-btn-modern"
-                                                            data-action="increase">
+                                                        <button type="button" class="qty-btn-modern" data-action="increase">
                                                             <i class="bi bi-plus"></i>
                                                         </button>
                                                         <div class="qty-loading">
@@ -137,8 +131,7 @@
                                                     </div>
                                                 </td>
                                                 <td class="d-none d-md-table-cell">
-                                                    <span
-                                                        class="fw-bold item-subtotal">{{ number_format($item['subtotal']) }}
+                                                    <span class="fw-bold item-subtotal">{{ number_format($item['subtotal']) }}
                                                         ج.م</span>
                                                 </td>
                                                 <td class="d-none d-md-table-cell">
@@ -217,8 +210,8 @@
                 <!-- Empty Cart -->
                 <div class="text-center py-5" data-aos="fade-up">
                     <div class="glass-card p-5 mx-auto" style="max-width: 500px;">
-                        <svg class="cart-icon-empty" xmlns="http://www.w3.org/2000/svg" height="80px"
-                            viewBox="0 -960 960 960" width="80px" fill="currentColor" style="opacity: 0.5;">
+                        <svg class="cart-icon-empty" xmlns="http://www.w3.org/2000/svg" height="80px" viewBox="0 -960 960 960"
+                            width="80px" fill="currentColor" style="opacity: 0.5;">
                             <path
                                 d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
                         </svg>
@@ -240,14 +233,14 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
             const FREE_SHIPPING_THRESHOLD = {{ $freeShippingThreshold }};
             const SHIPPING_FEE = {{ $shippingFee }};
 
             // Quantity buttons
             document.querySelectorAll('.qty-btn-modern').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const controls = this.closest('.quantity-controls');
                     const display = controls.querySelector('.qty-display');
                     const key = controls.dataset.key;
@@ -269,7 +262,7 @@
 
             // Remove buttons
             document.querySelectorAll('.remove-item-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const row = this.closest('.cart-item');
                     const key = row.dataset.key;
                     removeCartItem(key, row);
@@ -277,15 +270,15 @@
             });
 
             // Clear cart
-            document.getElementById('clearCartBtn')?.addEventListener('click', function() {
+            document.getElementById('clearCartBtn')?.addEventListener('click', function () {
                 if (confirm('هل أنت متأكد من تفريغ السلة؟')) {
                     fetch('/cart/clear', {
-                            method: 'POST',
-                            headers: {
-                                'X-CSRF-TOKEN': csrfToken,
-                                'Accept': 'application/json'
-                            }
-                        })
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        }
+                    })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -302,17 +295,17 @@
                 buttons.forEach(btn => btn.disabled = true);
 
                 fetch('/cart/update', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            key: key,
-                            quantity: quantity
-                        })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        key: key,
+                        quantity: quantity
                     })
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -404,9 +397,9 @@
                     const remaining = FREE_SHIPPING_THRESHOLD - cartData.total;
                     if (existingAlert) {
                         existingAlert.innerHTML = `
-                            <i class="bi bi-info-circle me-2"></i>
-                            أضف ${formatNumber(remaining)} ج.م للحصول على توصيل مجاني
-                        `;
+                                <i class="bi bi-info-circle me-2"></i>
+                                أضف ${formatNumber(remaining)} ج.م للحصول على توصيل مجاني
+                            `;
                     }
                 } else if (existingAlert) {
                     existingAlert.style.display = 'none';
@@ -432,16 +425,16 @@
                 row.style.transform = 'translateX(-20px)';
 
                 fetch('/cart/remove', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            key: key
-                        })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        key: key
                     })
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {

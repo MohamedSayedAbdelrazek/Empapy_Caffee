@@ -178,7 +178,7 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Month names in Arabic
             const monthNames = ['', 'يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو',
                 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'
@@ -188,7 +188,7 @@
             const rawOrdersPerMonth = @json($ordersPerMonth);
 
             // Transform data with Arabic month names
-            const ordersPerMonth = rawOrdersPerMonth.map(function(item) {
+            const ordersPerMonth = rawOrdersPerMonth.map(function (item) {
                 return {
                     month: item.month,
                     monthLabel: monthNames[item.month] || item.month,

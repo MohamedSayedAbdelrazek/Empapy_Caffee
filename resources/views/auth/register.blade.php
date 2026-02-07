@@ -43,8 +43,8 @@
                                 <label class="form-label">الاسم الكامل *</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                    <input type="text" name="name" class="form-control" value="{{ old('name') }}"
-                                        required autofocus placeholder="محمد أحمد">
+                                    <input type="text" name="name" class="form-control" value="{{ old('name') }}" required
+                                        autofocus placeholder="محمد أحمد">
                                 </div>
                             </div>
 
@@ -114,13 +114,13 @@
 @endsection
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         function setupPasswordToggle(toggleId, inputId) {
             const toggle = document.getElementById(toggleId);
             const input = document.getElementById(inputId);
 
             if (toggle && input) {
-                toggle.addEventListener('click', function() {
+                toggle.addEventListener('click', function () {
                     const icon = this.querySelector('i');
                     if (input.type === 'password') {
                         input.type = 'text';

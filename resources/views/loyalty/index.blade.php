@@ -165,8 +165,7 @@
                                             </span>
                                             <p class="mb-0">{{ $transaction->description }}</p>
                                         </div>
-                                        <small
-                                            class="transaction-meta">{{ $transaction->created_at->diffForHumans() }}</small>
+                                        <small class="transaction-meta">{{ $transaction->created_at->diffForHumans() }}</small>
                                     </div>
                                 </div>
                             @endforeach
@@ -236,7 +235,7 @@
         <!-- Success Toast with Confetti -->
         <div class="confetti-container" id="confettiContainer"></div>
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 // Show confetti
                 const colors = ['#FFD700', '#C9A227', '#8B4513', '#2ECC71', '#3498DB'];
                 const container = document.getElementById('confettiContainer');
@@ -261,9 +260,9 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             document.querySelectorAll('.copy-code-btn').forEach(btn => {
-                btn.addEventListener('click', async function() {
+                btn.addEventListener('click', async function () {
                     const code = this.dataset.code;
                     const icon = this.querySelector('i');
 

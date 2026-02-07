@@ -30,7 +30,8 @@
                         </div>
                         <div class="col-12">
                             <label class="form-label">وصف الصنف</label>
-                            <textarea name="description" class="form-control" rows="3">{{ old('description', $category->description) }}</textarea>
+                            <textarea name="description" class="form-control"
+                                rows="3">{{ old('description', $category->description) }}</textarea>
                         </div>
                         <div class="col-12">
                             <label class="form-label">صورة الصنف</label>
@@ -61,8 +62,7 @@
                     <h5 class="mb-4">الحالة</h5>
 
                     <div class="form-check">
-                        <input type="checkbox" name="is_active" class="form-check-input" id="is_active" value="1"
-                            {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
+                        <input type="checkbox" name="is_active" class="form-check-input" id="is_active" value="1" {{ old('is_active', $category->is_active) ? 'checked' : '' }}>
                         <label class="form-check-label" for="is_active">صنف نشط</label>
                     </div>
                 </div>
@@ -77,14 +77,14 @@
 
 @push('scripts')
     <script>
-        document.getElementById('imageInput').addEventListener('change', function(e) {
+        document.getElementById('imageInput').addEventListener('change', function (e) {
             const preview = document.getElementById('imagePreview');
             const previewImg = preview.querySelector('img');
             const file = e.target.files[0];
 
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     previewImg.src = e.target.result;
                     preview.style.display = 'block';
                 }

@@ -213,7 +213,7 @@
 
                     <!-- Mobile user panel script -->
                     <script>
-                        (function() {
+                        (function () {
                             // Run immediately when script loads
                             function initMobileUserPanel() {
                                 const userBtn = document.getElementById('userDropdownBtn');
@@ -269,7 +269,7 @@
                                 }
 
                                 // Toggle on button click - removed stopImmediatePropagation
-                                userBtn.addEventListener('click', function(e) {
+                                userBtn.addEventListener('click', function (e) {
                                     if (isMobile()) {
                                         e.preventDefault();
                                         e.stopPropagation(); // Only stopPropagation, not Immediate
@@ -292,14 +292,14 @@
                                 backdrop.addEventListener('click', closePanel);
 
                                 // Close on ESC
-                                document.addEventListener('keydown', function(e) {
+                                document.addEventListener('keydown', function (e) {
                                     if (e.key === 'Escape' && userMenu.classList.contains('show')) {
                                         closePanel();
                                     }
                                 });
 
                                 // Click outside to close navbar collapse
-                                document.addEventListener('click', function(e) {
+                                document.addEventListener('click', function (e) {
                                     const navbarCollapse = document.getElementById('navbarMain');
                                     const toggler = document.querySelector('.navbar-toggler');
                                     if (navbarCollapse && navbarCollapse.classList.contains('show') &&
@@ -311,7 +311,7 @@
                                 });
 
                                 // Handle resize
-                                window.addEventListener('resize', function() {
+                                window.addEventListener('resize', function () {
                                     if (isMobile()) {
                                         userBtn.removeAttribute('data-bs-toggle');
                                     } else {
@@ -328,7 +328,7 @@
                                 initMobileUserPanel();
                             }
                         })
-                        ();
+                            ();
                     </script>
                 @else
                     <a href="{{ route('login') }}" class="btn btn-golden">
@@ -336,8 +336,7 @@
                     </a>
                 @endauth
                 <!-- Theme Toggle -->
-                <button class="btn btn-icon theme-toggle-navbar" id="themeToggleNavbar"
-                    aria-label="Toggle dark mode">
+                <button class="btn btn-icon theme-toggle-navbar" id="themeToggleNavbar" aria-label="Toggle dark mode">
                     <i class="bi bi-sun-fill sun-icon"></i>
                     <i class="bi bi-moon-fill moon-icon"></i>
                 </button>
@@ -353,8 +352,8 @@
             <div class="modal-body p-4">
                 <form action="{{ route('shop.index') }}" method="GET">
                     <div class="input-group input-group-lg">
-                        <input type="text" name="search" class="form-control"
-                            placeholder="ابحث عن قهوتك المفضلة..." aria-label="البحث في المنتجات" autofocus>
+                        <input type="text" name="search" class="form-control" placeholder="ابحث عن قهوتك المفضلة..."
+                            aria-label="البحث في المنتجات" autofocus>
                         <button type="submit" class="btn btn-golden">
                             <i class="bi bi-search"></i>
                         </button>

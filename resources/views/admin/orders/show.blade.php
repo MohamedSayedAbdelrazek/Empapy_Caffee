@@ -30,8 +30,8 @@
                         </thead>
                         <tbody>
                             @foreach ($order->items as $item)
-                                <tr
-                                    @if ($item->is_reward_item) class="table-success" style="background: rgba(16, 185, 129, 0.15);" @endif>
+                                <tr @if ($item->is_reward_item) class="table-success"
+                                style="background: rgba(16, 185, 129, 0.15);" @endif>
                                     <td>
                                         <div class="d-flex align-items-center gap-3">
                                             @if ($item->product)
@@ -103,10 +103,12 @@
                                 </tr>
                             @endif
                             {{-- Free Product Reward Alert --}}
-                            @if (isset($rewardRedemption) &&
+                            @if (
+                                    isset($rewardRedemption) &&
                                     $rewardRedemption &&
                                     $rewardRedemption->reward &&
-                                    $rewardRedemption->reward->reward_type === 'free_product')
+                                    $rewardRedemption->reward->reward_type === 'free_product'
+                                )
                                 <tr class="{{ $rewardRedemption->gift_fulfilled ? 'table-success' : 'table-warning' }}"
                                     style="background: rgba({{ $rewardRedemption->gift_fulfilled ? '16, 185, 129' : '245, 158, 11' }}, 0.15);">
                                     <td colspan="4" class="text-start">
