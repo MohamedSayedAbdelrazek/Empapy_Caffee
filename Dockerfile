@@ -38,6 +38,7 @@ RUN apk add --no-cache \
     libpng-dev \
     libjpeg-turbo-dev \
     freetype-dev \
+    libwebp-dev \
     libzip-dev \
     zip \
     unzip \
@@ -47,8 +48,8 @@ RUN apk add --no-cache \
     supervisor \
     shadow
 
-# Install PHP extensions
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+# Install PHP extensions with WebP support
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install \
     pdo \
     pdo_mysql \

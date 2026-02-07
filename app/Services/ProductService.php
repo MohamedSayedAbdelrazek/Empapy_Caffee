@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Product;
 use App\Models\ProductOption;
 use App\Models\ProductOptionValue;
+use App\Services\ImageService;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -68,7 +69,7 @@ class ProductService
     }
 
     /**
-     * Handle main image upload
+     * Handle main image upload with automatic WebP conversion
      */
     public function handleImageUpload(?UploadedFile $image, ?string $oldImagePath = null): ?string
     {
@@ -81,12 +82,15 @@ class ProductService
             $this->deleteImage($oldImagePath);
         }
 
-        $path = $image->store('products', 'public');
-        return '/storage/' . $path;
+        // Upload and convert to WebP
+        $customName = 'product_' . time() . '_' . Str::random(8);
+        $result = ImageService::uploadAndConvert($image, 'uploads/products', $customName);
+        
+        return $result['path'];
     }
 
     /**
-     * Handle gallery images upload
+     * Handle gallery images upload with automatic WebP conversion
      */
     public function handleGalleryUpload(?array $galleryImages, ?array $oldGallery = null): ?array
     {
@@ -102,10 +106,11 @@ class ProductService
         }
 
         $galleryPaths = [];
-        foreach ($galleryImages as $image) {
+        foreach ($galleryImages as $index => $image) {
             if ($image instanceof UploadedFile) {
-                $path = $image->store('products/gallery', 'public');
-                $galleryPaths[] = '/storage/' . $path;
+                $customName = 'gallery_' . time() . '_' . $index . '_' . Str::random(6);
+                $result = ImageService::uploadAndConvert($image, 'uploads/products/gallery', $customName);
+                $galleryPaths[] = $result['path'];
             }
         }
 
@@ -117,7 +122,13 @@ class ProductService
      */
     public function deleteImage(string $imagePath): bool
     {
-        // Convert public path to storage path
+        // Handle uploads directory (new WebP images)
+        if (str_starts_with($imagePath, '/uploads/')) {
+            ImageService::delete($imagePath);
+            return true;
+        }
+        
+        // Handle old storage path for backward compatibility
         $storagePath = str_replace('/storage/', '', $imagePath);
 
         if (Storage::disk('public')->exists($storagePath)) {

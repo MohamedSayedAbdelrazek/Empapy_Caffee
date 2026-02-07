@@ -10,27 +10,31 @@
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="1-K9hEmL-oDOLLF4eGYd2TsRlKdmvbEfSGwx79k-Tus" />
 
-    <script>
-        // ✅ Service Worker Registration for PWA
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(reg => console.log('✅ SW registered:', reg.scope))
-                    .catch(err => console.log('❌ SW registration failed:', err));
-            });
-        }
-    </script>
+    <!-- Preconnect for Google services -->
+    <link rel="preconnect" href="https://www.googletagmanager.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
-    <!-- Google Analytics 4 -->
+    <!-- Google Analytics 4 (async - non-blocking) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JWP19DBNZE"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-
-        function gtag() {
-            dataLayer.push(arguments);
-        }
+        function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
         gtag('config', 'G-JWP19DBNZE');
+    </script>
+
+    <script>
+        // ✅ Service Worker Registration for PWA (deferred to after load)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Delay SW registration to prioritize critical resources
+                setTimeout(function() {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(reg => console.log('✅ SW registered:', reg.scope))
+                        .catch(err => console.log('❌ SW registration failed:', err));
+                }, 2000);
+            });
+        }
     </script>
 
     <!-- PWA Meta Tags -->
@@ -113,20 +117,39 @@
     }
     </script>
 
-    <!-- Google Fonts - Cairo for Arabic -->
+    <!-- Preconnect to external domains for faster loading -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap"
-        rel="stylesheet">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
 
-    <!-- Bootstrap 5 RTL -->
+    <!-- Google Fonts - Cairo (optimized weights) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Critical CSS (Inlined for faster FCP) -->
+    <style>
+        :root{--espresso:#2C1810;--dark-roast:#3D2317;--gold:#C9A227;--cream:#FFF8E7;--font-primary:'Cairo',sans-serif}
+        *,*::before,*::after{box-sizing:border-box}
+        body{font-family:var(--font-primary);background-color:var(--cream);color:var(--espresso);line-height:1.7;overflow-x:hidden;margin:0}
+        .hero-section{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--espresso) 0%,var(--dark-roast) 100%)}
+        .hero-bg{position:absolute;inset:0;z-index:0}
+        .hero-bg img{width:100%;height:100%;object-fit:cover;opacity:0.4}
+        .hero-overlay{position:absolute;inset:0;background:linear-gradient(135deg,rgba(44,24,16,0.95) 0%,rgba(61,35,23,0.9) 100%);z-index:1}
+        .hero-content{position:relative;z-index:10;color:#fff;padding-top:100px}
+        .btn-golden{background:linear-gradient(135deg,var(--gold) 0%,#E8C547 50%,var(--gold) 100%);color:var(--espresso);border:none;padding:12px 30px;border-radius:50px;font-weight:600}
+    </style>
+
+    <!-- Bootstrap 5 RTL (Critical CSS) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+    <!-- Bootstrap Icons (Deferred - Non-blocking) -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"></noscript>
 
-    <!-- AOS - Animate On Scroll -->
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+    <!-- AOS - Animate On Scroll (Deferred) -->
+    <link rel="preload" href="https://unpkg.com/aos@2.3.1/dist/aos.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css"></noscript>
 
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
@@ -143,17 +166,20 @@
     <!-- Announcement Bar CSS (v10 - direction fixed) -->
     <link rel="stylesheet" href="{{ asset('css/announcement-bar.css') }}?v=10">
 
-    <!-- Loyalty System CSS -->
-    <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
+    <!-- Loyalty System CSS (Deferred - loaded after page render) -->
+    <link rel="preload" href="{{ asset('css/loyalty.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/loyalty.css') }}"></noscript>
 
     <!-- User Dropdown Menu CSS -->
     <link rel="stylesheet" href="{{ asset('css/user-dropdown.css') }}">
 
-    <!-- PWA Install Prompt CSS -->
-    <link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}">
+    <!-- PWA Install Prompt CSS (Deferred) -->
+    <link rel="preload" href="{{ asset('css/pwa-install.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}"></noscript>
 
-    <!-- Firebase Notifications CSS -->
-    <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
+    <!-- Firebase Notifications CSS (Deferred) -->
+    <link rel="preload" href="{{ asset('css/firebase-notifications.css') }}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}"></noscript>
 
     <!-- Product Card CSS (extracted for better caching) -->
     <link rel="stylesheet" href="{{ asset('css/product-card.css') }}">
@@ -217,36 +243,52 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- AOS JS -->
-    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <!-- AOS JS (Deferred) -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
 
     <!-- Custom JS -->
     <script src="{{ asset('js/app.js') }}"></script>
 
-    <!-- UI Enhancements JS -->
-    <script src="{{ asset('js/enhancements.js') }}"></script>
+    <!-- UI Enhancements JS (Deferred) -->
+    <script src="{{ asset('js/enhancements.js') }}" defer></script>
 
     <script>
-        // Initialize AOS
-        AOS.init({
-            duration: 800,
-            easing: 'ease-out-cubic',
-            once: true,
-            offset: 50
+        // Initialize AOS after deferred script loads
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof AOS !== 'undefined') {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-out-cubic',
+                    once: true,
+                    offset: 50
+                });
+            }
+        });
+        // Fallback for when AOS loads after DOMContentLoaded
+        window.addEventListener('load', function() {
+            if (typeof AOS !== 'undefined' && !window.aosInitialized) {
+                AOS.init({
+                    duration: 800,
+                    easing: 'ease-out-cubic',
+                    once: true,
+                    offset: 50
+                });
+                window.aosInitialized = true;
+            }
         });
     </script>
 
-    <!-- Creative Premium Effects JS -->
-    <script src="{{ asset('js/creative-effects.js') }}"></script>
+    <!-- Creative Premium Effects JS (Deferred) -->
+    <script src="{{ asset('js/creative-effects.js') }}" defer></script>
 
-    <!-- UX Enhancements JS -->
-    <script src="{{ asset('js/ux-enhancements.js') }}"></script>
+    <!-- UX Enhancements JS (Deferred) -->
+    <script src="{{ asset('js/ux-enhancements.js') }}" defer></script>
 
-    <!-- Product Card JS (extracted for better caching) -->
-    <script src="{{ asset('js/product-card.js') }}"></script>
+    <!-- Product Card JS (Deferred) -->
+    <script src="{{ asset('js/product-card.js') }}" defer></script>
 
-    <!-- PWA Service Worker & Install Prompt -->
-    <script src="{{ asset('js/pwa.js') }}"></script>
+    <!-- PWA Service Worker & Install Prompt (Deferred) -->
+    <script src="{{ asset('js/pwa.js') }}" defer></script>
 
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>

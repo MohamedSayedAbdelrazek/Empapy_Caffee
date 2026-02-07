@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Services\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Artisan;
@@ -42,12 +43,12 @@ class CategoryController extends Controller
         $validated['slug'] = Str::slug($validated['name']);
         $validated['is_active'] = $request->has('is_active');
 
-        // Handle image upload
+        // Handle image upload with automatic WebP conversion
         if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/categories'), $imageName);
-            $validated['image'] = '/uploads/categories/' . $imageName;
+            $customName = time() . '_' . Str::slug($validated['name']);
+            $result = ImageService::uploadAndConvert($image, 'uploads/categories', $customName);
+            $validated['image'] = $result['path'];
         }
 
         Category::create($validated);
@@ -90,20 +91,17 @@ class CategoryController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
 
-        // Handle image upload
+        // Handle image upload with automatic WebP conversion
         if ($request->hasFile('image')) {
             // Delete old image if it exists and is a local file
             if ($category->image && str_starts_with($category->image, '/uploads/')) {
-                $oldImagePath = public_path($category->image);
-                if (file_exists($oldImagePath)) {
-                    unlink($oldImagePath);
-                }
+                ImageService::delete($category->image);
             }
 
             $image = $request->file('image');
-            $imageName = time() . '_' . Str::slug($validated['name']) . '.' . $image->getClientOriginalExtension();
-            $image->move(public_path('uploads/categories'), $imageName);
-            $validated['image'] = '/uploads/categories/' . $imageName;
+            $customName = time() . '_' . Str::slug($validated['name']);
+            $result = ImageService::uploadAndConvert($image, 'uploads/categories', $customName);
+            $validated['image'] = $result['path'];
         }
 
         $category->update($validated);

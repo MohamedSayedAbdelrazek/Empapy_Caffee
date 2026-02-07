@@ -6,7 +6,10 @@
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-bg">
-            <img src="{{ asset('images/hero-bg.jpg') }}" alt="Coffee Background" fetchpriority="high" decoding="async">
+            <picture>
+                <source srcset="{{ asset('images/hero-bg.webp') }}" type="image/webp">
+                <img src="{{ asset('images/hero-bg.jpg') }}" alt="Coffee Background" fetchpriority="high" decoding="async" width="1920" height="1080">
+            </picture>
         </div>
         <div class="hero-overlay"></div>
 
@@ -48,9 +51,12 @@
                 </div>
                 <div class="col-lg-6 d-none d-lg-block" data-aos="fade-up" data-aos-delay="200">
                     <div class="hero-image text-center" style="position: relative; z-index: 100;">
-                        <img src="{{ asset('images/hero-coffee-new.png') }}" alt="Premium Coffee" loading="lazy"
-                            decoding="async"
-                            style="border-radius: 30px; max-height: 450px; width: auto; object-fit: cover; box-shadow: 0 25px 60px rgba(0,0,0,0.4);">
+                        <picture>
+                            <source srcset="{{ asset('images/hero-coffee-new.webp') }}" type="image/webp">
+                            <img src="{{ asset('images/hero-coffee-new.png') }}" alt="Premium Coffee" loading="lazy"
+                                decoding="async" width="450" height="450"
+                                style="border-radius: 30px; max-height: 450px; width: auto; object-fit: cover; box-shadow: 0 25px 60px rgba(0,0,0,0.4);">
+                        </picture>
                     </div>
                 </div>
             </div>
