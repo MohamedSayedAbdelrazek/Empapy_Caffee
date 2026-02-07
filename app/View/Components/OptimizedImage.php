@@ -22,7 +22,7 @@ class OptimizedImage extends Component
      * Create a new component instance.
      */
     public function __construct(
-        string $src,
+        ?string $src = null,
         string $alt = '',
         ?string $class = null,
         ?string $style = null,
@@ -32,7 +32,9 @@ class OptimizedImage extends Component
         string $decoding = 'async',
         ?string $fetchpriority = null
     ) {
-        $this->src = $src;
+        // Handle null/empty src with a simple gray placeholder
+        $placeholder = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300" viewBox="0 0 300 300"%3E%3Crect fill="%23f0f0f0" width="300" height="300"/%3E%3Ctext fill="%23999" font-family="Arial" font-size="16" x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E';
+        $this->src = $src ?: $placeholder;
         $this->alt = $alt;
         $this->class = $class;
         $this->style = $style;
@@ -42,8 +44,8 @@ class OptimizedImage extends Component
         $this->decoding = $decoding;
         $this->fetchpriority = $fetchpriority;
 
-        // Check if WebP version exists
-        $this->webpSrc = $this->getWebpPath($src);
+        // Check if WebP version exists (only if we have a real src)
+        $this->webpSrc = $src ? $this->getWebpPath($src) : null;
     }
 
     /**

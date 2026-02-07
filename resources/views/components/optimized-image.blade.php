@@ -12,6 +12,7 @@
             loading="{{ $loading }}"
             decoding="{{ $decoding }}"
             @if($fetchpriority) fetchpriority="{{ $fetchpriority }}" @endif
+            {{ $attributes->except(['src', 'alt', 'class', 'style', 'width', 'height', 'loading', 'decoding', 'fetchpriority']) }}
         >
     </picture>
 @else
@@ -25,5 +26,6 @@
         loading="{{ $loading }}"
         decoding="{{ $decoding }}"
         @if($fetchpriority) fetchpriority="{{ $fetchpriority }}" @endif
+        {{ $attributes->except(['src', 'alt', 'class', 'style', 'width', 'height', 'loading', 'decoding', 'fetchpriority']) }}
     >
 @endif
