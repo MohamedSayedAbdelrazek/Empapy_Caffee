@@ -26,13 +26,15 @@
                     </p>
                     <div class="social-links">
                         <a href="https://www.facebook.com/profile.php?id=61559046937280" target="_blank"
-                            class="social-link" title="فيسبوك"><i class="bi bi-facebook"></i></a>
-                        <a href="https://wa.me/201151579225" target="_blank" class="social-link" title="واتساب"><i
-                                class="bi bi-whatsapp"></i></a>
-                        <a href="https://www.instagram.com/empapy_coffee" target="_blank" class="social-link"
-                            title="انستجرام"><i class="bi bi-instagram"></i></a>
-                        <a href="https://www.tiktok.com/@empapy_coffe" target="_blank" class="social-link"
-                            title="تيك توك"><i class="bi bi-tiktok"></i></a>
+                            rel="noopener noreferrer" class="social-link" title="فيسبوك" aria-label="فيسبوك"><i
+                                class="bi bi-facebook"></i></a>
+                        <a href="https://wa.me/201151579225" target="_blank" rel="noopener noreferrer"
+                            class="social-link" title="واتساب" aria-label="واتساب"><i class="bi bi-whatsapp"></i></a>
+                        <a href="https://www.instagram.com/empapy_coffee" target="_blank" rel="noopener noreferrer"
+                            class="social-link" title="انستجرام" aria-label="انستجرام"><i
+                                class="bi bi-instagram"></i></a>
+                        <a href="https://www.tiktok.com/@empapy_coffe" target="_blank" rel="noopener noreferrer"
+                            class="social-link" title="تيك توك" aria-label="تيك توك"><i class="bi bi-tiktok"></i></a>
                     </div>
                 </div>
 

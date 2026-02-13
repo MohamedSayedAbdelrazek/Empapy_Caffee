@@ -8,7 +8,8 @@
         <div class="hero-bg">
             <picture>
                 <source srcset="{{ asset('images/hero-bg.webp') }}" type="image/webp">
-                <img src="{{ asset('images/hero-bg.jpg') }}" alt="Coffee Background" fetchpriority="high" decoding="async" width="1920" height="1080">
+                <img src="{{ asset('images/hero-bg.jpg') }}" alt="Coffee Background" fetchpriority="high" decoding="sync"
+                    width="1920" height="1080">
             </picture>
         </div>
         <div class="hero-overlay"></div>
@@ -53,7 +54,7 @@
                     <div class="hero-image text-center" style="position: relative; z-index: 100;">
                         <picture>
                             <source srcset="{{ asset('images/hero-coffee-new.webp') }}" type="image/webp">
-                            <img src="{{ asset('images/hero-coffee-new.png') }}" alt="Premium Coffee" loading="lazy"
+                            <img src="{{ asset('images/hero-coffee-new.png') }}" alt="Premium Coffee" fetchpriority="high"
                                 decoding="async" width="450" height="450"
                                 style="border-radius: 30px; max-height: 450px; width: auto; object-fit: cover; box-shadow: 0 25px 60px rgba(0,0,0,0.4);">
                         </picture>
@@ -76,7 +77,8 @@
                     <div class="col-lg-4 col-md-6 col-12" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
                         <a href="{{ route('shop.index', ['category' => $category->slug]) }}" class="category-card-vertical">
                             <div class="card-image">
-                                <x-optimized-image :src="$category->image" :alt="$category->name" loading="lazy" decoding="async" :width="400" :height="300" />
+                                <x-optimized-image :src="$category->image" :alt="$category->name" loading="lazy" decoding="async"
+                                    :width="400" :height="300" />
                                 <div class="card-overlay"></div>
                                 <div class="card-shine"></div>
                             </div>
@@ -136,10 +138,11 @@
                     <video id="empapyVideo" class="cinema-video" playsinline preload="metadata"
                         poster="{{ asset('images/video-poster.jpg') }}" aria-label="فيديو إمبابي كافيه - رحلة القهوة">
                         <source src="{{ asset('assets/videos/Empapy_video.mp4') }}" type="video/mp4">
+                        <track kind="captions" src="" srclang="ar" label="العربية" default>
                     </video>
 
                     <!-- Custom Play Button with Sound Waves -->
-                    <div class="cinema-play-overlay" id="cinemaPlayBtn">
+                    <button class="cinema-play-overlay" id="cinemaPlayBtn" aria-label="تشغيل الفيديو" type="button">
                         <!-- Sound Wave Animation -->
                         <div class="sound-waves">
                             <span class="wave"></span>
@@ -156,17 +159,17 @@
                         </div>
 
                         <span class="cinema-play-text">اضغط لتشغيل الفيديو</span>
-                    </div>
+                    </button>
 
                     <!-- Video Controls Overlay (appears on hover when playing) -->
                     <div class="cinema-controls" id="cinemaControls">
-                        <button class="control-btn" id="cinemaPauseBtn">
+                        <button class="control-btn" id="cinemaPauseBtn" aria-label="إيقاف مؤقت">
                             <i class="bi bi-pause-fill"></i>
                         </button>
-                        <div class="progress-bar">
+                        <div class="progress-bar" role="progressbar" aria-label="تقدم الفيديو">
                             <div class="progress-fill" id="progressFill"></div>
                         </div>
-                        <button class="control-btn" id="cinemaFullscreen">
+                        <button class="control-btn" id="cinemaFullscreen" aria-label="ملء الشاشة">
                             <i class="bi bi-fullscreen"></i>
                         </button>
                     </div>
@@ -546,8 +549,8 @@
         }
 
         /* =========================================
-                                                                                           CINEMATIC VIDEO SHOWCASE SECTION STYLES
-                                                                                           ========================================= */
+                                                                                                           CINEMATIC VIDEO SHOWCASE SECTION STYLES
+                                                                                                           ========================================= */
         .video-showcase-section {
             position: relative;
             min-height: 70vh;
@@ -809,11 +812,11 @@
 
             0%,
             100% {
-                box-shadow: 0 8px 25px rgba(201, 162, 39, 0.4);
+                transform: scale(1);
             }
 
             50% {
-                box-shadow: 0 8px 40px rgba(201, 162, 39, 0.6);
+                transform: scale(1.05);
             }
         }
 
@@ -1038,8 +1041,8 @@
         }
 
         /* =========================================
-                           🎬 CINEMATIC VIDEO SECTION STYLES
-                   ========================================= */
+                                           🎬 CINEMATIC VIDEO SECTION STYLES
+                                   ========================================= */
         .cinema-video-section {
             position: relative;
             padding: 80px 0;
@@ -1149,20 +1152,9 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            animation: goldShimmer 3s ease-in-out infinite;
         }
 
-        @keyframes goldShimmer {
 
-            0%,
-            100% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-        }
 
         .cinema-subtitle {
             color: rgba(255, 255, 255, 0.7);
@@ -1301,6 +1293,8 @@
             cursor: pointer;
             transition: all 0.4s ease;
             z-index: 10;
+            border: none;
+            font-family: inherit;
         }
 
         .cinema-play-overlay:hover {
@@ -1718,7 +1712,7 @@
             // ========== Floating Particles ==========
             const particlesContainer = document.getElementById('videoParticles');
             if (particlesContainer) {
-                const particleCount = 20;
+                const particleCount = 8;
 
                 for (let i = 0; i < particleCount; i++) {
                     const particle = document.createElement('span');
@@ -1843,21 +1837,21 @@
                 });
             }
 
-            // ========== Parallax Effect ==========
-            window.addEventListener('scroll', function() {
-                const section = document.querySelector('.cinema-video-section');
-                if (section) {
-                    const rect = section.getBoundingClientRect();
+            // ========== Parallax Effect (passive for performance) ==========
+            const cinemaSection = document.querySelector('.cinema-video-section');
+            const cinemaGlow = cinemaSection ? cinemaSection.querySelector('.frame-glow') : null;
+            if (cinemaSection && cinemaGlow) {
+                window.addEventListener('scroll', function() {
+                    const rect = cinemaSection.getBoundingClientRect();
                     const scrollPercent = (window.innerHeight - rect.top) / (window.innerHeight + rect
                         .height);
-
-                    // Subtle glow intensity on scroll
-                    const frameGlow = section.querySelector('.frame-glow');
-                    if (frameGlow && scrollPercent > 0.2 && scrollPercent < 0.8) {
-                        frameGlow.style.opacity = Math.min(1, (scrollPercent - 0.2) * 2);
+                    if (scrollPercent > 0.2 && scrollPercent < 0.8) {
+                        cinemaGlow.style.opacity = Math.min(1, (scrollPercent - 0.2) * 2);
                     }
-                }
-            });
+                }, {
+                    passive: true
+                });
+            }
         });
     </script>
 @endpush

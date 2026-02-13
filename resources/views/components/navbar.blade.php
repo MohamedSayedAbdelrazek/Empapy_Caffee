@@ -19,7 +19,7 @@
         </button>
 
         <!-- Mobile Toggle -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain" aria-controls="navbarMain" aria-expanded="false" aria-label="فتح القائمة">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -72,7 +72,7 @@
 
                 <!-- PWA Install Button (Hidden by default, shown via pwa.js) -->
                 <button class="btn btn-icon navbar-install-btn" id="navbarInstallBtn" style="display: none;"
-                    title="تثبيت التطبيق">
+                    title="تثبيت التطبيق" aria-label="تثبيت التطبيق">
                     <i class="bi bi-download"></i>
                 </button>
 
@@ -80,7 +80,7 @@
                 @auth
                     <div class="dropdown notification-dropdown">
                         <button class="btn btn-icon notification-bell position-relative" data-bs-toggle="dropdown"
-                            id="userNotificationBell">
+                            id="userNotificationBell" aria-label="الإشعارات">
                             <i class="bi bi-bell"></i>
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
                                 id="userNotificationBadge" style="display: none; font-size: 0.6rem;">

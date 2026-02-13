@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'إمبابي كافيه - قهوة فاخرة')</title>
+    <meta name="description" content="@yield('meta_description', 'إمبابي كافيه - أجود أنواع القهوة المحمصة بعناية فائقة من أفضل مزارع البن في العالم. تسوق الآن واستمتع بتجربة قهوة استثنائية.')">
 
     <!-- Google Search Console Verification -->
     <meta name="google-site-verification" content="1-K9hEmL-oDOLLF4eGYd2TsRlKdmvbEfSGwx79k-Tus" />
@@ -18,7 +19,10 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-JWP19DBNZE"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
-        function gtag() { dataLayer.push(arguments); }
+
+        function gtag() {
+            dataLayer.push(arguments);
+        }
         gtag('js', new Date());
         gtag('config', 'G-JWP19DBNZE');
     </script>
@@ -26,9 +30,9 @@
     <script>
         // ✅ Service Worker Registration for PWA (deferred to after load)
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function () {
+            window.addEventListener('load', function() {
                 // Delay SW registration to prioritize critical resources
-                setTimeout(function () {
+                setTimeout(function() {
                     navigator.serviceWorker.register('/sw.js')
                         .then(reg => console.log('✅ SW registered:', reg.scope))
                         .catch(err => console.log('❌ SW registration failed:', err));
@@ -54,8 +58,7 @@
     <link rel="apple-touch-icon" sizes="256x256" href="{{ asset('icons/ios/256.png') }}">
 
     <!-- ====== SEO Meta Tags - Enhanced for Google Ranking ====== -->
-    <meta name="description"
-        content="@yield('meta_description', 'إمبابي كافيه | Empapy Coffee - أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي، توصيل سريع. تسوق الآن!')">
+    <meta name="description" content="@yield('meta_description', 'إمبابي كافيه | Empapy Coffee - أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي، توصيل سريع. تسوق الآن!')">
 
     <!-- All keyword variations for search -->
     <meta name="keywords"
@@ -74,8 +77,7 @@
     <meta property="og:site_name" content="إمبابي كافيه - Empapy Caffe">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="@yield('og_title', 'إمبابي كافيه | Empapy Coffee - قهوة وبن فاخر')">
-    <meta property="og:description"
-        content="@yield('meta_description', 'أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي. توصيل سريع لجميع المحافظات.')">
+    <meta property="og:description" content="@yield('meta_description', 'أجود أنواع البن والقهوة الفاخرة في مصر. قهوة امبابي، بن امبابي. توصيل سريع لجميع المحافظات.')">
     <meta property="og:image" content="@yield('og_image', asset('images/og-image.jpg'))">
     <meta property="og:locale" content="ar_EG">
 
@@ -119,12 +121,12 @@
     }
     </script>
 
-    <!-- Preconnect to external domains for faster loading -->
+    <!-- Preconnect to critical domains only (max 4) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://unpkg.com" crossorigin>
-    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://unpkg.com">
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
 
     <!-- Preload Critical LCP Font (Cairo) -->
     <link rel="preload"
@@ -132,15 +134,17 @@
         as="font" type="font/woff2" crossorigin>
 
     <!-- Preload LCP Image (Hero Background) - Only on Home Page -->
-    @if(request()->routeIs('home'))
-        <link rel="preload" href="{{ asset('images/hero-bg.webp') }}" as="image" type="image/webp" fetchpriority="high">
+    @if (request()->routeIs('home'))
+        <link rel="preload" href="{{ asset('images/hero-bg.webp') }}" as="image" type="image/webp"
+            fetchpriority="high">
     @endif
 
     <!-- Google Fonts - Cairo (Non-blocking with preload) -->
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap"
         as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
+        <link rel="stylesheet"
+            href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap">
     </noscript>
 
     <!-- Critical CSS (Inlined for faster FCP) -->
@@ -214,14 +218,19 @@
         }
     </style>
 
-    <!-- Bootstrap 5 RTL (Critical CSS) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <!-- Bootstrap 5 RTL (Non-blocking with preload) -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css"
+        as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    </noscript>
 
     <!-- Bootstrap Icons (Deferred - Non-blocking) -->
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css"
         as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
     </noscript>
 
     <!-- AOS - Animate On Scroll (Deferred) -->
@@ -359,7 +368,7 @@
 
     <script>
         // Initialize AOS after deferred script loads
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             if (typeof AOS !== 'undefined') {
                 AOS.init({
                     duration: 800,
@@ -370,7 +379,7 @@
             }
         });
         // Fallback for when AOS loads after DOMContentLoaded
-        window.addEventListener('load', function () {
+        window.addEventListener('load', function() {
             if (typeof AOS !== 'undefined' && !window.aosInitialized) {
                 AOS.init({
                     duration: 800,
@@ -412,7 +421,7 @@
             return div.innerHTML;
         }
 
-        window.handleFirebaseMessage = function (payload) {
+        window.handleFirebaseMessage = function(payload) {
             console.log('[User Layout] Received Firebase Message:', payload);
             const {
                 notification,
