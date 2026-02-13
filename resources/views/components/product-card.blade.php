@@ -26,9 +26,8 @@
         <!-- Product Image with Skeleton Loading -->
         <div class="product-image-wrapper">
             <div class="skeleton-placeholder skeleton" style="position: absolute; inset: 0; z-index: 1;"></div>
-            <x-optimized-image :src="$product->image" :alt="$product->name" loading="lazy"
-                :width="300" :height="300"
-                onload="this.previousElementSibling.style.display='none'; this.classList.add('loaded');" />
+            <x-optimized-image :src="$product->image" :alt="$product->name" loading="lazy" :width="300" :height="300"
+                onload="var w=this.closest('.product-image-wrapper');if(w){var s=w.querySelector('.skeleton-placeholder');if(s)s.style.display='none';}this.classList.add('loaded');" />
         </div>
 
         <!-- Quick Actions -->

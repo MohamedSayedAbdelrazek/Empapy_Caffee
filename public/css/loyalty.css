@@ -1,1 +1,698 @@
-:root{--loyalty-bronze:#CD7F32;--loyalty-silver:#C0C0C0;--loyalty-gold:#FFD700;--loyalty-platinum:#E5E4E2;--loyalty-bronze-gradient:linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);--loyalty-silver-gradient:linear-gradient(135deg, #C0C0C0 0%, #808080 100%);--loyalty-gold-gradient:linear-gradient(135deg, #FFD700 0%, #FFA500 100%);--loyalty-platinum-gradient:linear-gradient(135deg, #E5E4E2 0%, #A9A9A9 100%)}.points-counter{font-size:3rem;font-weight:800;font-family:Cairo,sans-serif;background:linear-gradient(135deg,var(--gold) 0,var(--gold-dark) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:inline-block;animation:pointsPulse 2s ease-in-out infinite}@keyframes pointsPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}.points-counter-animated{transition:all .5s cubic-bezier(.34, 1.56, .64, 1)}.points-counter-animated.updating{transform:scale(1.2)}.tier-badge{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;border-radius:var(--radius-full);font-weight:700;font-size:.9rem;text-transform:uppercase;letter-spacing:.5px;transition:all .3s ease}.tier-badge-bronze{background:var(--loyalty-bronze-gradient);color:#fff;box-shadow:0 4px 15px rgba(205,127,50,.4)}.tier-badge-silver{background:var(--loyalty-silver-gradient);color:#333;box-shadow:0 4px 15px rgba(192,192,192,.4)}.tier-badge-gold{background:var(--loyalty-gold-gradient);color:#333;box-shadow:0 4px 20px rgba(255,215,0,.5);animation:goldShine 3s ease-in-out infinite}.tier-badge-platinum{background:var(--loyalty-platinum-gradient);color:#333;box-shadow:0 4px 25px rgba(229,228,226,.6);position:relative;overflow:hidden}.tier-badge-platinum::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:linear-gradient(45deg,transparent 40%,rgba(255,255,255,.5) 50%,transparent 60%);animation:platinumShine 3s ease-in-out infinite}@keyframes goldShine{0%,100%{box-shadow:0 4px 20px rgba(255,215,0,.5)}50%{box-shadow:0 4px 30px rgba(255,215,0,.8)}}@keyframes platinumShine{0%{transform:translateX(-100%) rotate(45deg)}100%{transform:translateX(100%) rotate(45deg)}}.tier-badge-icon{font-size:1.2rem}.tier-progress-container{background:var(--gray-100);border-radius:var(--radius-lg);padding:20px;position:relative}.tier-progress-bar{height:12px;background:var(--gray-200);border-radius:var(--radius-full);overflow:hidden;position:relative}.tier-progress-fill{height:100%;border-radius:var(--radius-full);transition:width 1s cubic-bezier(.34, 1.56, .64, 1);position:relative;overflow:hidden}.tier-progress-fill::after{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.4) 50%,rgba(255,255,255,0) 100%);animation:progressShine 2s ease-in-out infinite}@keyframes progressShine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}.tier-progress-fill.bronze{background:var(--loyalty-bronze-gradient)}.tier-progress-fill.silver{background:var(--loyalty-silver-gradient)}.tier-progress-fill.gold{background:var(--loyalty-gold-gradient)}.tier-progress-fill.platinum{background:var(--loyalty-platinum-gradient)}.tier-progress-labels{display:flex;justify-content:space-between;margin-top:10px;font-size:.85rem;color:var(--gray-600)}.tier-icons-row{display:flex;justify-content:space-between;margin-bottom:15px;position:relative}.tier-icon-item{display:flex;flex-direction:column;align-items:center;gap:5px;font-size:.8rem;color:var(--gray-500);transition:all .3s ease}.tier-icon-item.active{color:var(--espresso);font-weight:700}.tier-icon-item.active .tier-icon-circle{transform:scale(1.2);box-shadow:0 0 20px currentColor}.tier-icon-circle{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:#fff;border:2px solid var(--gray-200);transition:all .3s ease}.tier-icon-circle.bronze{border-color:var(--loyalty-bronze);color:var(--loyalty-bronze)}.tier-icon-circle.silver{border-color:var(--loyalty-silver);color:var(--loyalty-silver)}.tier-icon-circle.gold{border-color:var(--loyalty-gold);color:var(--loyalty-gold)}.tier-icon-circle.platinum{border-color:var(--loyalty-platinum);color:var(--loyalty-platinum)}.reward-card{background:#fff;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-md);transition:all .3s ease;position:relative}.reward-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-lg)}.reward-card.locked{opacity:.6;filter:grayscale(50%)}.reward-card.locked::after{content:'🔒';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:3rem;filter:drop-shadow(0 2px 4px rgba(0, 0, 0, .3))}.reward-card-image{height:150px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:4rem}.reward-card-body{padding:20px}.reward-card-title{font-size:1.1rem;font-weight:700;color:var(--espresso);margin-bottom:8px}.reward-card-description{font-size:.9rem;color:var(--gray-600);margin-bottom:15px}.reward-card-points{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--gold-dark)}.reward-card-points i{font-size:1.2rem}.reward-card-footer{padding:15px 20px;background:var(--gray-50);border-top:1px solid var(--gray-100)}.reward-redeem-btn{width:100%;padding:12px;border:none;border-radius:var(--radius-md);font-weight:700;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;gap:8px}.reward-redeem-btn.available{background:linear-gradient(135deg,var(--gold) 0,var(--gold-dark) 100%);color:var(--espresso)}.reward-redeem-btn.available:hover{transform:scale(1.02);box-shadow:0 4px 15px rgba(201,162,39,.4)}.reward-redeem-btn.unavailable{background:var(--gray-200);color:var(--gray-500);cursor:not-allowed}.reward-card.featured{border:2px solid var(--gold)}.reward-card.featured::before{content:'⭐ مميز';position:absolute;top:10px;right:10px;background:var(--gold);color:var(--espresso);padding:5px 12px;border-radius:var(--radius-full);font-size:.75rem;font-weight:700;z-index:5}.transaction-timeline{position:relative;padding-left:30px}.transaction-timeline::before{content:'';position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--gray-200)}.transaction-item{position:relative;padding:15px 0;border-bottom:1px solid var(--gray-100)}.transaction-item:last-child{border-bottom:none}.transaction-item::before{content:'';position:absolute;left:-24px;top:20px;width:10px;height:10px;border-radius:50%;background:var(--gray-300);border:2px solid #fff}.transaction-item.earned::before{background:var(--success)}.transaction-item.redeemed::before{background:var(--warning)}.transaction-item.bonus::before{background:var(--gold)}.transaction-points{font-weight:700;font-size:1.1rem}.transaction-points.positive{color:var(--success)}.transaction-points.negative{color:var(--danger)}.transaction-meta{font-size:.85rem;color:var(--gray-500)}.referral-code-box{background:linear-gradient(135deg,var(--cream) 0,var(--cream-dark) 100%);border:2px dashed var(--gold);border-radius:var(--radius-lg);padding:30px;text-align:center}.referral-code{font-size:2rem;font-weight:800;font-family:'Roboto Mono',monospace;color:var(--espresso);letter-spacing:3px;margin:15px 0}.referral-share-buttons{display:flex;gap:10px;justify-content:center;margin-top:20px}.referral-share-btn{width:50px;height:50px;border-radius:var(--radius-full);border:none;display:flex;align-items:center;justify-content:center;font-size:1.3rem;cursor:pointer;transition:all .3s ease;color:#fff}.referral-share-btn:hover{transform:scale(1.1)}.referral-share-btn.whatsapp{background:#25d366}.referral-share-btn.facebook{background:#1877f2}.referral-share-btn.twitter{background:#1da1f2}.referral-share-btn.copy{background:var(--espresso)}.loyalty-stat-card{background:#fff;border-radius:var(--radius-lg);padding:25px;text-align:center;box-shadow:var(--shadow-sm);transition:all .3s ease}.loyalty-stat-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-md)}.loyalty-stat-icon{width:60px;height:60px;border-radius:var(--radius-full);display:flex;align-items:center;justify-content:center;margin:0 auto 15px;font-size:1.5rem}.loyalty-stat-icon.points{background:rgba(201,162,39,.15);color:var(--gold-dark)}.loyalty-stat-icon.tier{background:rgba(139,69,19,.15);color:var(--espresso)}.loyalty-stat-icon.referrals{background:rgba(46,204,113,.15);color:var(--success)}.loyalty-stat-value{font-size:1.8rem;font-weight:800;color:var(--espresso);margin-bottom:5px}.loyalty-stat-label{font-size:.9rem;color:var(--gray-600)}.confetti-container{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;overflow:hidden;z-index:99999}.confetti{position:absolute;width:10px;height:10px;animation:confettiFall 3s ease-out forwards}@keyframes confettiFall{0%{transform:translateY(-100px) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}.navbar-loyalty-badge{display:flex;align-items:center;gap:8px;padding:8px 15px;background:rgba(201,162,39,.15);border-radius:var(--radius-full);color:var(--gold-dark);font-weight:700;font-size:.9rem;text-decoration:none;transition:all .3s ease}.navbar-loyalty-badge:hover{background:rgba(201,162,39,.25);color:var(--gold-dark);text-decoration:none}.navbar-loyalty-badge i{font-size:1rem}.navbar-loyalty-points{animation:coinPulse 2s ease-in-out infinite}@keyframes coinPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}.loyalty-admin-card{background:#fff;border-radius:var(--radius-lg);overflow:hidden;box-shadow:var(--shadow-sm)}.loyalty-admin-card-header{padding:20px;border-bottom:1px solid var(--gray-100);display:flex;justify-content:space-between;align-items:center}.loyalty-admin-card-header h3{margin:0;font-size:1.1rem;font-weight:700}.loyalty-admin-card-body{padding:20px}.tier-color-preview{width:30px;height:30px;border-radius:var(--radius-sm);border:2px solid var(--gray-200)}@media (max-width:768px){.points-counter{font-size:2.5rem}.tier-badge{padding:6px 12px;font-size:.8rem}.reward-card-image{height:120px;font-size:3rem}.referral-code{font-size:1.5rem;letter-spacing:2px}.referral-share-btn{width:45px;height:45px;font-size:1.1rem}}[data-theme=dark] .loyalty-admin-card,[data-theme=dark] .loyalty-stat-card,[data-theme=dark] .reward-card{background:var(--dark-card)}[data-theme=dark] .tier-progress-container{background:var(--dark-bg)}[data-theme=dark] .referral-code-box{background:linear-gradient(135deg,#2c1810 0,#3d2317 100%)}[data-theme=dark] .tier-progress-bar{background:var(--dark-bg)}[data-theme=dark] .transaction-timeline::before{background:var(--gray-700)}
+:root {
+    --loyalty-bronze: #CD7F32;
+    --loyalty-silver: #C0C0C0;
+    --loyalty-gold: #FFD700;
+    --loyalty-platinum: #E5E4E2;
+    --loyalty-bronze-gradient: linear-gradient(135deg, #CD7F32 0%, #8B4513 100%);
+    --loyalty-silver-gradient: linear-gradient(135deg, #C0C0C0 0%, #808080 100%);
+    --loyalty-gold-gradient: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    --loyalty-platinum-gradient: linear-gradient(135deg, #E5E4E2 0%, #A9A9A9 100%)
+}
+
+.points-counter {
+    font-size: 3rem;
+    font-weight: 800;
+    font-family: Cairo, sans-serif;
+    background: linear-gradient(135deg, var(--gold) 0, var(--gold-dark) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+    animation: pointsPulse 2s ease-in-out infinite
+}
+
+@keyframes pointsPulse {
+
+    0%,
+    100% {
+        transform: scale(1)
+    }
+
+    50% {
+        transform: scale(1.02)
+    }
+}
+
+.points-counter-animated {
+    transition: all .5s cubic-bezier(.34, 1.56, .64, 1)
+}
+
+.points-counter-animated.updating {
+    transform: scale(1.2)
+}
+
+.tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: var(--radius-full);
+    font-weight: 700;
+    font-size: .9rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    transition: all .3s ease
+}
+
+.tier-badge-bronze {
+    background: var(--loyalty-bronze-gradient);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(205, 127, 50, .4)
+}
+
+.tier-badge-silver {
+    background: var(--loyalty-silver-gradient);
+    color: #333;
+    box-shadow: 0 4px 15px rgba(192, 192, 192, .4)
+}
+
+.tier-badge-gold {
+    background: var(--loyalty-gold-gradient);
+    color: #333;
+    box-shadow: 0 4px 20px rgba(255, 215, 0, .5);
+    animation: goldShine 3s ease-in-out infinite
+}
+
+.tier-badge-platinum {
+    background: var(--loyalty-platinum-gradient);
+    color: #333;
+    box-shadow: 0 4px 25px rgba(229, 228, 226, .6);
+    position: relative;
+    overflow: hidden
+}
+
+.tier-badge-platinum::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 40%, rgba(255, 255, 255, .5) 50%, transparent 60%);
+    animation: platinumShine 3s ease-in-out infinite
+}
+
+@keyframes goldShine {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1
+    }
+
+    50% {
+        transform: scale(1.05);
+        opacity: .85
+    }
+}
+
+@keyframes platinumShine {
+    0% {
+        transform: translateX(-100%) rotate(45deg)
+    }
+
+    100% {
+        transform: translateX(100%) rotate(45deg)
+    }
+}
+
+.tier-badge-icon {
+    font-size: 1.2rem
+}
+
+.tier-progress-container {
+    background: var(--gray-100);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: relative
+}
+
+.tier-progress-bar {
+    height: 12px;
+    background: var(--gray-200);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative
+}
+
+.tier-progress-fill {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width 1s cubic-bezier(.34, 1.56, .64, 1);
+    position: relative;
+    overflow: hidden
+}
+
+.tier-progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, .4) 50%, rgba(255, 255, 255, 0) 100%);
+    animation: progressShine 2s ease-in-out infinite
+}
+
+@keyframes progressShine {
+    0% {
+        transform: translateX(-100%)
+    }
+
+    100% {
+        transform: translateX(100%)
+    }
+}
+
+.tier-progress-fill.bronze {
+    background: var(--loyalty-bronze-gradient)
+}
+
+.tier-progress-fill.silver {
+    background: var(--loyalty-silver-gradient)
+}
+
+.tier-progress-fill.gold {
+    background: var(--loyalty-gold-gradient)
+}
+
+.tier-progress-fill.platinum {
+    background: var(--loyalty-platinum-gradient)
+}
+
+.tier-progress-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: .85rem;
+    color: var(--gray-600)
+}
+
+.tier-icons-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    position: relative
+}
+
+.tier-icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    font-size: .8rem;
+    color: var(--gray-500);
+    transition: all .3s ease
+}
+
+.tier-icon-item.active {
+    color: var(--espresso);
+    font-weight: 700
+}
+
+.tier-icon-item.active .tier-icon-circle {
+    transform: scale(1.2);
+    box-shadow: 0 0 20px currentColor
+}
+
+.tier-icon-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background: #fff;
+    border: 2px solid var(--gray-200);
+    transition: all .3s ease
+}
+
+.tier-icon-circle.bronze {
+    border-color: var(--loyalty-bronze);
+    color: var(--loyalty-bronze)
+}
+
+.tier-icon-circle.silver {
+    border-color: var(--loyalty-silver);
+    color: var(--loyalty-silver)
+}
+
+.tier-icon-circle.gold {
+    border-color: var(--loyalty-gold);
+    color: var(--loyalty-gold)
+}
+
+.tier-icon-circle.platinum {
+    border-color: var(--loyalty-platinum);
+    color: var(--loyalty-platinum)
+}
+
+.reward-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-md);
+    transition: all .3s ease;
+    position: relative
+}
+
+.reward-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg)
+}
+
+.reward-card.locked {
+    opacity: .6;
+    filter: grayscale(50%)
+}
+
+.reward-card.locked::after {
+    content: '🔒';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, .3))
+}
+
+.reward-card-image {
+    height: 150px;
+    background: var(--gray-100);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem
+}
+
+.reward-card-body {
+    padding: 20px
+}
+
+.reward-card-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--espresso);
+    margin-bottom: 8px
+}
+
+.reward-card-description {
+    font-size: .9rem;
+    color: var(--gray-600);
+    margin-bottom: 15px
+}
+
+.reward-card-points {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    color: var(--gold-dark)
+}
+
+.reward-card-points i {
+    font-size: 1.2rem
+}
+
+.reward-card-footer {
+    padding: 15px 20px;
+    background: var(--gray-50);
+    border-top: 1px solid var(--gray-100)
+}
+
+.reward-redeem-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: var(--radius-md);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all .3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px
+}
+
+.reward-redeem-btn.available {
+    background: linear-gradient(135deg, var(--gold) 0, var(--gold-dark) 100%);
+    color: var(--espresso)
+}
+
+.reward-redeem-btn.available:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(201, 162, 39, .4)
+}
+
+.reward-redeem-btn.unavailable {
+    background: var(--gray-200);
+    color: var(--gray-500);
+    cursor: not-allowed
+}
+
+.reward-card.featured {
+    border: 2px solid var(--gold)
+}
+
+.reward-card.featured::before {
+    content: '⭐ مميز';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--gold);
+    color: var(--espresso);
+    padding: 5px 12px;
+    border-radius: var(--radius-full);
+    font-size: .75rem;
+    font-weight: 700;
+    z-index: 5
+}
+
+.transaction-timeline {
+    position: relative;
+    padding-left: 30px
+}
+
+.transaction-timeline::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--gray-200)
+}
+
+.transaction-item {
+    position: relative;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--gray-100)
+}
+
+.transaction-item:last-child {
+    border-bottom: none
+}
+
+.transaction-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 20px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--gray-300);
+    border: 2px solid #fff
+}
+
+.transaction-item.earned::before {
+    background: var(--success)
+}
+
+.transaction-item.redeemed::before {
+    background: var(--warning)
+}
+
+.transaction-item.bonus::before {
+    background: var(--gold)
+}
+
+.transaction-points {
+    font-weight: 700;
+    font-size: 1.1rem
+}
+
+.transaction-points.positive {
+    color: var(--success)
+}
+
+.transaction-points.negative {
+    color: var(--danger)
+}
+
+.transaction-meta {
+    font-size: .85rem;
+    color: var(--gray-500)
+}
+
+.referral-code-box {
+    background: linear-gradient(135deg, var(--cream) 0, var(--cream-dark) 100%);
+    border: 2px dashed var(--gold);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    text-align: center
+}
+
+.referral-code {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'Roboto Mono', monospace;
+    color: var(--espresso);
+    letter-spacing: 3px;
+    margin: 15px 0
+}
+
+.referral-share-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px
+}
+
+.referral-share-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: var(--radius-full);
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: all .3s ease;
+    color: #fff
+}
+
+.referral-share-btn:hover {
+    transform: scale(1.1)
+}
+
+.referral-share-btn.whatsapp {
+    background: #25d366
+}
+
+.referral-share-btn.facebook {
+    background: #1877f2
+}
+
+.referral-share-btn.twitter {
+    background: #1da1f2
+}
+
+.referral-share-btn.copy {
+    background: var(--espresso)
+}
+
+.loyalty-stat-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    padding: 25px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    transition: all .3s ease
+}
+
+.loyalty-stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md)
+}
+
+.loyalty-stat-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    font-size: 1.5rem
+}
+
+.loyalty-stat-icon.points {
+    background: rgba(201, 162, 39, .15);
+    color: var(--gold-dark)
+}
+
+.loyalty-stat-icon.tier {
+    background: rgba(139, 69, 19, .15);
+    color: var(--espresso)
+}
+
+.loyalty-stat-icon.referrals {
+    background: rgba(46, 204, 113, .15);
+    color: var(--success)
+}
+
+.loyalty-stat-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--espresso);
+    margin-bottom: 5px
+}
+
+.loyalty-stat-label {
+    font-size: .9rem;
+    color: var(--gray-600)
+}
+
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 99999
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    animation: confettiFall 3s ease-out forwards
+}
+
+@keyframes confettiFall {
+    0% {
+        transform: translateY(-100px) rotate(0);
+        opacity: 1
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0
+    }
+}
+
+.navbar-loyalty-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 15px;
+    background: rgba(201, 162, 39, .15);
+    border-radius: var(--radius-full);
+    color: var(--gold-dark);
+    font-weight: 700;
+    font-size: .9rem;
+    text-decoration: none;
+    transition: all .3s ease
+}
+
+.navbar-loyalty-badge:hover {
+    background: rgba(201, 162, 39, .25);
+    color: var(--gold-dark);
+    text-decoration: none
+}
+
+.navbar-loyalty-badge i {
+    font-size: 1rem
+}
+
+.navbar-loyalty-points {
+    animation: coinPulse 2s ease-in-out infinite
+}
+
+@keyframes coinPulse {
+
+    0%,
+    100% {
+        transform: scale(1)
+    }
+
+    50% {
+        transform: scale(1.05)
+    }
+}
+
+.loyalty-admin-card {
+    background: #fff;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm)
+}
+
+.loyalty-admin-card-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--gray-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center
+}
+
+.loyalty-admin-card-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700
+}
+
+.loyalty-admin-card-body {
+    padding: 20px
+}
+
+.tier-color-preview {
+    width: 30px;
+    height: 30px;
+    border-radius: var(--radius-sm);
+    border: 2px solid var(--gray-200)
+}
+
+@media (max-width:768px) {
+    .points-counter {
+        font-size: 2.5rem
+    }
+
+    .tier-badge {
+        padding: 6px 12px;
+        font-size: .8rem
+    }
+
+    .reward-card-image {
+        height: 120px;
+        font-size: 3rem
+    }
+
+    .referral-code {
+        font-size: 1.5rem;
+        letter-spacing: 2px
+    }
+
+    .referral-share-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 1.1rem
+    }
+}
+
+[data-theme=dark] .loyalty-admin-card,
+[data-theme=dark] .loyalty-stat-card,
+[data-theme=dark] .reward-card {
+    background: var(--dark-card)
+}
+
+[data-theme=dark] .tier-progress-container {
+    background: var(--dark-bg)
+}
+
+[data-theme=dark] .referral-code-box {
+    background: linear-gradient(135deg, #2c1810 0, #3d2317 100%)
+}
+
+[data-theme=dark] .tier-progress-bar {
+    background: var(--dark-bg)
+}
+
+[data-theme=dark] .transaction-timeline::before {
+    background: var(--gray-700)
+}
