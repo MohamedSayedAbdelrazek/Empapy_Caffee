@@ -25,11 +25,20 @@ class CartController extends Controller
         $freeShippingThreshold = \App\Models\Setting::get('shipping_free_threshold', 500);
         $shippingFee = \App\Models\Setting::get('shipping_fee', 50);
 
+        // Get shipping zones for the smart estimator
+        $shippingZones = \App\Models\ShippingZone::active()->ordered()->get();
+        $minFee = $shippingZones->min('fee') ?? $shippingFee;
+        $maxFee = $shippingZones->max('fee') ?? $shippingFee;
+
         return view('cart.index', [
             'cartItems' => $cartData['items'],
             'total' => $cartData['total'],
             'freeShippingThreshold' => $freeShippingThreshold,
             'shippingFee' => $shippingFee,
+            'shippingZones' => $shippingZones,
+            'minFee' => $minFee,
+            'maxFee' => $maxFee,
+            'userGovernorate' => auth()->user()?->governorate,
         ]);
     }
 

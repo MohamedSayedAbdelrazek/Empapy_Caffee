@@ -40,8 +40,8 @@
                                                 <td colspan="5" class="d-md-none p-3">
                                                     <!-- Mobile Card Layout -->
                                                     <div class="d-flex gap-3">
-                                                        <x-optimized-image :src="$item['product']->image"
-                                                            :alt="$item['product']->name" class="rounded"
+                                                        <x-optimized-image :src="$item['product']->image" :alt="$item['product']->name"
+                                                            class="rounded"
                                                             style="width: 80px; height: 80px; object-fit: cover; flex-shrink: 0;" />
                                                         <div class="flex-grow-1">
                                                             <h6 class="mb-1">{{ $item['product']->name }}</h6>
@@ -59,11 +59,13 @@
                                                                 </div>
                                                             @endif
 
-                                                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-center mt-2">
                                                                 <span
                                                                     class="fw-bold text-warning">{{ number_format($item['price']) }}
                                                                     ج.م</span>
-                                                                <div class="quantity-controls" data-key="{{ $item['key'] }}"
+                                                                <div class="quantity-controls"
+                                                                    data-key="{{ $item['key'] }}"
                                                                     style="transform: scale(0.85);">
                                                                     <button type="button" class="qty-btn-modern"
                                                                         data-action="decrease">
@@ -79,11 +81,13 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-center mt-2">
                                                                 <span
                                                                     class="fw-bold item-subtotal">{{ number_format($item['subtotal']) }}
                                                                     ج.م</span>
-                                                                <button class="btn btn-sm btn-outline-danger remove-item-btn">
+                                                                <button
+                                                                    class="btn btn-sm btn-outline-danger remove-item-btn">
                                                                     <i class="bi bi-trash"></i>
                                                                 </button>
                                                             </div>
@@ -93,8 +97,8 @@
                                                 <!-- Desktop Table Layout -->
                                                 <td class="d-none d-md-table-cell">
                                                     <div class="d-flex align-items-center gap-3">
-                                                        <x-optimized-image :src="$item['product']->image"
-                                                            :alt="$item['product']->name" class="rounded"
+                                                        <x-optimized-image :src="$item['product']->image" :alt="$item['product']->name"
+                                                            class="rounded"
                                                             style="width: 80px; height: 80px; object-fit: cover;" />
                                                         <div>
                                                             <h6 class="mb-1">{{ $item['product']->name }}</h6>
@@ -118,11 +122,13 @@
                                                 </td>
                                                 <td class="d-none d-md-table-cell">
                                                     <div class="quantity-controls" data-key="{{ $item['key'] }}">
-                                                        <button type="button" class="qty-btn-modern" data-action="decrease">
+                                                        <button type="button" class="qty-btn-modern"
+                                                            data-action="decrease">
                                                             <i class="bi bi-dash"></i>
                                                         </button>
                                                         <div class="qty-display">{{ $item['quantity'] }}</div>
-                                                        <button type="button" class="qty-btn-modern" data-action="increase">
+                                                        <button type="button" class="qty-btn-modern"
+                                                            data-action="increase">
                                                             <i class="bi bi-plus"></i>
                                                         </button>
                                                         <div class="qty-loading">
@@ -131,7 +137,8 @@
                                                     </div>
                                                 </td>
                                                 <td class="d-none d-md-table-cell">
-                                                    <span class="fw-bold item-subtotal">{{ number_format($item['subtotal']) }}
+                                                    <span
+                                                        class="fw-bold item-subtotal">{{ number_format($item['subtotal']) }}
                                                         ج.م</span>
                                                 </td>
                                                 <td class="d-none d-md-table-cell">
@@ -167,30 +174,225 @@
                                 <span class="fw-bold" id="cartSubtotal">{{ number_format($total) }} ج.م</span>
                             </div>
 
-                            <div class="d-flex justify-content-between mb-3">
-                                <span>التوصيل</span>
-                                <span class="fw-bold text-success">
-                                    @if ($total >= $freeShippingThreshold)
-                                        مجاني
-                                    @else
-                                        {{ $shippingFee }} ج.م
-                                    @endif
-                                </span>
+                            {{-- Smart Shipping Estimator --}}
+                            <div class="shipping-estimator mb-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>التوصيل</span>
+                                    <span class="fw-bold" id="shippingFeeDisplay">
+                                        @if ($total >= $freeShippingThreshold)
+                                            <span class="text-success">مجاني 🎉</span>
+                                        @else
+                                            <span class="shipping-range-badge">{{ number_format($minFee) }} -
+                                                {{ number_format($maxFee) }} ج.م</span>
+                                        @endif
+                                    </span>
+                                </div>
+
+                                {{-- Governorate Selector Toggle --}}
+                                @if ($total < $freeShippingThreshold)
+                                    <div class="gov-selector-wrapper" id="govSelectorWrapper">
+                                        <button type="button" class="btn btn-gov-selector w-100" id="govToggleBtn"
+                                            onclick="toggleGovSelector()">
+                                            <span class="gov-btn-content">
+                                                <i class="bi bi-geo-alt-fill"></i>
+                                                <span id="govBtnText">📍 حدد محافظتك لمعرفة سعر التوصيل</span>
+                                            </span>
+                                            <i class="bi bi-chevron-down gov-chevron" id="govChevron"></i>
+                                        </button>
+
+                                        <div class="gov-dropdown-container" id="govDropdownContainer">
+                                            <select class="form-select gov-select" id="cartGovernorateSelect"
+                                                onchange="updateCartShipping()">
+                                                <option value="">اختر المحافظة...</option>
+                                                @foreach ($shippingZones as $zone)
+                                                    <option value="{{ $zone->name }}" data-fee="{{ $zone->fee }}">
+                                                        {{ $zone->name }} — {{ number_format($zone->fee) }} ج.م
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                {{-- Free Shipping Progress --}}
+                                @if ($total < $freeShippingThreshold)
+                                    <div class="free-shipping-hint mt-2">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <small class="text-muted">
+                                                <i class="bi bi-truck me-1"></i>
+                                                أضف <strong
+                                                    style="color: var(--gold);">{{ number_format($freeShippingThreshold - $total) }}
+                                                    ج.م</strong> للتوصيل المجاني
+                                            </small>
+                                            <small
+                                                class="text-muted">{{ number_format(min(100, ($total / $freeShippingThreshold) * 100), 0) }}%</small>
+                                        </div>
+                                        <div class="progress shipping-progress" style="height: 6px;">
+                                            <div class="progress-bar" role="progressbar"
+                                                style="width: {{ min(100, ($total / $freeShippingThreshold) * 100) }}%; background: linear-gradient(90deg, var(--gold), #e8c547);"
+                                                aria-valuenow="{{ $total }}" aria-valuemin="0"
+                                                aria-valuemax="{{ $freeShippingThreshold }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
-                            @if ($total < $freeShippingThreshold)
-                                <div class="alert alert-info small mb-3">
-                                    <i class="bi bi-info-circle me-2"></i>
-                                    أضف {{ number_format($freeShippingThreshold - $total) }} ج.م للحصول على توصيل مجاني
-                                </div>
-                            @endif
+                            {{-- Shipping Estimator Styles --}}
+                            <style>
+                                .shipping-range-badge {
+                                    background: linear-gradient(135deg, rgba(201, 162, 39, 0.15), rgba(232, 197, 71, 0.1));
+                                    color: var(--gold);
+                                    padding: 4px 12px;
+                                    border-radius: 20px;
+                                    font-size: 0.9rem;
+                                    font-weight: 600;
+                                    border: 1px solid rgba(201, 162, 39, 0.25);
+                                    display: inline-block;
+                                    animation: shimmer 3s ease-in-out infinite;
+                                }
+
+                                @keyframes shimmer {
+
+                                    0%,
+                                    100% {
+                                        opacity: 1;
+                                    }
+
+                                    50% {
+                                        opacity: 0.75;
+                                    }
+                                }
+
+                                .btn-gov-selector {
+                                    background: rgba(201, 162, 39, 0.08);
+                                    border: 1.5px dashed rgba(201, 162, 39, 0.35);
+                                    border-radius: 12px;
+                                    padding: 10px 16px;
+                                    color: var(--text-color, #333);
+                                    font-size: 0.85rem;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                                    cursor: pointer;
+                                }
+
+                                .btn-gov-selector:hover {
+                                    background: rgba(201, 162, 39, 0.15);
+                                    border-color: var(--gold);
+                                    transform: translateY(-1px);
+                                    box-shadow: 0 4px 12px rgba(201, 162, 39, 0.15);
+                                }
+
+                                .btn-gov-selector.active {
+                                    border-style: solid;
+                                    border-color: var(--gold);
+                                    background: rgba(201, 162, 39, 0.12);
+                                }
+
+                                .gov-btn-content {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 8px;
+                                }
+
+                                .gov-btn-content i {
+                                    color: var(--gold);
+                                    font-size: 1rem;
+                                }
+
+                                .gov-chevron {
+                                    transition: transform 0.3s ease;
+                                    color: var(--gold);
+                                    font-size: 0.8rem;
+                                }
+
+                                .gov-chevron.rotated {
+                                    transform: rotate(180deg);
+                                }
+
+                                .gov-dropdown-container {
+                                    max-height: 0;
+                                    overflow: hidden;
+                                    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, margin 0.3s ease;
+                                    opacity: 0;
+                                    margin-top: 0;
+                                }
+
+                                .gov-dropdown-container.expanded {
+                                    max-height: 80px;
+                                    opacity: 1;
+                                    margin-top: 10px;
+                                }
+
+                                .gov-select {
+                                    border-radius: 10px;
+                                    border: 1.5px solid rgba(201, 162, 39, 0.3);
+                                    padding: 8px 12px;
+                                    font-size: 0.9rem;
+                                    background: rgba(255, 255, 255, 0.05);
+                                    transition: all 0.3s ease;
+                                }
+
+                                .gov-select:focus {
+                                    border-color: var(--gold);
+                                    box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15);
+                                }
+
+                                .shipping-progress {
+                                    border-radius: 10px;
+                                    background: rgba(201, 162, 39, 0.1);
+                                    overflow: hidden;
+                                }
+
+                                .shipping-progress .progress-bar {
+                                    border-radius: 10px;
+                                    transition: width 0.6s ease;
+                                }
+
+                                /* Selected Gov Display */
+                                .gov-selected-display {
+                                    color: var(--gold);
+                                    font-weight: 600;
+                                }
+
+                                /* Shipping update animation */
+                                @keyframes shippingUpdate {
+                                    0% {
+                                        transform: scale(1);
+                                    }
+
+                                    50% {
+                                        transform: scale(1.15);
+                                    }
+
+                                    100% {
+                                        transform: scale(1);
+                                    }
+                                }
+
+                                .shipping-updated {
+                                    animation: shippingUpdate 0.5s ease;
+                                }
+
+                                /* Dark mode */
+                                [data-bs-theme="dark"] .btn-gov-selector {
+                                    color: #e0e0e0;
+                                }
+
+                                [data-bs-theme="dark"] .gov-select {
+                                    background: rgba(255, 255, 255, 0.08);
+                                    color: #e0e0e0;
+                                }
+                            </style>
 
                             <hr>
 
                             <div class="d-flex justify-content-between mb-4">
                                 <span class="fs-5">الإجمالي</span>
                                 <span class="fs-4 fw-bold" style="color: var(--gold);" id="cartTotal">
-                                    {{ number_format($total + ($total >= $freeShippingThreshold ? 0 : $shippingFee)) }} ج.م
+                                    {{ number_format($total) }} ج.م+
                                 </span>
                             </div>
 
@@ -210,8 +412,8 @@
                 <!-- Empty Cart -->
                 <div class="text-center py-5" data-aos="fade-up">
                     <div class="glass-card p-5 mx-auto" style="max-width: 500px;">
-                        <svg class="cart-icon-empty" xmlns="http://www.w3.org/2000/svg" height="80px" viewBox="0 -960 960 960"
-                            width="80px" fill="currentColor" style="opacity: 0.5;">
+                        <svg class="cart-icon-empty" xmlns="http://www.w3.org/2000/svg" height="80px"
+                            viewBox="0 -960 960 960" width="80px" fill="currentColor" style="opacity: 0.5;">
                             <path
                                 d="M280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM246-720l96 200h280l110-200H246Zm-38-80h590q23 0 35 20.5t1 41.5L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68-39.5t-2-78.5l54-98-144-304H40v-80h130l38 80Zm134 280h280-280Z" />
                         </svg>
@@ -233,14 +435,127 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        // Global shipping estimator state
+        let currentShippingFee = 0;
+        let currentSubtotal = {{ $total }};
+        const FREE_SHIPPING_THRESHOLD_GLOBAL = {{ $freeShippingThreshold }};
+
+        // Toggle governorate selector
+        function toggleGovSelector() {
+            const container = document.getElementById('govDropdownContainer');
+            const chevron = document.getElementById('govChevron');
+            const btn = document.getElementById('govToggleBtn');
+
+            container.classList.toggle('expanded');
+            chevron.classList.toggle('rotated');
+            btn.classList.toggle('active');
+        }
+
+        // Update shipping fee when governorate is selected
+        async function updateCartShipping() {
+            const select = document.getElementById('cartGovernorateSelect');
+            const gov = select.value;
+            const feeDisplay = document.getElementById('shippingFeeDisplay');
+            const totalDisplay = document.getElementById('cartTotal');
+            const govBtnText = document.getElementById('govBtnText');
+
+            if (!gov) {
+                // Reset to range
+                feeDisplay.innerHTML =
+                    '<span class="shipping-range-badge">{{ number_format($minFee) }} - {{ number_format($maxFee) }} ج.م</span>';
+                currentShippingFee = 0;
+                totalDisplay.textContent = formatNumberGlobal(currentSubtotal) + ' ج.م+';
+                govBtnText.textContent = '📍 حدد محافظتك لمعرفة سعر التوصيل';
+                localStorage.removeItem('empapy_cart_gov');
+                return;
+            }
+
+            // Show loading
+            feeDisplay.innerHTML = '<span class="spinner-border spinner-border-sm" style="color: var(--gold);"></span>';
+
+            try {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                const response = await fetch('/checkout/calculate-shipping', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        governorate: gov,
+                        subtotal: currentSubtotal
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentShippingFee = parseFloat(data.shipping);
+
+                    // Update shipping display with animation
+                    if (data.is_free) {
+                        feeDisplay.innerHTML = '<span class="text-success shipping-updated">مجاني 🎉</span>';
+                    } else {
+                        feeDisplay.innerHTML = '<span class="fw-bold shipping-updated">' + data.message + '</span>';
+                    }
+
+                    // Update total
+                    const newTotal = currentSubtotal + currentShippingFee;
+                    totalDisplay.classList.add('shipping-updated');
+                    totalDisplay.textContent = formatNumberGlobal(newTotal) + ' ج.م';
+                    setTimeout(() => totalDisplay.classList.remove('shipping-updated'), 500);
+
+                    // Update button text
+                    govBtnText.textContent = '📍 ' + gov;
+
+                    // Collapse dropdown
+                    document.getElementById('govDropdownContainer').classList.remove('expanded');
+                    document.getElementById('govChevron').classList.remove('rotated');
+
+                    // Save to localStorage
+                    localStorage.setItem('empapy_cart_gov', gov);
+                }
+            } catch (error) {
+                console.error('Error calculating shipping:', error);
+                feeDisplay.innerHTML = '<span class="text-danger small">خطأ في الحساب</span>';
+            }
+        }
+
+        function formatNumberGlobal(num) {
+            return new Intl.NumberFormat('ar-EG').format(num);
+        }
+
+        // On page load - restore saved governorate (priority: DB profile > localStorage)
+        document.addEventListener('DOMContentLoaded', function() {
+            const select = document.getElementById('cartGovernorateSelect');
+            if (!select) return;
+
+            // Priority 1: User's saved governorate from profile (DB)
+            const userGov = @json($userGovernorate ?? null);
+            // Priority 2: Previously selected governorate from localStorage
+            const savedGov = localStorage.getItem('empapy_cart_gov');
+
+            const govToUse = userGov || savedGov;
+
+            if (govToUse) {
+                select.value = govToUse;
+                if (select.value === govToUse) {
+                    // Auto-open and calculate
+                    toggleGovSelector();
+                    updateCartShipping();
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
             const FREE_SHIPPING_THRESHOLD = {{ $freeShippingThreshold }};
             const SHIPPING_FEE = {{ $shippingFee }};
 
             // Quantity buttons
             document.querySelectorAll('.qty-btn-modern').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const controls = this.closest('.quantity-controls');
                     const display = controls.querySelector('.qty-display');
                     const key = controls.dataset.key;
@@ -262,7 +577,7 @@
 
             // Remove buttons
             document.querySelectorAll('.remove-item-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
+                btn.addEventListener('click', function() {
                     const row = this.closest('.cart-item');
                     const key = row.dataset.key;
                     removeCartItem(key, row);
@@ -270,15 +585,15 @@
             });
 
             // Clear cart
-            document.getElementById('clearCartBtn')?.addEventListener('click', function () {
+            document.getElementById('clearCartBtn')?.addEventListener('click', function() {
                 if (confirm('هل أنت متأكد من تفريغ السلة؟')) {
                     fetch('/cart/clear', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        }
-                    })
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            }
+                        })
                         .then(response => response.json())
                         .then(data => {
                             if (data.success) {
@@ -295,17 +610,17 @@
                 buttons.forEach(btn => btn.disabled = true);
 
                 fetch('/cart/update', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        key: key,
-                        quantity: quantity
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            key: key,
+                            quantity: quantity
+                        })
                     })
-                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
@@ -370,39 +685,47 @@
                     setTimeout(() => subtotalEl.classList.remove('cart-total-updating'), 300);
                 }
 
-                // Update delivery fee and total
-                const deliveryFee = cartData.total >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-                const totalWithDelivery = cartData.total + deliveryFee;
+                // Update global subtotal for shipping estimator
+                currentSubtotal = cartData.total;
 
-                // Update delivery text
-                const deliveryTextElements = document.querySelectorAll('.d-flex.justify-content-between.mb-3');
-                deliveryTextElements.forEach(el => {
-                    const spans = el.querySelectorAll('span');
-                    if (spans[0] && spans[0].textContent.includes('التوصيل')) {
-                        const deliverySpan = spans[1];
-                        if (deliverySpan) {
-                            deliverySpan.classList.add('cart-total-updating');
-                            deliverySpan.innerHTML = deliveryFee === 0 ?
-                                'مجاني' :
-                                deliveryFee + ' ج.م';
-                            deliverySpan.className = deliveryFee === 0 ? 'fw-bold text-success' : 'fw-bold';
-                            setTimeout(() => deliverySpan.classList.remove('cart-total-updating'), 300);
-                        }
+                // Recalculate with current shipping selection
+                const totalWithDelivery = cartData.total + currentShippingFee;
+
+                // Update shipping display based on new subtotal
+                const feeDisplay = document.getElementById('shippingFeeDisplay');
+                if (cartData.total >= FREE_SHIPPING_THRESHOLD) {
+                    if (feeDisplay) {
+                        feeDisplay.innerHTML = '<span class="text-success">مجاني 🎉</span>';
                     }
-                });
+                    currentShippingFee = 0;
+                } else if (currentShippingFee === 0) {
+                    // No gov selected yet, show range
+                    if (feeDisplay) {
+                        feeDisplay.innerHTML =
+                            '<span class="shipping-range-badge">{{ number_format($minFee) }} - {{ number_format($maxFee) }} ج.م</span>';
+                    }
+                }
 
-                // Update or remove free shipping alert
-                const existingAlert = document.querySelector('.alert.alert-info');
-                if (cartData.total < FREE_SHIPPING_THRESHOLD) {
+                // Update free shipping progress bar
+                const progressBar = document.querySelector('.shipping-progress .progress-bar');
+                const progressHint = document.querySelector('.free-shipping-hint');
+                if (cartData.total >= FREE_SHIPPING_THRESHOLD) {
+                    if (progressHint) progressHint.style.display = 'none';
+                    // Also hide gov selector
+                    const govWrapper = document.getElementById('govSelectorWrapper');
+                    if (govWrapper) govWrapper.style.display = 'none';
+                } else if (progressHint) {
+                    progressHint.style.display = '';
                     const remaining = FREE_SHIPPING_THRESHOLD - cartData.total;
-                    if (existingAlert) {
-                        existingAlert.innerHTML = `
-                                <i class="bi bi-info-circle me-2"></i>
-                                أضف ${formatNumber(remaining)} ج.م للحصول على توصيل مجاني
-                            `;
+                    const pct = Math.min(100, (cartData.total / FREE_SHIPPING_THRESHOLD) * 100);
+                    const hintText = progressHint.querySelector('small:first-child');
+                    const hintPct = progressHint.querySelector('small:last-child');
+                    if (hintText) {
+                        hintText.innerHTML =
+                            `<i class="bi bi-truck me-1"></i>أضف <strong style="color: var(--gold);">${formatNumber(remaining)} ج.م</strong> للتوصيل المجاني`;
                     }
-                } else if (existingAlert) {
-                    existingAlert.style.display = 'none';
+                    if (hintPct) hintPct.textContent = Math.round(pct) + '%';
+                    if (progressBar) progressBar.style.width = pct + '%';
                 }
 
                 // Update final total
@@ -425,16 +748,16 @@
                 row.style.transform = 'translateX(-20px)';
 
                 fetch('/cart/remove', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Accept': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        key: key
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken,
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            key: key
+                        })
                     })
-                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {

@@ -138,17 +138,16 @@
                             <div class="row g-3">
                                 <div class="col-12">
                                     <label class="form-label">العنوان التفصيلي *</label>
-                                    <textarea name="shipping_address"
-                                        class="form-control @error('shipping_address') is-invalid @enderror" rows="3"
-                                        required
-                                        placeholder="الشارع، المبنى، الطابق، الشقة">{{ old('shipping_address', auth()->user()?->address) }}</textarea>
+                                    <textarea name="shipping_address" class="form-control @error('shipping_address') is-invalid @enderror" rows="3"
+                                        required placeholder="الشارع، المبنى، الطابق، الشقة">{{ old('shipping_address', auth()->user()?->address) }}</textarea>
                                     @error('shipping_address')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label">المدينة *</label>
-                                    <input type="text" name="city" class="form-control @error('city') is-invalid @enderror"
+                                    <input type="text" name="city"
+                                        class="form-control @error('city') is-invalid @enderror"
                                         value="{{ old('city', auth()->user()?->city) }}" required>
                                     @error('city')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -162,7 +161,8 @@
                                         <option value="">اختر المحافظة</option>
                                         @php $userGov = old('governorate', auth()->user()?->governorate); @endphp
                                         @foreach ($shippingZones as $zone)
-                                            <option value="{{ $zone->name }}" {{ $userGov === $zone->name ? 'selected' : '' }}
+                                            <option value="{{ $zone->name }}"
+                                                {{ $userGov === $zone->name ? 'selected' : '' }}
                                                 data-fee="{{ $zone->fee }}">
                                                 {{ $zone->name }} ({{ number_format($zone->fee) }} ج.م)
                                             </option>
@@ -174,8 +174,7 @@
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label">ملاحظات إضافية</label>
-                                    <textarea name="notes" class="form-control" rows="2"
-                                        placeholder="أي تعليمات خاصة للتوصيل">{{ old('notes') }}</textarea>
+                                    <textarea name="notes" class="form-control" rows="2" placeholder="أي تعليمات خاصة للتوصيل">{{ old('notes') }}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -196,8 +195,8 @@
                                         </div>
                                     </div>
                                     <div class="form-check form-check-reverse m-0">
-                                        <input class="form-check-input payment-radio" type="radio" name="payment_method"
-                                            value="cash_on_delivery" id="cod" checked>
+                                        <input class="form-check-input payment-radio" type="radio"
+                                            name="payment_method" value="cash_on_delivery" id="cod" checked>
                                         <label class="form-check-label visually-hidden" for="cod">الدفع عند
                                             الاستلام</label>
                                     </div>
@@ -369,8 +368,8 @@
                             <div class="order-items mb-4">
                                 @foreach ($cartItems as $item)
                                     <div class="d-flex gap-3 mb-3 pb-3 border-bottom">
-                                        <x-optimized-image :src="$item['product']->image" :alt="$item['product']->name"
-                                            class="rounded" style="width: 60px; height: 60px; object-fit: cover;" />
+                                        <x-optimized-image :src="$item['product']->image" :alt="$item['product']->name" class="rounded"
+                                            style="width: 60px; height: 60px; object-fit: cover;" />
                                         <div class="flex-grow-1">
                                             <h6 class="mb-1 small">{{ $item['product']->name }}</h6>
                                             @if (!empty($item['options']))
@@ -476,11 +475,20 @@
         let currentTotal = {{ $total }};
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             // Mark COD as active
             document.getElementById('cod-option').classList.add('active');
 
-            if (document.getElementById('governorateSelect').value) {
+            // Sync governorate from cart page (localStorage) if not already set from profile
+            const govSelect = document.getElementById('governorateSelect');
+            if (!govSelect.value) {
+                const cartGov = localStorage.getItem('empapy_cart_gov');
+                if (cartGov) {
+                    govSelect.value = cartGov;
+                }
+            }
+
+            if (govSelect.value) {
                 updateShippingFee();
             }
         });
@@ -573,7 +581,7 @@
         }
 
         // Initialize on load if value exists
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             if (document.getElementById('governorateSelect').value) {
                 updateShippingFee();
             }
