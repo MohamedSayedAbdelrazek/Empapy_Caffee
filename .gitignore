@@ -21,3 +21,10 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Runtime uploads
+/public/uploads
+
+# Audit/overview reports
+PROJECT_AUDIT.html
+PROJECT_OVERVIEW.html
