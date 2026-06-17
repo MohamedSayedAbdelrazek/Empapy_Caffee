@@ -22,12 +22,25 @@
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
-        <!-- <env name="DB_CONNECTION" value="sqlite"/> -->
-        <!-- <env name="DB_DATABASE" value=":memory:"/> -->
+        <!--
+            Tests run against an ISOLATED database, never the real one.
+            The app uses MySQL in production (and some migrations use MySQL-only
+            SQL such as `ALTER TABLE ... MODIFY COLUMN ... ENUM`, so SQLite can't
+            run them). We force the connection + a dedicated test database here;
+            host/credentials come from the environment (.env locally, the CI
+            workflow in CI) so no credentials are committed. `force="true"`
+            guarantees the real DB_DATABASE from .env can never be used.
+        -->
+        <env name="DB_CONNECTION" value="mysql" force="true"/>
+        <env name="DB_DATABASE" value="empapy_caffee2_test" force="true"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
+        <!-- Don't call out to Google reCAPTCHA during tests -->
+        <env name="RECAPTCHA_ENABLED" value="false"/>
+        <!-- Keep notification side-effects off the network in tests -->
+        <env name="FIREBASE_PROJECT_ID" value="testing"/>
     </php>
 </phpunit>

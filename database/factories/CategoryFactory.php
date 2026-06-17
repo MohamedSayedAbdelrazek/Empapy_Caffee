@@ -39,7 +39,7 @@ class CategoryFactory extends Factory
 
         return [
             'name' => $name,
-            'slug' => Str::slug($name) . '-' . fake()->unique()->numberBetween(1, 9999),
+            'slug' => Str::slug($name).'-'.fake()->unique()->numberBetween(1, 9999),
             'description' => $descriptions[$name] ?? 'اكتشف مجموعتنا الفاخرة من القهوة',
             'image' => 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=400&h=400&fit=crop',
             'is_active' => true,

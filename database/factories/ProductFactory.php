@@ -167,9 +167,9 @@ class ProductFactory extends Factory
         $price = fake()->randomFloat(2, 150, 800);
 
         return [
-            'category_id' => Category::inRandomOrder()->first()?->id ?? 1,
+            'category_id' => Category::inRandomOrder()->first()?->id ?? Category::factory(),
             'name' => $coffee['name'],
-            'slug' => Str::slug($coffee['name']) . '-' . fake()->unique()->numberBetween(1, 9999),
+            'slug' => Str::slug($coffee['name']).'-'.fake()->unique()->numberBetween(1, 9999),
             'description' => $coffee['description'],
             'price' => $price,
             'sale_price' => fake()->boolean(30) ? round($price * 0.85, 2) : null,
@@ -188,7 +188,7 @@ class ProductFactory extends Factory
      */
     public function featured(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'is_featured' => true,
         ]);
     }
@@ -198,7 +198,7 @@ class ProductFactory extends Factory
      */
     public function onSale(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'sale_price' => $attributes['price'] * 0.8,
         ]);
     }

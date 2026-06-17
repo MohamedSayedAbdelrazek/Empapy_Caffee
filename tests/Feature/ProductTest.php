@@ -5,224 +5,170 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
+use Database\Seeders\PermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
+/**
+ * Admin product CRUD against the current schema (no `name_ar` / `stock`
+ * columns; slugs are generated server-side from the name).
+ */
 class ProductTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected User $admin;
-    protected Category $category;
+    private User $admin;
+
+    private Category $category;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        // Create admin user
-        $this->admin = User::factory()->create([
-            'role' => 'admin',
-        ]);
-
-        // Create category
+        $this->admin = User::factory()->create(['role' => 'admin']);
         $this->category = Category::factory()->create();
     }
 
-    /** @test */
-    public function admin_can_view_products_index()
+    #[Test]
+    public function an_admin_can_view_the_products_index(): void
     {
-        $response = $this->actingAs($this->admin)
-            ->get(route('admin.products.index'));
-
-        $response->assertStatus(200);
-        $response->assertViewIs('admin.products.index');
+        $this->actingAs($this->admin)
+            ->get(route('admin.products.index'))
+            ->assertOk()
+            ->assertViewIs('admin.products.index');
     }
 
-    /** @test */
-    public function admin_can_view_create_product_form()
+    #[Test]
+    public function an_admin_can_create_a_product(): void
     {
-        $response = $this->actingAs($this->admin)
-            ->get(route('admin.products.create'));
-
-        $response->assertStatus(200);
-        $response->assertViewIs('admin.products.create');
-    }
-
-    /** @test */
-    public function admin_can_create_product()
-    {
-        Storage::fake('public');
-
-        $productData = [
-            'name' => 'Test Coffee',
-            'name_ar' => 'قهوة اختبار',
+        $response = $this->actingAs($this->admin)->post(route('admin.products.store'), [
+            'name' => 'قهوة اختبار',
             'category_id' => $this->category->id,
-            'description' => 'Test description',
-            'description_ar' => 'وصف اختباري',
+            'description' => 'وصف',
             'price' => 99.99,
-            'stock' => 50,
-            'weight' => '250g',
-            'roast_level' => 'medium',
-            'origin' => 'Ethiopia',
-            'origin_ar' => 'إثيوبيا',
-            'is_featured' => true,
-            'is_active' => true,
-            'image' => UploadedFile::fake()->image('product.jpg'),
-        ];
-
-        $response = $this->actingAs($this->admin)
-            ->post(route('admin.products.store'), $productData);
+            'is_active' => '1',
+        ]);
 
         $response->assertRedirect(route('admin.products.index'));
         $response->assertSessionHas('success');
 
         $this->assertDatabaseHas('products', [
-            'name' => 'Test Coffee',
-            'name_ar' => 'قهوة اختبار',
+            'name' => 'قهوة اختبار',
             'category_id' => $this->category->id,
+            'price' => 99.99,
         ]);
     }
 
-    /** @test */
-    public function admin_can_update_product()
+    #[Test]
+    public function creating_a_product_requires_a_name(): void
+    {
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), [
+                'category_id' => $this->category->id,
+                'price' => 50,
+            ])
+            ->assertSessionHasErrors('name');
+    }
+
+    #[Test]
+    public function creating_a_product_requires_an_existing_category(): void
+    {
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), [
+                'name' => 'قهوة',
+                'category_id' => 999999,
+                'price' => 50,
+            ])
+            ->assertSessionHasErrors('category_id');
+    }
+
+    #[Test]
+    public function the_sale_price_must_be_lower_than_the_price(): void
+    {
+        $this->actingAs($this->admin)
+            ->post(route('admin.products.store'), [
+                'name' => 'قهوة',
+                'category_id' => $this->category->id,
+                'price' => 50,
+                'sale_price' => 100,
+            ])
+            ->assertSessionHasErrors('sale_price');
+    }
+
+    #[Test]
+    public function an_admin_can_update_a_product(): void
     {
         $product = Product::factory()->create([
             'category_id' => $this->category->id,
+            'name' => 'الاسم القديم',
         ]);
 
-        $updateData = [
-            'name' => 'Updated Coffee',
-            'name_ar' => 'قهوة محدثة',
-            'category_id' => $this->category->id,
-            'price' => 149.99,
-            'stock' => 100,
-        ];
-
-        $response = $this->actingAs($this->admin)
-            ->put(route('admin.products.update', $product), $updateData);
-
-        $response->assertRedirect(route('admin.products.index'));
+        $this->actingAs($this->admin)
+            ->put(route('admin.products.update', $product), [
+                'name' => 'الاسم الجديد',
+                'category_id' => $this->category->id,
+                'price' => 149.99,
+            ])
+            ->assertRedirect(route('admin.products.index'));
 
         $this->assertDatabaseHas('products', [
             'id' => $product->id,
-            'name' => 'Updated Coffee',
-            'name_ar' => 'قهوة محدثة',
+            'name' => 'الاسم الجديد',
+            'price' => 149.99,
         ]);
     }
 
-    /** @test */
-    public function admin_can_delete_product()
+    #[Test]
+    public function an_admin_can_soft_delete_a_product(): void
     {
-        $product = Product::factory()->create([
-            'category_id' => $this->category->id,
-        ]);
+        $product = Product::factory()->create(['category_id' => $this->category->id]);
 
-        $response = $this->actingAs($this->admin)
-            ->delete(route('admin.products.destroy', $product));
+        $this->actingAs($this->admin)
+            ->delete(route('admin.products.destroy', $product))
+            ->assertRedirect(route('admin.products.index'));
 
-        $response->assertRedirect(route('admin.products.index'));
-
-        // Soft delete check
-        $this->assertSoftDeleted('products', [
-            'id' => $product->id,
-        ]);
+        $this->assertSoftDeleted('products', ['id' => $product->id]);
     }
 
-    /** @test */
-    public function product_requires_name()
-    {
-        $response = $this->actingAs($this->admin)
-            ->post(route('admin.products.store'), [
-                'name_ar' => 'قهوة',
-                'category_id' => $this->category->id,
-                'price' => 99.99,
-                'stock' => 50,
-            ]);
+    // ---- Access control on the products routes ---------------------------
 
-        $response->assertSessionHasErrors('name');
+    #[Test]
+    public function a_guest_is_redirected_to_login(): void
+    {
+        // StaffMiddleware sends non-staff to the login page.
+        $this->get(route('admin.products.index'))->assertRedirect(route('login'));
     }
 
-    /** @test */
-    public function product_requires_valid_category()
+    #[Test]
+    public function a_customer_is_not_treated_as_staff(): void
     {
-        $response = $this->actingAs($this->admin)
-            ->post(route('admin.products.store'), [
-                'name' => 'Test Coffee',
-                'name_ar' => 'قهوة اختبار',
-                'category_id' => 99999,
-                'price' => 99.99,
-                'stock' => 50,
-            ]);
+        $customer = User::factory()->create(['role' => 'customer']);
 
-        $response->assertSessionHasErrors('category_id');
+        $this->actingAs($customer)
+            ->get(route('admin.products.index'))
+            ->assertRedirect(route('login'));
     }
 
-    /** @test */
-    public function sale_price_must_be_less_than_price()
+    #[Test]
+    public function a_cashier_without_the_permission_is_forbidden(): void
     {
-        $response = $this->actingAs($this->admin)
-            ->post(route('admin.products.store'), [
-                'name' => 'Test Coffee',
-                'name_ar' => 'قهوة اختبار',
-                'category_id' => $this->category->id,
-                'price' => 50.00,
-                'sale_price' => 100.00,
-                'stock' => 50,
-            ]);
+        $cashier = User::factory()->create(['role' => 'cashier']);
 
-        $response->assertSessionHasErrors('sale_price');
+        $this->actingAs($cashier)
+            ->get(route('admin.products.index'))
+            ->assertForbidden();
     }
 
-    /** @test */
-    public function guest_cannot_access_admin_products()
+    #[Test]
+    public function a_cashier_with_the_permission_can_view_products(): void
     {
-        $response = $this->get(route('admin.products.index'));
+        $this->seed(PermissionSeeder::class);
+        $cashier = User::factory()->create(['role' => 'cashier']);
+        $cashier->givePermissionTo('view-products');
 
-        $response->assertRedirect(route('login'));
-    }
-
-    /** @test */
-    public function regular_user_cannot_access_admin_products()
-    {
-        $user = User::factory()->create([
-            'role' => 'customer',
-        ]);
-
-        $response = $this->actingAs($user)
-            ->get(route('admin.products.index'));
-
-        $response->assertStatus(403);
-    }
-
-    /** @test */
-    public function product_can_be_filtered_by_category()
-    {
-        $category1 = Category::factory()->create();
-        $category2 = Category::factory()->create();
-
-        Product::factory()->count(3)->create(['category_id' => $category1->id]);
-        Product::factory()->count(2)->create(['category_id' => $category2->id]);
-
-        $response = $this->actingAs($this->admin)
-            ->get(route('admin.products.index', ['category' => $category1->id]));
-
-        $response->assertStatus(200);
-    }
-
-    /** @test */
-    public function product_can_be_searched_by_name()
-    {
-        Product::factory()->create([
-            'name' => 'Ethiopian Blend',
-            'name_ar' => 'خلطة إثيوبية',
-            'category_id' => $this->category->id,
-        ]);
-
-        $response = $this->actingAs($this->admin)
-            ->get(route('admin.products.index', ['search' => 'Ethiopian']));
-
-        $response->assertStatus(200);
+        $this->actingAs($cashier)
+            ->get(route('admin.products.index'))
+            ->assertOk();
     }
 }

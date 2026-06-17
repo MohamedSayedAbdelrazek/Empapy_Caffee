@@ -145,7 +145,7 @@ class StaffController extends Controller
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
-            'phone' => $validated['phone'],
+            'phone' => $validated['phone'] ?? null,
             'role' => $role,
         ];
 

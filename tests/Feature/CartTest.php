@@ -4,215 +4,204 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductOption;
+use App\Models\ProductOptionValue;
 use App\Services\CartService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
+/**
+ * Cart behaviour through the AJAX endpoints and the CartService.
+ * Matches the current schema (products no longer have a `stock` column).
+ */
 class CartTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected Product $product;
-    protected CartService $cartService;
+    private Product $product;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $category = Category::factory()->create();
-
         $this->product = Product::factory()->create([
-            'category_id' => $category->id,
-            'price' => 99.99,
-            'stock' => 10,
+            'category_id' => Category::factory(),
+            'price' => 100,
+            'sale_price' => null,
             'is_active' => true,
         ]);
-
-        $this->cartService = new CartService();
     }
 
-    /** @test */
-    public function can_add_product_to_cart()
+    private function cartKeyFor(int $productId, array $options = []): string
     {
-        $response = $this->post(route('cart.add'), [
-            'product_id' => $this->product->id,
-            'quantity' => 1,
-        ]);
+        ksort($options);
 
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'message' => 'تمت الإضافة إلى السلة',
-        ]);
+        return md5($productId.serialize($options));
     }
 
-    /** @test */
-    public function can_update_cart_quantity()
+    // ---- HTTP endpoints --------------------------------------------------
+
+    #[Test]
+    public function a_product_can_be_added_to_the_cart(): void
     {
-        // First add to cart
-        $this->post(route('cart.add'), [
-            'product_id' => $this->product->id,
-            'quantity' => 1,
-        ]);
-
-        // Then update quantity
-        $response = $this->post(route('cart.update'), [
-            'product_id' => $this->product->id,
-            'quantity' => 3,
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson(['success' => true]);
-    }
-
-    /** @test */
-    public function can_remove_product_from_cart()
-    {
-        // First add to cart
-        $this->post(route('cart.add'), [
-            'product_id' => $this->product->id,
-            'quantity' => 1,
-        ]);
-
-        // Then remove
-        $response = $this->post(route('cart.remove'), [
-            'product_id' => $this->product->id,
-        ]);
-
-        $response->assertStatus(200);
-        $response->assertJson([
-            'success' => true,
-            'message' => 'تم الحذف من السلة',
-        ]);
-    }
-
-    /** @test */
-    public function can_clear_cart()
-    {
-        // Add products to cart
-        $this->post(route('cart.add'), [
+        $response = $this->postJson(route('cart.add'), [
             'product_id' => $this->product->id,
             'quantity' => 2,
         ]);
 
-        // Clear cart
-        $response = $this->post(route('cart.clear'));
-
-        $response->assertStatus(200);
-        $response->assertJson([
+        $response->assertOk()->assertJson([
             'success' => true,
-            'message' => 'تم تفريغ السلة',
-            'cartCount' => 0,
+            'message' => 'تمت الإضافة إلى السلة',
+            'cartCount' => 2,
         ]);
     }
 
-    /** @test */
-    public function cannot_add_inactive_product_to_cart()
+    #[Test]
+    public function adding_the_same_product_again_increases_the_quantity(): void
     {
-        $inactiveProduct = Product::factory()->create([
+        $this->postJson(route('cart.add'), ['product_id' => $this->product->id, 'quantity' => 1]);
+        $response = $this->postJson(route('cart.add'), ['product_id' => $this->product->id, 'quantity' => 2]);
+
+        $response->assertOk()->assertJson(['cartCount' => 3]);
+    }
+
+    #[Test]
+    public function an_inactive_product_cannot_be_added(): void
+    {
+        $inactive = Product::factory()->create([
             'category_id' => $this->product->category_id,
             'is_active' => false,
         ]);
 
-        $response = $this->post(route('cart.add'), [
-            'product_id' => $inactiveProduct->id,
+        $response = $this->postJson(route('cart.add'), [
+            'product_id' => $inactive->id,
             'quantity' => 1,
         ]);
 
-        $response->assertStatus(400);
-        $response->assertJson([
+        $response->assertStatus(400)->assertJson([
             'success' => false,
             'message' => 'هذا المنتج غير متوفر حالياً',
         ]);
     }
 
-    /** @test */
-    public function cannot_exceed_stock_quantity()
+    #[Test]
+    public function adding_requires_a_valid_existing_product(): void
     {
-        $response = $this->post(route('cart.add'), [
-            'product_id' => $this->product->id,
-            'quantity' => 100, // More than stock (10)
-        ]);
+        $this->postJson(route('cart.add'), ['product_id' => 999999, 'quantity' => 1])
+            ->assertStatus(422);
+    }
 
-        $response->assertStatus(400);
-        $response->assertJson([
-            'success' => false,
+    #[Test]
+    public function cart_quantity_can_be_updated(): void
+    {
+        $this->postJson(route('cart.add'), ['product_id' => $this->product->id, 'quantity' => 1]);
+        $key = $this->cartKeyFor($this->product->id);
+
+        $response = $this->postJson(route('cart.update'), ['key' => $key, 'quantity' => 4]);
+
+        $response->assertOk()->assertJson([
+            'success' => true,
+            'cart' => ['count' => 4, 'total' => 400],
         ]);
     }
 
-    /** @test */
-    public function can_get_cart_data()
+    #[Test]
+    public function updating_quantity_to_zero_removes_the_item(): void
     {
-        // Add product to cart
-        $this->post(route('cart.add'), [
-            'product_id' => $this->product->id,
-            'quantity' => 2,
-        ]);
+        $this->postJson(route('cart.add'), ['product_id' => $this->product->id, 'quantity' => 2]);
+        $key = $this->cartKeyFor($this->product->id);
 
-        $response = $this->get(route('cart.data'));
-
-        $response->assertStatus(200);
-        $response->assertJsonStructure([
-            'cartCount',
-            'cartTotal',
-            'items',
-        ]);
+        $this->postJson(route('cart.update'), ['key' => $key, 'quantity' => 0])
+            ->assertOk()
+            ->assertJson(['cart' => ['count' => 0]]);
     }
 
-    /** @test */
-    public function cart_service_adds_product_correctly()
+    #[Test]
+    public function an_item_can_be_removed_from_the_cart(): void
     {
-        $result = $this->cartService->addToCart($this->product, 2);
+        $this->postJson(route('cart.add'), ['product_id' => $this->product->id, 'quantity' => 1]);
+        $key = $this->cartKeyFor($this->product->id);
 
-        $this->assertTrue($result['success']);
-        $this->assertEquals(2, $result['cartCount']);
+        $this->postJson(route('cart.remove'), ['key' => $key])
+            ->assertOk()
+            ->assertJson(['success' => true, 'message' => 'تم الحذف من السلة', 'cartCount' => 0]);
     }
 
-    /** @test */
-    public function cart_service_calculates_total_correctly()
+    #[Test]
+    public function the_cart_can_be_cleared(): void
     {
-        $this->cartService->addToCart($this->product, 2);
+        $this->postJson(route('cart.add'), ['product_id' => $this->product->id, 'quantity' => 2]);
 
-        $total = $this->cartService->getCartTotal();
-
-        $this->assertEquals(99.99 * 2, $total);
+        $this->postJson(route('cart.clear'))
+            ->assertOk()
+            ->assertJson(['success' => true, 'message' => 'تم تفريغ السلة', 'cartCount' => 0, 'cartTotal' => 0]);
     }
 
-    /** @test */
-    public function cart_service_validates_cart_items()
+    #[Test]
+    public function cart_data_endpoint_returns_the_expected_shape(): void
     {
-        $this->cartService->addToCart($this->product, 2);
+        $this->postJson(route('cart.add'), ['product_id' => $this->product->id, 'quantity' => 2]);
 
-        $validation = $this->cartService->validateCart();
-
-        $this->assertTrue($validation['valid']);
-        $this->assertEmpty($validation['errors']);
+        $this->getJson(route('cart.data'))
+            ->assertOk()
+            ->assertJsonStructure(['cartCount', 'cartTotal', 'items', 'freeShippingThreshold'])
+            ->assertJson(['cartCount' => 2, 'cartTotal' => 200]);
     }
 
-    /** @test */
-    public function cart_page_loads_successfully()
+    #[Test]
+    public function the_cart_page_loads(): void
     {
-        $response = $this->get(route('cart.index'));
-
-        $response->assertStatus(200);
-        $response->assertViewIs('cart.index');
+        $this->get(route('cart.index'))->assertOk()->assertViewIs('cart.index');
     }
 
-    /** @test */
-    public function adding_same_product_increases_quantity()
+    // ---- CartService unit-style ------------------------------------------
+
+    #[Test]
+    public function the_cart_service_totals_quantity_times_unit_price(): void
     {
-        $this->post(route('cart.add'), [
-            'product_id' => $this->product->id,
-            'quantity' => 1,
+        $cart = new CartService;
+        $cart->addToCart($this->product, 3);
+
+        $this->assertSame(3, $cart->getCartCount());
+        $this->assertEqualsWithDelta(300, $cart->getCartTotal(), 0.001);
+    }
+
+    #[Test]
+    public function the_cart_service_applies_option_price_modifiers_to_the_total(): void
+    {
+        $product = Product::factory()->create([
+            'category_id' => $this->product->category_id,
+            'price' => 100,
+            'has_weight_options' => true,
         ]);
 
-        $response = $this->post(route('cart.add'), [
-            'product_id' => $this->product->id,
-            'quantity' => 2,
+        $option = ProductOption::create(['product_id' => $product->id, 'type' => 'weight', 'name' => 'weight']);
+        $value = ProductOptionValue::create([
+            'product_option_id' => $option->id,
+            'value' => '500g',
+            'price_modifier' => 180, // weight price_modifier IS the full price
+            'is_default' => true,
         ]);
 
-        $response->assertJson([
-            'cartCount' => 3,
-        ]);
+        $cart = new CartService;
+        $cart->addToCart($product, 2, ['weight' => $value->id]);
+
+        // 2 × 180 (the selected weight price), not 2 × 100 (base price).
+        $this->assertEqualsWithDelta(360, $cart->getCartTotal(), 0.001);
+    }
+
+    #[Test]
+    public function the_cart_service_drops_inactive_products_during_validation(): void
+    {
+        $cart = new CartService;
+        $cart->addToCart($this->product, 1);
+
+        $this->product->update(['is_active' => false]);
+
+        $result = $cart->validateCart();
+
+        $this->assertFalse($result['valid']);
+        $this->assertNotEmpty($result['errors']);
     }
 }

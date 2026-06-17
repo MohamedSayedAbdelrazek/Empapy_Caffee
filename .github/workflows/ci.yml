@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    name: Tests (PHP 8.2 + MySQL)
+    runs-on: ubuntu-latest
+
+    # MySQL service container. The app uses MySQL in production and some
+    # migrations rely on MySQL-only SQL (e.g. ALTER TABLE ... MODIFY COLUMN
+    # ... ENUM), so the test database must be MySQL too. This is an ephemeral
+    # CI database — the credentials below are throwaway, not secrets.
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: empapy_caffee2_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --user=root --password=root --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+
+    # These reach the test run via config/database.php. The test database name
+    # and driver are forced in phpunit.xml, so the real database is never used.
+    env:
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, dom, curl, pdo, pdo_mysql, bcmath, intl, gd, zip, fileinfo
+          coverage: none
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v4
+        with:
+          path: vendor
+          key: composer-${{ runner.os }}-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Prepare application environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          chmod -R 777 storage bootstrap/cache
+
+      - name: Run test suite
+        # RefreshDatabase migrates the isolated test DB (forced in phpunit.xml).
+        run: php artisan test
+
+      - name: Check code style (new test & factory code)
+        # The legacy app/migration/seeder code is not yet Pint-clean, and
+        # reformatting it would touch the recently security-hardened files.
+        # The style gate is therefore scoped to the code this suite adds.
+        run: ./vendor/bin/pint --test tests database/factories
