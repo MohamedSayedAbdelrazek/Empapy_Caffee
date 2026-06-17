@@ -100,7 +100,13 @@ class CouponController extends Controller
             return response()->json(['valid' => false, 'message' => 'كود الخصم غير صحيح']);
         }
 
-        if (!$coupon->isValid()) {
+        if (!$coupon->isValid(Auth::id())) {
+            // Give a clearer message when the user has hit the per-user limit.
+            if (Auth::check() && $coupon->per_user_limit !== null
+                && $coupon->usageCountForUser(Auth::id()) >= $coupon->per_user_limit) {
+                return response()->json(['valid' => false, 'message' => 'لقد استخدمت هذا الكوبون من قبل']);
+            }
+
             return response()->json(['valid' => false, 'message' => 'كود الخصم منتهي أو غير نشط']);
         }
 

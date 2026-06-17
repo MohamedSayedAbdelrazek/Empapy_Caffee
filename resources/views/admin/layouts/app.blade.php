@@ -354,7 +354,8 @@
     @stack('styles')
 
 <script>
-    window.firebaseVapidKey = "{{ env('VITE_FIREBASE_VAPID_KEY') }}";
+    {{-- نستخدم config() وليس env() حتى يعمل المفتاح بعد تشغيل config:cache في الإنتاج --}}
+    window.firebaseVapidKey = "{{ config('firebase.fcm.vapid_key') }}";
 </script>
 
 </head>

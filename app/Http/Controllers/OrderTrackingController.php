@@ -15,36 +15,64 @@ class OrderTrackingController extends Controller
      */
     public function track(Request $request)
     {
-        $order = null;
-
-        // Auto-search if order_number is in URL
-        if ($request->has('order_number')) {
-            $order = Order::where('order_number', $request->order_number)
-                ->with('items.product')
-                ->first();
-        }
-
-        return view('orders.track', compact('order'));
+        // Do NOT reveal any order from the query string alone. The order_number
+        // param only pre-fills the form; details are shown only after the
+        // visitor proves ownership via search() (order number + email/phone).
+        return view('orders.track');
     }
 
     /**
-     * Search for order by order number
+     * Search for order by order number + a matching second factor (email or phone).
      */
     public function search(Request $request)
     {
         $request->validate([
-            'order_number' => 'required|string'
+            'order_number' => 'required|string',
+            'verification' => 'required|string',
+        ], [], [
+            'order_number' => 'رقم الطلب',
+            'verification' => 'البريد الإلكتروني أو رقم الهاتف',
         ]);
 
         $order = Order::where('order_number', $request->order_number)
             ->with('items.product')
             ->first();
 
-        if (!$order) {
-            return back()->with('error', 'لم يتم العثور على طلب بهذا الرقم');
+        // Require the email or phone on the order to match before revealing anything.
+        // Use a single generic message so the response can't confirm whether an
+        // order number exists (prevents enumeration).
+        if (!$order || !$this->verificationMatches($order, (string) $request->input('verification'))) {
+            return back()
+                ->withInput($request->only('order_number'))
+                ->with('error', 'رقم الطلب أو بيانات التحقق غير صحيحة');
         }
 
         return view('orders.track', compact('order'));
+    }
+
+    /**
+     * Check whether the supplied value matches the order's email or phone.
+     */
+    private function verificationMatches(Order $order, string $value): bool
+    {
+        $value = trim($value);
+
+        if ($value === '') {
+            return false;
+        }
+
+        // Email: case-insensitive, constant-time comparison.
+        $emailMatches = hash_equals(
+            mb_strtolower((string) $order->customer_email),
+            mb_strtolower($value)
+        );
+
+        // Phone: compare digits only so formatting/spaces don't matter.
+        $inputDigits = preg_replace('/\D+/', '', $value);
+        $orderDigits = preg_replace('/\D+/', '', (string) $order->customer_phone);
+        $phoneMatches = $inputDigits !== '' && $orderDigits !== '' && hash_equals($orderDigits, $inputDigits);
+
+        return $emailMatches || $phoneMatches;
     }
 
     /**
@@ -143,6 +171,16 @@ class OrderTrackingController extends Controller
                     $coupon = \App\Models\Coupon::where('code', $order->coupon_code)->first();
                     if ($coupon && $coupon->usage_count > 0) {
                         $coupon->decrement('usage_count');
+
+                        // Keep per-user usage accurate so the customer isn't
+                        // blocked from reusing a coupon on a cancelled order.
+                        if ($order->user_id) {
+                            \App\Models\CouponUser::where('coupon_id', $coupon->id)
+                                ->where('user_id', $order->user_id)
+                                ->where('usage_count', '>', 0)
+                                ->decrement('usage_count');
+                        }
+
                         Log::info('[Order Cancellation] Coupon usage refunded', [
                             'order_id' => $order->id,
                             'coupon_code' => $order->coupon_code,

@@ -10,6 +10,7 @@ use App\Services\FirebaseNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 
 class CheckoutController extends Controller
 {
@@ -186,13 +187,19 @@ class CheckoutController extends Controller
                         $couponCode = $code; // Store the redemption code
                     }
                 } else {
-                    // Regular coupon code
-                    $coupon = \App\Models\Coupon::where('code', $code)->first();
+                    // Regular coupon code. Lock the row for the duration of the
+                    // transaction so the usage limit can't be raced by concurrent
+                    // checkouts (validation + increment stay consistent).
+                    $coupon = \App\Models\Coupon::where('code', $code)->lockForUpdate()->first();
+                    $couponUserId = \Illuminate\Support\Facades\Auth::id();
 
-                    if ($coupon && $coupon->isValid()) {
+                    if ($coupon && $coupon->isValid($couponUserId)) {
                         $discount = $coupon->calculateDiscount($subtotal);
                         $couponCode = $coupon->code;
-                        // Note: incrementUsage() will be called after order creation to avoid race condition
+                        // Usage is recorded atomically after the order is created.
+                    } else {
+                        // Don't record usage for a coupon that wasn't applied.
+                        $coupon = null;
                     }
                 }
             }
@@ -266,9 +273,36 @@ class CheckoutController extends Controller
                 $redemption->applyToOrder($order);
             }
 
-            // Increment coupon usage AFTER order is successfully created (inside transaction)
+            // Record coupon usage AFTER the order is created (inside the transaction).
             if (isset($coupon) && $coupon) {
-                $coupon->incrementUsage();
+                // Global usage limit: conditional increment; abort if it would
+                // push usage past the cap (backstop to the row lock above).
+                $incremented = \App\Models\Coupon::whereKey($coupon->id)
+                    ->where(function ($q) {
+                        $q->whereNull('usage_limit')
+                            ->orWhereColumn('usage_count', '<', 'usage_limit');
+                    })
+                    ->increment('usage_count');
+
+                if ($incremented === 0) {
+                    throw new \Exception('Coupon usage limit reached');
+                }
+
+                // Per-user usage tracking / limit (only for authenticated users).
+                $couponUserId = \Illuminate\Support\Facades\Auth::id();
+                if ($couponUserId) {
+                    $pivot = \App\Models\CouponUser::firstOrNew([
+                        'coupon_id' => $coupon->id,
+                        'user_id' => $couponUserId,
+                    ]);
+
+                    if ($coupon->per_user_limit !== null && $pivot->usage_count >= $coupon->per_user_limit) {
+                        throw new \Exception('Coupon per-user limit reached');
+                    }
+
+                    $pivot->usage_count = ($pivot->usage_count ?? 0) + 1;
+                    $pivot->save();
+                }
             }
 
             // Save user info for next time if checkbox was checked
@@ -284,7 +318,15 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            return redirect()->route('checkout.success', $order)
+            // Redirect to a one-time signed URL so guests (no user_id) can view
+            // their own confirmation without the page being publicly enumerable.
+            $successUrl = URL::temporarySignedRoute(
+                'checkout.success',
+                now()->addHours(24),
+                ['order' => $order->order_number]
+            );
+
+            return redirect($successUrl)
                 ->with('success', 'تم إنشاء طلبك بنجاح!')
                 ->with('celebrate', true);
         } catch (\Exception $e) {
@@ -299,8 +341,16 @@ class CheckoutController extends Controller
     /**
      * Display order success page
      */
-    public function success(Order $order)
+    public function success(Request $request, Order $order)
     {
+        // Only the order's owner, or someone holding a valid signed link
+        // (the link issued at checkout), may view the confirmation page.
+        $isOwner = auth()->check() && $order->user_id === auth()->id();
+
+        if (!$request->hasValidSignature() && !$isOwner) {
+            abort(403);
+        }
+
         return view('checkout.success', compact('order'));
     }
 

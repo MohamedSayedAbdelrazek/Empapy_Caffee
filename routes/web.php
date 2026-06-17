@@ -68,7 +68,7 @@ Route::get('/api/device/vapid-key', [App\Http\Controllers\Api\DeviceController::
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::post('/checkout/calculate-shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculate-shipping'); // Added route
-Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])->name('checkout.success');
+Route::get('/checkout/success/{order:order_number}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 // Payment Routes (Stripe) - DISABLED: Will be replaced with Paymob
 // Route::post('/payment/create-intent', [App\Http\Controllers\PaymentController::class, 'createIntent'])
@@ -77,9 +77,11 @@ Route::get('/checkout/success/{order}', [CheckoutController::class, 'success'])-
 //     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
 //     ->name('stripe.webhook');
 
-// Order Tracking (Public)
+// Order Tracking (Public) - reveals data only after order number + matching email/phone
 Route::get('/track', [App\Http\Controllers\OrderTrackingController::class, 'track'])->name('orders.track');
-Route::post('/track', [App\Http\Controllers\OrderTrackingController::class, 'search'])->name('orders.search');
+Route::post('/track', [App\Http\Controllers\OrderTrackingController::class, 'search'])
+    ->name('orders.search')
+    ->middleware('throttle:10,1'); // limit lookup attempts to deter enumeration
 
 // My Orders (Authenticated)
 Route::middleware('auth')->group(function () {
@@ -210,14 +212,16 @@ Route::prefix('admin')->name('admin.')->middleware(['staff'])->group(function ()
     Route::get('shipping-zones', [App\Http\Controllers\Admin\ShippingZoneController::class, 'index'])->name('shipping-zones.index')->middleware('permission:manage-site');
     Route::put('shipping-zones/{shipping_zone}', [App\Http\Controllers\Admin\ShippingZoneController::class, 'update'])->name('shipping-zones.update')->middleware('permission:manage-site');
 
-    // Staff Management (requires user management permissions)
+    // Staff Management - viewing is permission-based; creating/editing/deleting
+    // staff (and therefore assigning roles & permissions) is admin-only to
+    // prevent privilege escalation by non-admin user managers.
     Route::get('staff', [\App\Http\Controllers\Admin\StaffController::class, 'index'])->name('staff.index')->middleware('permission:view-users');
-    Route::get('staff/create', [\App\Http\Controllers\Admin\StaffController::class, 'create'])->name('staff.create')->middleware('permission:create-users');
-    Route::post('staff', [\App\Http\Controllers\Admin\StaffController::class, 'store'])->name('staff.store')->middleware('permission:create-users');
+    Route::get('staff/create', [\App\Http\Controllers\Admin\StaffController::class, 'create'])->name('staff.create')->middleware(['admin', 'permission:create-users']);
+    Route::post('staff', [\App\Http\Controllers\Admin\StaffController::class, 'store'])->name('staff.store')->middleware(['admin', 'permission:create-users']);
     Route::get('staff/{staff}', [\App\Http\Controllers\Admin\StaffController::class, 'show'])->name('staff.show')->middleware('permission:view-users');
-    Route::get('staff/{staff}/edit', [\App\Http\Controllers\Admin\StaffController::class, 'edit'])->name('staff.edit')->middleware('permission:edit-users');
-    Route::put('staff/{staff}', [\App\Http\Controllers\Admin\StaffController::class, 'update'])->name('staff.update')->middleware('permission:edit-users');
-    Route::delete('staff/{staff}', [\App\Http\Controllers\Admin\StaffController::class, 'destroy'])->name('staff.destroy')->middleware('permission:delete-users');
+    Route::get('staff/{staff}/edit', [\App\Http\Controllers\Admin\StaffController::class, 'edit'])->name('staff.edit')->middleware(['admin', 'permission:edit-users']);
+    Route::put('staff/{staff}', [\App\Http\Controllers\Admin\StaffController::class, 'update'])->name('staff.update')->middleware(['admin', 'permission:edit-users']);
+    Route::delete('staff/{staff}', [\App\Http\Controllers\Admin\StaffController::class, 'destroy'])->name('staff.destroy')->middleware(['admin', 'permission:delete-users']);
 
     // Contact Messages (requires contact permissions)
     Route::get('contacts', [\App\Http\Controllers\Admin\ContactController::class, 'index'])->name('contacts.index')->middleware('permission:view-contacts');

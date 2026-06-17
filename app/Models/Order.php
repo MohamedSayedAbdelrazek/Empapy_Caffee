@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Str;
 
 class Order extends Model
 {
@@ -66,7 +67,13 @@ class Order extends Model
 
         static::creating(function ($order) {
             if (empty($order->order_number)) {
-                $order->order_number = 'EMP-' . strtoupper(uniqid());
+                // Use a random, non-sequential token so order numbers can't be
+                // guessed or enumerated (uniqid() is derived from the timestamp).
+                do {
+                    $candidate = 'EMP-' . strtoupper(Str::random(10));
+                } while (static::where('order_number', $candidate)->exists());
+
+                $order->order_number = $candidate;
             }
         });
     }

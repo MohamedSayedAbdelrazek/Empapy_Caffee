@@ -6,7 +6,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="mb-1">➕ إضافة موظف جديد</h2>
-            <p class="text-muted mb-0">إضافة مدير أو موظف جديد للنظام</p>
+            <p class="text-muted mb-0">إضافة موظف جديد للنظام بصلاحيات مخصصة</p>
         </div>
         <a href="{{ route('admin.staff.index') }}" class="btn btn-outline-secondary">
             <i class="bi bi-arrow-right me-2"></i>رجوع
@@ -55,9 +55,13 @@
                         <select name="role" id="roleSelect" class="form-select @error('role') is-invalid @enderror"
                             required>
                             <option value="">اختر الدور</option>
-                            <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>
-                                🛡️ مدير - صلاحيات كاملة
-                            </option>
+                            {{-- Only an admin may create another admin. The option is hidden for
+                                 other actors and the controller rejects a forged role=admin. --}}
+                            @if (auth()->user()->isAdmin())
+                                <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>
+                                    🛡️ مدير - صلاحيات كاملة
+                                </option>
+                            @endif
                             <option value="cashier" {{ old('role') === 'cashier' ? 'selected' : '' }}>
                                 👤 موظف - صلاحيات مخصصة
                             </option>
@@ -93,8 +97,11 @@
                         <input type="password" name="password_confirmation" class="form-control" required>
                     </div>
 
-                    {{-- Permissions Section --}}
-                    @include('admin.staff._permissions')
+                    {{-- Permissions Section (admin-only UX: non-admins cannot reach this
+                         form, and the controller only grants permissions the actor holds) --}}
+                    @if (auth()->user()->isAdmin())
+                        @include('admin.staff._permissions')
+                    @endif
                 </div>
 
                 <hr class="my-4">
@@ -117,15 +124,17 @@
                 const adminHint = document.getElementById('adminHint');
                 const staffHint = document.getElementById('staffHint');
 
+                if (!roleSelect || !permissionsSection) return;
+
                 function togglePermissions() {
                     if (roleSelect.value === 'admin') {
                         permissionsSection.style.display = 'none';
-                        adminHint.style.display = 'inline';
-                        staffHint.style.display = 'none';
+                        if (adminHint) adminHint.style.display = 'inline';
+                        if (staffHint) staffHint.style.display = 'none';
                     } else {
                         permissionsSection.style.display = 'block';
-                        adminHint.style.display = 'none';
-                        staffHint.style.display = 'inline';
+                        if (adminHint) adminHint.style.display = 'none';
+                        if (staffHint) staffHint.style.display = 'inline';
                     }
                 }
 

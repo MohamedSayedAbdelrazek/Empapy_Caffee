@@ -19,9 +19,10 @@ if [ ! -L /home/site/wwwroot/public/storage ]; then
     echo "✅ Storage link created"
 fi
 
-# Run migrations (safe - won't re-run existing ones)
-php /home/site/wwwroot/artisan migrate --force
-echo "✅ Migrations complete"
+# NOTE: migrations are intentionally NOT run on container boot.
+# Schema changes run once per deployment in deploy.sh, wrapped in
+# maintenance mode + a database backup. Running migrate on every boot
+# risks an unattended, un-backed-up schema change on autoscale/restart.
 
 # Clear and cache config for performance
 php /home/site/wwwroot/artisan config:cache

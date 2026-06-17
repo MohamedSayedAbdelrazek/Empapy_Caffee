@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Carbon\Carbon;
 
 class Coupon extends Model
@@ -19,6 +20,7 @@ class Coupon extends Model
         'min_order_amount',
         'max_discount',
         'usage_limit',
+        'per_user_limit',
         'usage_count',
         'starts_at',
         'expires_at',
@@ -46,6 +48,7 @@ class Coupon extends Model
         'min_order_amount' => 'decimal:2',
         'max_discount' => 'decimal:2',
         'usage_limit' => 'integer',
+        'per_user_limit' => 'integer',
         'usage_count' => 'integer',
         'starts_at' => 'datetime',
         'expires_at' => 'datetime',
@@ -53,9 +56,30 @@ class Coupon extends Model
     ];
 
     /**
-     * Check if coupon is valid
+     * Users who have used this coupon (with per-user usage_count on the pivot).
      */
-    public function isValid(): bool
+    public function users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class)
+            ->withPivot('usage_count')
+            ->withTimestamps();
+    }
+
+    /**
+     * How many times a given user has already used this coupon.
+     */
+    public function usageCountForUser(int $userId): int
+    {
+        return (int) (CouponUser::where('coupon_id', $this->id)
+            ->where('user_id', $userId)
+            ->value('usage_count') ?? 0);
+    }
+
+    /**
+     * Check if coupon is valid. When $userId is provided, the per-user usage
+     * limit is also enforced.
+     */
+    public function isValid(?int $userId = null): bool
     {
         // Check if active
         if (!$this->is_active) {
@@ -71,8 +95,14 @@ class Coupon extends Model
             return false;
         }
 
-        // Check usage limit
+        // Check global usage limit
         if ($this->usage_limit && $this->usage_count >= $this->usage_limit) {
+            return false;
+        }
+
+        // Check per-user usage limit (only when we know who is redeeming)
+        if ($userId !== null && $this->per_user_limit !== null
+            && $this->usageCountForUser($userId) >= $this->per_user_limit) {
             return false;
         }
 

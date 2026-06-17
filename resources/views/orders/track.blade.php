@@ -26,14 +26,22 @@
                         <h5 class="mb-3"><i class="bi bi-search me-2"></i>ابحث عن طلبك</h5>
                         <form action="{{ route('orders.search') }}" method="POST">
                             @csrf
-                            <div class="input-group">
+                            <div class="mb-3">
                                 <input type="text" name="order_number" class="form-control form-control-lg"
                                     placeholder="أدخل رقم الطلب (مثال: EMP-XXXXX)"
                                     value="{{ old('order_number', request('order_number')) }}" required>
+                            </div>
+                            <div class="input-group">
+                                <input type="text" name="verification" class="form-control form-control-lg"
+                                    placeholder="البريد الإلكتروني أو رقم الهاتف المسجل بالطلب"
+                                    value="{{ old('verification') }}" required>
                                 <button type="submit" class="btn btn-golden btn-lg">
                                     <i class="bi bi-search me-2"></i>بحث
                                 </button>
                             </div>
+                            <small class="text-muted d-block mt-2">
+                                <i class="bi bi-shield-lock me-1"></i>لحماية خصوصيتك، أدخل البريد الإلكتروني أو رقم الهاتف المستخدم عند إتمام الطلب
+                            </small>
                         </form>
 
                         @if (session('error'))

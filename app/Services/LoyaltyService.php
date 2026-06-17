@@ -197,6 +197,8 @@ class LoyaltyService
      */
     public function redeemReward(User $user, LoyaltyReward $reward): array
     {
+        // Fast pre-check for a friendly message. The authoritative checks are
+        // re-run under row locks inside the transaction below to prevent races.
         $canRedeem = $reward->canBeRedeemedBy($user);
 
         if (!$canRedeem['can']) {
@@ -204,43 +206,70 @@ class LoyaltyService
         }
 
         try {
-            DB::beginTransaction();
+            return DB::transaction(function () use ($user, $reward) {
+                // Lock the loyalty balance and the reward rows for the duration
+                // of the transaction so two concurrent redemptions can't both
+                // pass the checks and double-spend points or oversell stock.
+                $loyalty = $user->loyaltyPoints()->lockForUpdate()->first();
+                $lockedReward = LoyaltyReward::whereKey($reward->id)->lockForUpdate()->first();
 
-            $loyalty = $user->loyaltyPoints;
+                if (!$loyalty || !$lockedReward) {
+                    return ['success' => false, 'message' => 'حدث خطأ، يرجى المحاولة لاحقاً'];
+                }
 
-            // Deduct points
-            $loyalty->deductPoints(
-                $reward->points_required,
-                'reward',
-                "Redeemed: {$reward->name}",
-                "استبدال: {$reward->name_ar}",
-                $reward
-            );
+                // Re-validate balance under lock.
+                if ($loyalty->available_points < $lockedReward->points_required) {
+                    return ['success' => false, 'message' => 'نقاط غير كافية'];
+                }
 
-            // Update reward stats
-            $reward->increment('times_redeemed');
-            if ($reward->stock !== null) {
-                $reward->decrement('stock');
-            }
+                // Re-validate stock under lock.
+                if ($lockedReward->stock !== null && $lockedReward->stock <= 0) {
+                    return ['success' => false, 'message' => 'نفدت الكمية'];
+                }
 
-            // Create redemption record
-            $redemption = RewardRedemption::create([
-                'user_id' => $user->id,
-                'reward_id' => $reward->id,
-                'points_spent' => $reward->points_required,
-                'redemption_code' => RewardRedemption::generateCode(),
-                'expires_at' => now()->addDays(30),
-            ]);
+                // Re-validate the per-user limit under lock.
+                if ($lockedReward->max_per_user) {
+                    $userRedemptions = $lockedReward->redemptions()
+                        ->where('user_id', $user->id)
+                        ->whereIn('status', ['pending', 'applied'])
+                        ->count();
 
-            DB::commit();
+                    if ($userRedemptions >= $lockedReward->max_per_user) {
+                        return ['success' => false, 'message' => 'تم الوصول للحد الأقصى'];
+                    }
+                }
 
-            return [
-                'success' => true,
-                'message' => 'تم استبدال المكافأة بنجاح!',
-                'redemption' => $redemption,
-            ];
+                // Deduct points (operates on the locked, freshly-read row).
+                $loyalty->deductPoints(
+                    $lockedReward->points_required,
+                    'reward',
+                    "Redeemed: {$lockedReward->name}",
+                    "استبدال: {$lockedReward->name_ar}",
+                    $lockedReward
+                );
+
+                // Update reward stats.
+                $lockedReward->increment('times_redeemed');
+                if ($lockedReward->stock !== null) {
+                    $lockedReward->decrement('stock');
+                }
+
+                // Create redemption record.
+                $redemption = RewardRedemption::create([
+                    'user_id' => $user->id,
+                    'reward_id' => $lockedReward->id,
+                    'points_spent' => $lockedReward->points_required,
+                    'redemption_code' => RewardRedemption::generateCode(),
+                    'expires_at' => now()->addDays(30),
+                ]);
+
+                return [
+                    'success' => true,
+                    'message' => 'تم استبدال المكافأة بنجاح!',
+                    'redemption' => $redemption,
+                ];
+            });
         } catch (\Exception $e) {
-            DB::rollBack();
             Log::error('Reward redemption failed: ' . $e->getMessage());
 
             return ['success' => false, 'message' => 'حدث خطأ، يرجى المحاولة لاحقاً'];

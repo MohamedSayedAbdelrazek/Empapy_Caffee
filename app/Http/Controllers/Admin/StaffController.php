@@ -36,12 +36,18 @@ class StaffController extends Controller
      */
     public function store(Request $request)
     {
+        // Only an admin may create another admin (and assign permissions freely).
+        // The staff write routes are admin-gated, but we re-check the actor here
+        // so a forged role=admin POST is rejected server-side even if that route
+        // gate is ever loosened.
+        $actorIsAdmin = auth()->user()->isAdmin();
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:20'],
             'password' => ['required', 'confirmed', Password::min(8)],
-            'role' => ['required', 'in:admin,cashier'],
+            'role' => ['required', $actorIsAdmin ? 'in:admin,cashier' : 'in:cashier'],
             'permissions' => ['nullable', 'array'],
             'permissions.*' => ['exists:permissions,id'],
         ], [
@@ -51,7 +57,7 @@ class StaffController extends Controller
             'password.required' => 'كلمة المرور مطلوبة',
             'password.confirmed' => 'تأكيد كلمة المرور غير متطابق',
             'role.required' => 'يجب اختيار الدور',
-            'role.in' => 'الدور غير صحيح',
+            'role.in' => 'لا يمكن إنشاء حساب مدير من هذه الصفحة',
         ]);
 
         $user = User::create([
@@ -62,9 +68,10 @@ class StaffController extends Controller
             'role' => $validated['role'],
         ]);
 
-        // Sync permissions for cashiers
-        if ($validated['role'] === 'cashier' && isset($validated['permissions'])) {
-            $user->syncPermissions($validated['permissions']);
+        // Admins bypass permission checks, so only cashiers receive explicit
+        // permissions — and only those the current actor is allowed to grant.
+        if ($validated['role'] === 'cashier') {
+            $user->syncPermissions($this->grantablePermissions($validated['permissions'] ?? []));
         }
 
         return redirect()->route('admin.staff.index')
@@ -112,11 +119,34 @@ class StaffController extends Controller
             'role.required' => 'يجب اختيار الدور',
         ]);
 
+        $isSelf = $staff->id === auth()->id();
+
+        // Determine the effective role. A user can never change their own role,
+        // and only an admin may assign the admin role to another account.
+        if ($isSelf) {
+            $role = $staff->role; // ignore any submitted role change for self
+        } else {
+            $role = $validated['role'];
+
+            // Only an admin may grant/keep the admin role. A forged role=admin
+            // from a non-admin is rejected here, not merely hidden in the UI.
+            if ($role === 'admin' && !auth()->user()->isAdmin()) {
+                return back()->withInput()
+                    ->with('error', 'لا يمكن منح صلاحية المدير من هذه الصفحة');
+            }
+
+            // Prevent demoting the last remaining admin (would lock everyone out).
+            if ($staff->isAdmin() && $role !== 'admin' && User::where('role', 'admin')->count() <= 1) {
+                return back()->withInput()
+                    ->with('error', 'لا يمكن تغيير دور آخر مدير في النظام');
+            }
+        }
+
         $data = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'],
-            'role' => $validated['role'],
+            'role' => $role,
         ];
 
         // Only update password if provided
@@ -126,17 +156,45 @@ class StaffController extends Controller
 
         $staff->update($data);
 
-        // Sync permissions for cashiers (clear permissions for admins)
-        if ($validated['role'] === 'cashier') {
-            $permissions = $validated['permissions'] ?? [];
-            $staff->syncPermissions($permissions);
-        } else {
-            // Clear all permissions for admins (they bypass permission checks anyway)
-            $staff->permissions()->detach();
+        // Never allow a user to edit their own permissions. Otherwise sync the
+        // cashier's permissions (admins bypass permission checks, so clear theirs).
+        if (!$isSelf) {
+            if ($role === 'cashier') {
+                $staff->syncPermissions($this->grantablePermissions($validated['permissions'] ?? []));
+            } else {
+                $staff->permissions()->detach();
+            }
         }
 
         return redirect()->route('admin.staff.index')
             ->with('success', 'تم تحديث بيانات الموظف بنجاح! ✨');
+    }
+
+    /**
+     * Restrict the permissions being assigned to those the current actor may
+     * grant. Admins may grant any permission; a non-admin may only grant
+     * permissions they themselves hold. (Defense-in-depth: the staff write
+     * routes are already admin-only.)
+     *
+     * @param  array<int|string>  $permissionIds
+     * @return array<int|string>
+     */
+    private function grantablePermissions(array $permissionIds): array
+    {
+        $actor = auth()->user();
+
+        if ($actor && $actor->isAdmin()) {
+            return $permissionIds;
+        }
+
+        $ownPermissionIds = $actor
+            ? $actor->permissions->pluck('id')->map(fn ($id) => (string) $id)->all()
+            : [];
+
+        return array_values(array_filter(
+            $permissionIds,
+            fn ($id) => in_array((string) $id, $ownPermissionIds, true)
+        ));
     }
 
     /**

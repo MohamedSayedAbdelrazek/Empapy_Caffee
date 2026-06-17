@@ -92,6 +92,14 @@
                     <small class="text-light opacity-75">عدد مرات استخدام الكوبون الإجمالي</small>
                 </div>
 
+                <!-- Per-user Usage Limit -->
+                <div class="col-md-6">
+                    <label class="form-label">حد الاستخدام لكل عميل</label>
+                    <input type="number" name="per_user_limit" class="form-control" value="{{ old('per_user_limit') }}"
+                        min="1">
+                    <small class="text-light opacity-75">أقصى عدد مرات يستخدم فيها العميل الواحد الكوبون (اتركه فارغاً لعدم التحديد)</small>
+                </div>
+
                 <!-- Starts At -->
                 <div class="col-md-6">
                     <label class="form-label">تاريخ البداية</label>

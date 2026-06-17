@@ -169,7 +169,10 @@ return [
     |
     */
 
-    'secure' => env('SESSION_SECURE_COOKIE'),
+    // Force secure (HTTPS-only) cookies in production even if the env var is
+    // unset, while leaving local/dev (plain HTTP) working. Can still be
+    // overridden explicitly via SESSION_SECURE_COOKIE.
+    'secure' => env('SESSION_SECURE_COOKIE', env('APP_ENV') === 'production'),
 
     /*
     |--------------------------------------------------------------------------

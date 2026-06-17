@@ -55,9 +55,13 @@
                         <label class="form-label">الدور <span class="text-danger">*</span></label>
                         <select name="role" id="roleSelect" class="form-select @error('role') is-invalid @enderror" required
                             @if ($staff->id === auth()->id()) disabled @endif>
-                            <option value="admin" {{ old('role', $staff->role) === 'admin' ? 'selected' : '' }}>
-                                🛡️ مدير - صلاحيات كاملة
-                            </option>
+                            {{-- Only an admin may assign the admin role. The option is hidden for
+                                 other actors and the controller rejects a forged role=admin. --}}
+                            @if (auth()->user()->isAdmin())
+                                <option value="admin" {{ old('role', $staff->role) === 'admin' ? 'selected' : '' }}>
+                                    🛡️ مدير - صلاحيات كاملة
+                                </option>
+                            @endif
                             <option value="cashier" {{ old('role', $staff->role) === 'cashier' ? 'selected' : '' }}>
                                 👤 موظف - صلاحيات مخصصة
                             </option>
@@ -102,8 +106,11 @@
                     </div>
                 </div>
 
-                {{-- Permissions Section --}}
-                @include('admin.staff._permissions')
+                {{-- Permissions Section (admin-only UX: non-admins cannot reach this
+                     form, and the controller only grants permissions the actor holds) --}}
+                @if (auth()->user()->isAdmin())
+                    @include('admin.staff._permissions')
+                @endif
         </div>
 
         <hr class="my-4">
