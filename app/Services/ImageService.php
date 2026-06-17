@@ -24,10 +24,22 @@ class ImageService
             mkdir($publicPath, 0755, true);
         }
 
-        // Generate filename
-        $extension = strtolower($file->getClientOriginalExtension());
-        $baseName = $customName ?? time() . '_' . Str::random(10);
-        $baseName = Str::slug($baseName);
+        // Determine the extension from the SERVER-detected MIME type, never the
+        // client-supplied extension (SEC-08). Controllers already validate that
+        // the upload is an image; this maps the real content type to a safe
+        // extension so a renamed/spoofed file can't dictate what we write.
+        $mimeToExtension = [
+            'image/jpeg' => 'jpg',
+            'image/png' => 'png',
+            'image/gif' => 'gif',
+            'image/webp' => 'webp',
+        ];
+        $extension = $mimeToExtension[$file->getMimeType()] ?? strtolower($file->extension() ?: 'jpg');
+
+        // Use a non-predictable, random filename (SEC-08). An optional trusted
+        // custom name is kept only as a readable prefix.
+        $prefix = $customName ? Str::slug($customName) : '';
+        $baseName = trim($prefix . '-' . Str::random(32), '-');
         
         // If already WebP, just save it
         if ($extension === 'webp') {

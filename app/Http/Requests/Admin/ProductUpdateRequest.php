@@ -11,7 +11,10 @@ class ProductUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user() && $this->user()->role === 'admin';
+        // Mirror the route's permission gate (permission:edit-products) so a
+        // cashier granted that permission isn't blocked by a stricter, role-only
+        // check here. Admins pass via the role bypass inside hasPermission().
+        return $this->user()?->hasPermission('edit-products') ?? false;
     }
 
     /**

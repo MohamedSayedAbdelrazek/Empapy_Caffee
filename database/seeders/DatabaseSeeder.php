@@ -15,14 +15,16 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create Admin User
-        User::create([
+        // Create Admin User. Role is not mass-assignable (SEC-07), so set it
+        // explicitly via direct assignment before saving.
+        $admin = new User([
             'name' => 'أحمد صلاح',
             'email' => 'admin@empapy.com',
             'password' => bcrypt('ahmedsalah123'),
-            'role' => 'admin',
             'phone' => '+201151579225',
         ]);
+        $admin->role = 'admin';
+        $admin->save();
 
         
         // Create Categories (Arabic only - no name_ar column)

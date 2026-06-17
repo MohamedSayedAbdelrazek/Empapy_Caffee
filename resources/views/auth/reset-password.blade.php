@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'تسجيل الدخول - إمبابي كافيه')
+@section('title', 'تعيين كلمة مرور جديدة - إمبابي كافيه')
 
 @section('content')
     <section class="py-5" style="min-height: 100vh; display: flex; align-items: center; background: var(--gradient-dark);">
@@ -10,13 +10,12 @@
                     <div class="text-center mb-5">
                         <a href="{{ route('home') }}"
                             class="d-inline-flex align-items-center gap-3 text-white text-decoration-none">
-
                             <span style="font-size: 1.8rem; font-weight: 800;">إمبابي كافيه</span>
                         </a>
                     </div>
 
                     <div class="glass-card p-5">
-                        <h3 class="text-center mb-4">تسجيل الدخول</h3>
+                        <h3 class="text-center mb-4">تعيين كلمة مرور جديدة</h3>
 
                         @if ($errors->any())
                             <div class="alert alert-danger">
@@ -25,52 +24,49 @@
                             </div>
                         @endif
 
-                        <form action="{{ route('login') }}" method="POST">
+                        <form action="{{ route('password.update') }}" method="POST">
                             @csrf
+                            <input type="hidden" name="token" value="{{ $token }}">
 
                             <div class="mb-4">
                                 <label class="form-label">البريد الإلكتروني</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-                                    <input type="email" name="email" class="form-control" value="{{ old('email') }}"
-                                        required autofocus placeholder="example@email.com">
+                                    <input type="email" name="email" class="form-control"
+                                        value="{{ old('email', $email) }}" required autofocus
+                                        placeholder="example@email.com">
                                 </div>
                             </div>
 
                             <div class="mb-4">
-                                <label class="form-label">كلمة المرور</label>
+                                <label class="form-label">كلمة المرور الجديدة</label>
                                 <div class="input-group">
                                     <span class="input-group-text"><i class="bi bi-lock"></i></span>
                                     <input type="password" name="password" id="password" class="form-control" required
-                                        placeholder="كلمة المرور">
+                                        placeholder="كلمة المرور الجديدة">
                                     <button class="btn btn-outline-secondary" type="button" id="togglePassword">
                                         <i class="bi bi-eye"></i>
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="mb-4 d-flex justify-content-between align-items-center">
-                                <div class="form-check m-0">
-                                    <input type="checkbox" name="remember" class="form-check-input" id="remember">
-                                    <label class="form-check-label" for="remember">تذكرني</label>
+                            <div class="mb-4">
+                                <label class="form-label">تأكيد كلمة المرور</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-lock-fill"></i></span>
+                                    <input type="password" name="password_confirmation" class="form-control" required
+                                        placeholder="أعد إدخال كلمة المرور">
                                 </div>
-                                <a href="{{ route('password.request') }}" class="small" style="color: var(--gold);">نسيت كلمة المرور؟</a>
                             </div>
 
                             <button type="submit" class="btn btn-golden w-100 btn-lg">
-                                <i class="bi bi-box-arrow-in-left me-2"></i>تسجيل الدخول
+                                <i class="bi bi-check-circle me-2"></i>تغيير كلمة المرور
                             </button>
                         </form>
 
                         <div class="text-center mt-4">
-                            <span class="text-muted">ليس لديك حساب؟</span>
-                            <a href="{{ route('register') }}" class="fw-bold" style="color: var(--gold);">إنشاء حساب
-                                جديد</a>
-                        </div>
-
-                        <div class="text-center mt-3">
-                            <a href="{{ route('home') }}" class="text-muted small">
-                                <i class="bi bi-arrow-right me-1"></i>العودة للرئيسية
+                            <a href="{{ route('login') }}" class="text-muted small">
+                                <i class="bi bi-arrow-right me-1"></i>العودة لتسجيل الدخول
                             </a>
                         </div>
                     </div>
@@ -80,7 +76,7 @@
     </section>
 
     <script>
-        document.getElementById('togglePassword').addEventListener('click', function() {
+        document.getElementById('togglePassword')?.addEventListener('click', function() {
             const passwordInput = document.getElementById('password');
             const icon = this.querySelector('i');
 
@@ -95,8 +91,4 @@
             }
         });
     </script>
-    </div>
-    </div>
-    </div>
-    </section>
 @endsection

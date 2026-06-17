@@ -118,8 +118,10 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        if ($category->products()->count() > 0) {
-            return back()->with('error', 'لا يمكن حذف فئة تحتوي على منتجات');
+        // Count trashed products too: the DB enforces ON DELETE RESTRICT
+        // (DATA-01), and a soft-deleted product still holds the foreign key.
+        if ($category->products()->withTrashed()->count() > 0) {
+            return back()->with('error', 'لا يمكن حذف فئة تحتوي على منتجات. يرجى نقل المنتجات إلى فئة أخرى أو حذفها نهائياً أولاً.');
         }
 
         $category->delete();

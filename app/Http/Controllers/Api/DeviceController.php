@@ -26,18 +26,26 @@ class DeviceController extends Controller
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        // Check if token already exists
+        // SEC-06: scope to the current user. Look the token up globally only to
+        // detect when it belongs to a *different* account — in that case we must
+        // not reassign it (token takeover) nor hit the unique constraint.
         $device = UserDevice::where('fcm_token', $request->token)->first();
 
+        if ($device && $device->user_id !== $user->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This device token is registered to another account',
+            ], 409);
+        }
+
         if ($device) {
-            // Update existing device
+            // Token already belongs to this user — just reactivate / refresh it.
             $device->update([
-                'user_id' => $user->id,
                 'is_active' => true,
                 'last_used_at' => now(),
             ]);
         } else {
-            // Create new device
+            // Create new device owned by the current user.
             $device = UserDevice::create([
                 'user_id' => $user->id,
                 'fcm_token' => $request->token,
@@ -64,7 +72,17 @@ class DeviceController extends Controller
             'token' => 'required|string',
         ]);
 
-        UserDevice::where('fcm_token', $request->token)->update(['is_active' => false]);
+        $user = Auth::user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        // SEC-06: only the owner may deactivate their own token. Scoping by
+        // user_id stops one user from disabling another user's push delivery.
+        UserDevice::where('user_id', $user->id)
+            ->where('fcm_token', $request->token)
+            ->update(['is_active' => false]);
 
         return response()->json([
             'success' => true,

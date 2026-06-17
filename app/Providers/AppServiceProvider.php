@@ -12,6 +12,8 @@ use App\Observers\UserObserver;
 use App\Policies\ProductPolicy;
 use App\Services\CartService;
 use App\Services\ProductService;
+use Illuminate\Auth\Notifications\ResetPassword;
+use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
@@ -51,5 +53,22 @@ class AppServiceProvider extends ServiceProvider
         if (config('app.force_https', false)) {
             URL::forceScheme('https');
         }
+
+        // Arabic password-reset email (SEC-08). Keeps the standard Laravel
+        // reset flow but with localized, RTL-friendly copy.
+        ResetPassword::toMailUsing(function ($notifiable, string $token) {
+            $url = url(route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ], false));
+
+            return (new MailMessage)
+                ->subject('إعادة تعيين كلمة المرور - إمبابي كافيه')
+                ->greeting('مرحباً')
+                ->line('لقد تلقّينا طلباً لإعادة تعيين كلمة مرور حسابك.')
+                ->action('إعادة تعيين كلمة المرور', $url)
+                ->line('ينتهي هذا الرابط خلال 60 دقيقة.')
+                ->line('إذا لم تطلب إعادة التعيين، فلا حاجة لاتخاذ أي إجراء.');
+        });
     }
 }

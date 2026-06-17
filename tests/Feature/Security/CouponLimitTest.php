@@ -31,9 +31,13 @@ class CouponLimitTest extends TestCase
         parent::setUp();
 
         Http::fake();
+        // Pin sale_price to null: the factory otherwise sets a random sale_price
+        // (derived from its own random base price) ~30% of the time, which would
+        // override the price=100 here and make the subtotal non-deterministic.
         $this->product = Product::factory()->create([
             'category_id' => Category::factory(),
             'price' => 100,
+            'sale_price' => null,
             'is_active' => true,
         ]);
         ShippingZone::factory()->create(['name' => 'القاهرة', 'fee' => 40]);

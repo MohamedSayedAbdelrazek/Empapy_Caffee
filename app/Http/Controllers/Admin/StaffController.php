@@ -60,13 +60,16 @@ class StaffController extends Controller
             'role.in' => 'لا يمكن إنشاء حساب مدير من هذه الصفحة',
         ]);
 
-        $user = User::create([
+        $user = new User([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
             'password' => Hash::make($validated['password']),
-            'role' => $validated['role'],
         ]);
+        // Role is not mass-assignable (SEC-07); set the validated value
+        // explicitly before save() so the created user gets the right role.
+        $user->role = $validated['role'];
+        $user->save();
 
         // Admins bypass permission checks, so only cashiers receive explicit
         // permissions — and only those the current actor is allowed to grant.
@@ -146,7 +149,6 @@ class StaffController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
-            'role' => $role,
         ];
 
         // Only update password if provided
@@ -154,6 +156,9 @@ class StaffController extends Controller
             $data['password'] = Hash::make($validated['password']);
         }
 
+        // Role is not mass-assignable (SEC-07); set it explicitly. save() inside
+        // update() persists this dirty attribute alongside the fillable changes.
+        $staff->role = $role;
         $staff->update($data);
 
         // Never allow a user to edit their own permissions. Otherwise sync the

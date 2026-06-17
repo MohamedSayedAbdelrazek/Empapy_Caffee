@@ -70,13 +70,6 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 Route::post('/checkout/calculate-shipping', [CheckoutController::class, 'calculateShipping'])->name('checkout.calculate-shipping'); // Added route
 Route::get('/checkout/success/{order:order_number}', [CheckoutController::class, 'success'])->name('checkout.success');
 
-// Payment Routes (Stripe) - DISABLED: Will be replaced with Paymob
-// Route::post('/payment/create-intent', [App\Http\Controllers\PaymentController::class, 'createIntent'])
-//     ->name('payment.create-intent');
-// Route::post('/stripe/webhook', [App\Http\Controllers\PaymentController::class, 'webhook'])
-//     ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class])
-//     ->name('stripe.webhook');
-
 // Order Tracking (Public) - reveals data only after order number + matching email/phone
 Route::get('/track', [App\Http\Controllers\OrderTrackingController::class, 'track'])->name('orders.track');
 Route::post('/track', [App\Http\Controllers\OrderTrackingController::class, 'search'])
@@ -241,6 +234,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:10,1'); // 10 attempts per minute
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1');
+
+    // Forgot / reset password (rate-limited to deter abuse)
+    Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
+    Route::post('/forgot-password', [AuthController::class, 'sendResetLink'])->name('password.email')->middleware('throttle:5,1');
+    Route::get('/reset-password/{token}', [AuthController::class, 'showResetPassword'])->name('password.reset');
+    Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update')->middleware('throttle:5,1');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');

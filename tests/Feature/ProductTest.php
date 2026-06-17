@@ -171,4 +171,44 @@ class ProductTest extends TestCase
             ->get(route('admin.products.index'))
             ->assertOk();
     }
+
+    #[Test]
+    public function a_cashier_with_create_permission_can_create_a_product(): void
+    {
+        // BUG-03 regression: the granted permission must actually work — the
+        // form request authorisation must mirror the route's permission gate
+        // rather than demanding the admin role.
+        $this->seed(PermissionSeeder::class);
+        $cashier = User::factory()->create(['role' => 'cashier']);
+        $cashier->givePermissionTo('create-products');
+
+        $this->actingAs($cashier)->post(route('admin.products.store'), [
+            'name' => 'قهوة الكاشير',
+            'category_id' => $this->category->id,
+            'price' => 75,
+        ])->assertRedirect(route('admin.products.index'));
+
+        $this->assertDatabaseHas('products', ['name' => 'قهوة الكاشير']);
+    }
+
+    #[Test]
+    public function a_cashier_with_edit_permission_can_update_a_product(): void
+    {
+        // BUG-03 regression for the update path.
+        $this->seed(PermissionSeeder::class);
+        $cashier = User::factory()->create(['role' => 'cashier']);
+        $cashier->givePermissionTo('edit-products');
+        $product = Product::factory()->create(['category_id' => $this->category->id]);
+
+        $this->actingAs($cashier)->put(route('admin.products.update', $product), [
+            'name' => 'اسم محدّث بواسطة الكاشير',
+            'category_id' => $this->category->id,
+            'price' => 88,
+        ])->assertRedirect(route('admin.products.index'));
+
+        $this->assertDatabaseHas('products', [
+            'id' => $product->id,
+            'name' => 'اسم محدّث بواسطة الكاشير',
+        ]);
+    }
 }

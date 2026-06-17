@@ -24,7 +24,6 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
         'phone',
         'address',
         'city',
@@ -32,6 +31,13 @@ class User extends Authenticatable
         'avatar',
         'referred_by',
     ];
+
+    /**
+     * 'role' is intentionally NOT mass-assignable (SEC-07). It must be set
+     * explicitly via direct property assignment at the few trusted call sites
+     * (registration → 'customer'; admin staff management → a validated value)
+     * so a stray User::create($request->all()) can never escalate privileges.
+     */
 
     /**
      * The attributes that should be hidden for serialization.
