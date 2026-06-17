@@ -28,3 +28,5 @@ yarn-error.log
 # Audit/overview reports
 PROJECT_AUDIT.html
 PROJECT_OVERVIEW.html
+.env.docker
+.env.docker
