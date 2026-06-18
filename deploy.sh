@@ -7,16 +7,11 @@
 echo "🚀 Starting deployment..."
 
 # ============================================
-# 1. BUILD ASSETS (VITE) - CRITICAL!
+# 1. FRONT-END ASSETS
 # ============================================
-echo "📦 Installing NPM dependencies..."
-npm ci --production=false
-
-echo "🔨 Building Vite assets..."
-npm run build
-
-# Remove node_modules after build to save space
-rm -rf node_modules
+# Front-end assets are hand-written under public/css and public/js (committed,
+# minified locally via minify-assets.sh) and loaded with ?v={filemtime}
+# cache-busting — there is no Vite build step in the deploy pipeline.
 
 # ============================================
 # 2. INSTALL COMPOSER DEPENDENCIES

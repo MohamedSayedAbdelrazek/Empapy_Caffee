@@ -4,10 +4,8 @@ namespace App\Providers;
 
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\Review;
 use App\Models\User;
 use App\Observers\OrderObserver;
-use App\Observers\ReviewObserver;
 use App\Observers\UserObserver;
 use App\Policies\ProductPolicy;
 use App\Services\CartService;
@@ -46,7 +44,6 @@ class AppServiceProvider extends ServiceProvider
         // Register Observers for notifications
         Order::observe(OrderObserver::class);
         User::observe(UserObserver::class);
-        // DISABLED: Review::observe(ReviewObserver::class); // Uncomment when ready
 
         // Only force HTTPS when explicitly enabled via .env
         // Set FORCE_HTTPS=true in .env when you have SSL certificate

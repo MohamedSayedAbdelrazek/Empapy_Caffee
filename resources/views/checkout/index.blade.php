@@ -302,30 +302,7 @@
                                 margin-top: 1rem !important;
                             }
 
-                            /* Stripe Card Element Styling */
-                            .stripe-card-element {
-                                background: white;
-                                padding: 14px;
-                                border: 2px solid #e9ecef;
-                                border-radius: 8px;
-                                transition: all 0.3s ease;
-                                min-height: 45px;
-                            }
-
-                            .stripe-card-element:hover {
-                                border-color: var(--gold);
-                            }
-
-                            .stripe-card-element:focus-within {
-                                border-color: var(--gold);
-                                box-shadow: 0 0 0 3px rgba(201, 169, 97, 0.15);
-                            }
-
                             /* Dark mode adjustments */
-                            [data-bs-theme="dark"] .stripe-card-element {
-                                background: rgba(255, 255, 255, 0.05);
-                                border-color: rgba(255, 255, 255, 0.1);
-                            }
 
                             [data-bs-theme="dark"] .payment-option-card {
                                 background: rgba(255, 255, 255, 0.02);

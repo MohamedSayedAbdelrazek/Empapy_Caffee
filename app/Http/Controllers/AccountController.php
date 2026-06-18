@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\Account\UpdateAvatarRequest;
+use App\Http\Requests\Account\UpdatePasswordRequest;
+use App\Http\Requests\Account\UpdateProfileRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Validation\Rules\Password;
 
 class AccountController extends Controller
 {
@@ -46,25 +47,9 @@ class AccountController extends Controller
     /**
      * Update profile information
      */
-    public function updateProfile(Request $request)
+    public function updateProfile(UpdateProfileRequest $request)
     {
-        $user = Auth::user();
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $user->id],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'address' => ['nullable', 'string', 'max:500'],
-            'city' => ['nullable', 'string', 'max:100'],
-            'governorate' => ['nullable', 'string', 'max:100'],
-        ], [
-            'name.required' => 'الاسم مطلوب',
-            'email.required' => 'البريد الإلكتروني مطلوب',
-            'email.email' => 'البريد الإلكتروني غير صحيح',
-            'email.unique' => 'البريد الإلكتروني مستخدم بالفعل',
-        ]);
-
-        $user->update($validated);
+        Auth::user()->update($request->validated());
 
         return back()->with('success', 'تم تحديث بياناتك بنجاح! ✨');
     }
@@ -72,21 +57,10 @@ class AccountController extends Controller
     /**
      * Update password
      */
-    public function updatePassword(Request $request)
+    public function updatePassword(UpdatePasswordRequest $request)
     {
-        $validated = $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-        ], [
-            'current_password.required' => 'كلمة المرور الحالية مطلوبة',
-            'current_password.current_password' => 'كلمة المرور الحالية غير صحيحة',
-            'password.required' => 'كلمة المرور الجديدة مطلوبة',
-            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق',
-            'password.min' => 'كلمة المرور يجب أن تكون 8 أحرف على الأقل',
-        ]);
-
         Auth::user()->update([
-            'password' => Hash::make($validated['password']),
+            'password' => Hash::make($request->validated()['password']),
         ]);
 
         return back()->with('success', 'تم تغيير كلمة المرور بنجاح! 🔐');
@@ -95,17 +69,8 @@ class AccountController extends Controller
     /**
      * Update avatar
      */
-    public function updateAvatar(Request $request)
+    public function updateAvatar(UpdateAvatarRequest $request)
     {
-        $request->validate([
-            'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg,gif,webp', 'max:5120'],
-        ], [
-            'avatar.required' => 'يرجى اختيار صورة',
-            'avatar.image' => 'الملف يجب أن يكون صورة',
-            'avatar.mimes' => 'صيغة الصورة غير مدعومة',
-            'avatar.max' => 'حجم الصورة يجب أن لا يتجاوز 5MB',
-        ]);
-
         try {
             $user = Auth::user();
 

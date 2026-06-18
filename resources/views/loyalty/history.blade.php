@@ -3,7 +3,7 @@
 @section('title', 'سجل النقاط')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
+    <link rel="stylesheet" href="{{ asset_version('css/loyalty.css') }}">
 @endpush
 
 @section('content')

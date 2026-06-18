@@ -241,61 +241,61 @@
     </noscript>
 
     <!-- Custom CSS (Critical - keep sync) -->
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset_version('css/app.css') }}">
 
     <!-- Product Card CSS (Critical for LCP - keep sync) -->
-    <link rel="stylesheet" href="{{ asset('css/product-card.css') }}">
+    <link rel="stylesheet" href="{{ asset_version('css/product-card.css') }}">
 
     <!-- Announcement Bar CSS (Above-fold, keep sync) -->
-    <link rel="stylesheet" href="{{ asset('css/announcement-bar.css') }}?v=10">
+    <link rel="stylesheet" href="{{ asset_version('css/announcement-bar.css') }}">
 
     <!-- UI Enhancements CSS (Deferred - non-critical) -->
-    <link rel="preload" href="{{ asset('css/enhancements.css') }}" as="style"
+    <link rel="preload" href="{{ asset_version('css/enhancements.css') }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="{{ asset('css/enhancements.css') }}">
+        <link rel="stylesheet" href="{{ asset_version('css/enhancements.css') }}">
     </noscript>
 
     <!-- Creative Premium Effects CSS (Deferred - non-critical) -->
-    <link rel="preload" href="{{ asset('css/creative-effects.css') }}" as="style"
+    <link rel="preload" href="{{ asset_version('css/creative-effects.css') }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="{{ asset('css/creative-effects.css') }}">
+        <link rel="stylesheet" href="{{ asset_version('css/creative-effects.css') }}">
     </noscript>
 
     <!-- UX Enhancements CSS (Deferred - non-critical) -->
-    <link rel="preload" href="{{ asset('css/ux-enhancements.css') }}" as="style"
+    <link rel="preload" href="{{ asset_version('css/ux-enhancements.css') }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="{{ asset('css/ux-enhancements.css') }}">
+        <link rel="stylesheet" href="{{ asset_version('css/ux-enhancements.css') }}">
     </noscript>
 
     <!-- Loyalty System CSS (Deferred - loaded after page render) -->
-    <link rel="preload" href="{{ asset('css/loyalty.css') }}" as="style"
+    <link rel="preload" href="{{ asset_version('css/loyalty.css') }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="{{ asset('css/loyalty.css') }}">
+        <link rel="stylesheet" href="{{ asset_version('css/loyalty.css') }}">
     </noscript>
 
     <!-- User Dropdown Menu CSS (Deferred - non-critical) -->
-    <link rel="preload" href="{{ asset('css/user-dropdown.css') }}" as="style"
+    <link rel="preload" href="{{ asset_version('css/user-dropdown.css') }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="{{ asset('css/user-dropdown.css') }}">
+        <link rel="stylesheet" href="{{ asset_version('css/user-dropdown.css') }}">
     </noscript>
 
     <!-- PWA Install Prompt CSS (Deferred) -->
-    <link rel="preload" href="{{ asset('css/pwa-install.css') }}" as="style"
+    <link rel="preload" href="{{ asset_version('css/pwa-install.css') }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}">
+        <link rel="stylesheet" href="{{ asset_version('css/pwa-install.css') }}">
     </noscript>
 
     <!-- Firebase Notifications CSS (Deferred) -->
-    <link rel="preload" href="{{ asset('css/firebase-notifications.css') }}" as="style"
+    <link rel="preload" href="{{ asset_version('css/firebase-notifications.css') }}" as="style"
         onload="this.onload=null;this.rel='stylesheet'">
     <noscript>
-        <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
+        <link rel="stylesheet" href="{{ asset_version('css/firebase-notifications.css') }}">
     </noscript>
 
     @stack('styles')
@@ -362,10 +362,10 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js" defer></script>
 
     <!-- Custom JS (Deferred) -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset_version('js/app.js') }}" defer></script>
 
     <!-- UI Enhancements JS (Deferred) -->
-    <script src="{{ asset('js/enhancements.js') }}" defer></script>
+    <script src="{{ asset_version('js/enhancements.js') }}" defer></script>
 
     <script>
         // Initialize AOS after deferred script loads
@@ -394,16 +394,16 @@
     </script>
 
     <!-- Creative Premium Effects JS (Deferred) -->
-    <script src="{{ asset('js/creative-effects.js') }}" defer></script>
+    <script src="{{ asset_version('js/creative-effects.js') }}" defer></script>
 
     <!-- UX Enhancements JS (Deferred) -->
-    <script src="{{ asset('js/ux-enhancements.js') }}" defer></script>
+    <script src="{{ asset_version('js/ux-enhancements.js') }}" defer></script>
 
     <!-- Product Card JS (Deferred) -->
-    <script src="{{ asset('js/product-card.js') }}" defer></script>
+    <script src="{{ asset_version('js/product-card.js') }}" defer></script>
 
     <!-- PWA Service Worker & Install Prompt (Deferred) -->
-    <script src="{{ asset('js/pwa.js') }}" defer></script>
+    <script src="{{ asset_version('js/pwa.js') }}" defer></script>
 
     <!-- Firebase SDKs (Deferred - loaded after main content) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
@@ -507,7 +507,7 @@
             });
         }
     </script>
-    <script src="{{ asset('js/firebase-notifications.js') }}" defer></script>
+    <script src="{{ asset_version('js/firebase-notifications.js') }}" defer></script>
 
     @stack('scripts')
 </body>

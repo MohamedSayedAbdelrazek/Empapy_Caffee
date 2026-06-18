@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Auth\ForgotPasswordRequest;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Http\Request;
@@ -9,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password as PasswordBroker;
 use Illuminate\Support\Str;
-use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
@@ -24,12 +27,9 @@ class AuthController extends Controller
     /**
      * Handle login request
      */
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
+        $credentials = $request->validated();
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
@@ -92,15 +92,9 @@ class AuthController extends Controller
     /**
      * Handle registration request
      */
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'phone' => 'nullable|string|max:20',
-            'password' => ['required', 'string', 'min:8', 'confirmed', Password::defaults()],
-            'referral_code' => 'nullable|string|max:20'
-        ]);
+        $validated = $request->validated();
 
         $user = new User([
             'name' => $validated['name'],
@@ -191,13 +185,8 @@ class AuthController extends Controller
     /**
      * Email a password reset link.
      */
-    public function sendResetLink(Request $request)
+    public function sendResetLink(ForgotPasswordRequest $request)
     {
-        $request->validate(
-            ['email' => 'required|email'],
-            ['email.required' => 'البريد الإلكتروني مطلوب', 'email.email' => 'البريد الإلكتروني غير صحيح']
-        );
-
         $status = PasswordBroker::sendResetLink($request->only('email'));
 
         if ($status === PasswordBroker::RESET_LINK_SENT) {
@@ -222,18 +211,8 @@ class AuthController extends Controller
     /**
      * Reset the password using a valid token.
      */
-    public function resetPassword(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        $request->validate([
-            'token' => 'required',
-            'email' => 'required|email',
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ], [
-            'email.required' => 'البريد الإلكتروني مطلوب',
-            'password.required' => 'كلمة المرور مطلوبة',
-            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق',
-        ]);
-
         $status = PasswordBroker::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user, string $password) {

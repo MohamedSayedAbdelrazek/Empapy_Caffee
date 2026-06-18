@@ -24,7 +24,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
 
     <!-- Admin CSS -->
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset_version('css/admin.css') }}">
 
     <!-- Notification Styles -->
     <style>
@@ -679,15 +679,15 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <!-- Admin JS -->
-    <script src="{{ asset('js/admin.js') }}"></script>
+    <script src="{{ asset_version('js/admin.js') }}"></script>
 
     <!-- Firebase Push Notifications -->
-    <link rel="stylesheet" href="{{ asset('css/firebase-notifications.css') }}">
-    <script src="{{ asset('js/firebase-notifications.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset_version('css/firebase-notifications.css') }}">
+    <script src="{{ asset_version('js/firebase-notifications.js') }}"></script>
 
     <!-- PWA Install -->
-    <link rel="stylesheet" href="{{ asset('css/pwa-install.css') }}">
-    <script src="{{ asset('js/pwa.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset_version('css/pwa-install.css') }}">
+    <script src="{{ asset_version('js/pwa.js') }}"></script>
 
     <!-- Notification System JS -->
     <script>

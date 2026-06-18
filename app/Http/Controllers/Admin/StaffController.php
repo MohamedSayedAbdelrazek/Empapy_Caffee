@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StaffStoreRequest;
+use App\Http\Requests\Admin\StaffUpdateRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules\Password;
 
 class StaffController extends Controller
 {
@@ -34,31 +34,10 @@ class StaffController extends Controller
     /**
      * Store a newly created staff member
      */
-    public function store(Request $request)
+    public function store(StaffStoreRequest $request)
     {
-        // Only an admin may create another admin (and assign permissions freely).
-        // The staff write routes are admin-gated, but we re-check the actor here
-        // so a forged role=admin POST is rejected server-side even if that route
-        // gate is ever loosened.
-        $actorIsAdmin = auth()->user()->isAdmin();
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'password' => ['required', 'confirmed', Password::min(8)],
-            'role' => ['required', $actorIsAdmin ? 'in:admin,cashier' : 'in:cashier'],
-            'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['exists:permissions,id'],
-        ], [
-            'name.required' => 'الاسم مطلوب',
-            'email.required' => 'البريد الإلكتروني مطلوب',
-            'email.unique' => 'البريد الإلكتروني مستخدم بالفعل',
-            'password.required' => 'كلمة المرور مطلوبة',
-            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق',
-            'role.required' => 'يجب اختيار الدور',
-            'role.in' => 'لا يمكن إنشاء حساب مدير من هذه الصفحة',
-        ]);
+        // Validation (incl. the SEC-02 server-side role rule) lives in StaffStoreRequest.
+        $validated = $request->validated();
 
         $user = new User([
             'name' => $validated['name'],
@@ -98,7 +77,7 @@ class StaffController extends Controller
     /**
      * Update the specified staff member
      */
-    public function update(Request $request, User $staff)
+    public function update(StaffUpdateRequest $request, User $staff)
     {
         // Prevent editing customers
         if ($staff->isCustomer()) {
@@ -106,21 +85,8 @@ class StaffController extends Controller
                 ->with('error', 'لا يمكن تعديل هذا الحساب');
         }
 
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', 'unique:users,email,' . $staff->id],
-            'phone' => ['nullable', 'string', 'max:20'],
-            'password' => ['nullable', 'confirmed', Password::min(8)],
-            'role' => ['required', 'in:admin,cashier'],
-            'permissions' => ['nullable', 'array'],
-            'permissions.*' => ['exists:permissions,id'],
-        ], [
-            'name.required' => 'الاسم مطلوب',
-            'email.required' => 'البريد الإلكتروني مطلوب',
-            'email.unique' => 'البريد الإلكتروني مستخدم بالفعل',
-            'password.confirmed' => 'تأكيد كلمة المرور غير متطابق',
-            'role.required' => 'يجب اختيار الدور',
-        ]);
+        // Validation lives in StaffUpdateRequest; the role/self/last-admin guards below stay here.
+        $validated = $request->validated();
 
         $isSelf = $staff->id === auth()->id();
 
