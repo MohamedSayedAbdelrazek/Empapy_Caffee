@@ -174,7 +174,6 @@ Route::prefix('admin')->name('admin.')->middleware(['staff'])->group(function ()
     Route::get('coupons', [CouponController::class, 'index'])->name('coupons.index')->middleware('permission:view-coupons');
     Route::get('coupons/create', [CouponController::class, 'create'])->name('coupons.create')->middleware('permission:create-coupons');
     Route::post('coupons', [CouponController::class, 'store'])->name('coupons.store')->middleware('permission:create-coupons');
-    Route::get('coupons/{coupon}', [CouponController::class, 'show'])->name('coupons.show')->middleware('permission:view-coupons');
     Route::get('coupons/{coupon}/edit', [CouponController::class, 'edit'])->name('coupons.edit')->middleware('permission:edit-coupons');
     Route::put('coupons/{coupon}', [CouponController::class, 'update'])->name('coupons.update')->middleware('permission:edit-coupons');
     Route::delete('coupons/{coupon}', [CouponController::class, 'destroy'])->name('coupons.destroy')->middleware('permission:delete-coupons');

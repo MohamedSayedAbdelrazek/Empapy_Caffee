@@ -30,3 +30,12 @@ PROJECT_AUDIT.html
 PROJECT_OVERVIEW.html
 .env.docker
 .env.docker
+
+# Internal working docs — not for the public repo
+CLAUDE.md
+PROJECT_OVERVIEW.html
+PROJECT_AUDIT.html
+PROJECT_EVALUATION.html
+project_evaluation_document.html
+project_evaluation*.html
+project_evaluation*.md

@@ -105,28 +105,24 @@ class OrderController extends Controller
 
         // If refunding, handle redemption restoration
         if ($newStatus === 'refunded' && $oldStatus !== 'refunded') {
-            // Find and restore any reward redemption used on this order
-            $redemption = \App\Models\RewardRedemption::where('order_id', $order->id)
-                ->where('status', 'applied')
-                ->first();
+            try {
+                // Credits restore + order update must stand or fall together
+                \DB::transaction(function () use ($order, $newStatus) {
+                    // Lock the order row to prevent concurrent modifications
+                    $order = Order::lockForUpdate()->find($order->id);
 
-            if ($redemption) {
-                $redemption->cancel(); // This restores points to user
+                    $this->restoreOrderCredits($order);
+
+                    // Also update order status to cancelled
+                    $order->update([
+                        'status' => 'cancelled',
+                        'payment_status' => $newStatus
+                    ]);
+                });
+            } catch (\Exception $e) {
+                \Log::error('[Order Refund] Failed: ' . $e->getMessage(), ['order_id' => $order->id]);
+                return back()->with('error', 'حدث خطأ أثناء استرداد المبلغ. يرجى المحاولة مرة أخرى.');
             }
-
-            // Refund coupon usage if used
-            if ($order->coupon_code && !str_starts_with($order->coupon_code, 'RWD-')) {
-                $coupon = \App\Models\Coupon::where('code', $order->coupon_code)->first();
-                if ($coupon && $coupon->usage_count > 0) {
-                    $coupon->decrement('usage_count');
-                }
-            }
-
-            // Also update order status to cancelled
-            $order->update([
-                'status' => 'cancelled',
-                'payment_status' => $newStatus
-            ]);
 
             // Send notification to customer
             if ($order->user_id) {
@@ -214,40 +210,77 @@ class OrderController extends Controller
             return back()->with('error', 'لا يمكن إلغاء طلب تم شحنه أو تسليمه. يرجى استخدام عملية الاسترداد بدلاً من ذلك.');
         }
 
-        // Refund coupon usage if used
-        if ($order->coupon_code && !str_starts_with($order->coupon_code, 'RWD-')) {
-            $coupon = \App\Models\Coupon::where('code', $order->coupon_code)->first();
-            if ($coupon && $coupon->usage_count > 0) {
-                $coupon->decrement('usage_count');
-            }
+        $oldStatus = $order->status;
+
+        try {
+            // Credits restore + order update must stand or fall together
+            \DB::transaction(function () use ($order) {
+                // Lock the order row to prevent concurrent modifications
+                $order = Order::lockForUpdate()->find($order->id);
+
+                // Re-check status under lock (race condition prevention)
+                if (in_array($order->status, ['cancelled', 'shipped', 'delivered'])) {
+                    throw new \Exception('Status changed during cancellation');
+                }
+
+                $this->restoreOrderCredits($order);
+
+                $order->update([
+                    'status' => 'cancelled'
+                ]);
+            });
+        } catch (\Exception $e) {
+            \Log::error('[Order Cancellation] Admin cancel failed: ' . $e->getMessage(), ['order_id' => $order->id]);
+            return back()->with('error', 'حدث خطأ أثناء إلغاء الطلب. يرجى المحاولة مرة أخرى.');
         }
-
-        // Restore reward redemption points if used
-        if ($order->coupon_code && str_starts_with($order->coupon_code, 'RWD-')) {
-            $redemption = \App\Models\RewardRedemption::where('order_id', $order->id)
-                ->where('status', 'applied')
-                ->first();
-
-            if ($redemption) {
-                $redemption->cancel(); // This restores points to user
-            }
-        }
-
-        $order->update([
-            'status' => 'cancelled'
-        ]);
 
         // Send notification to customer
         if ($order->user_id) {
             try {
                 $firebaseService = new FirebaseNotificationService();
-                $firebaseService->notifyOrderStatusChange($order, $order->getOriginal('status'), 'cancelled');
+                $firebaseService->notifyOrderStatusChange($order, $oldStatus, 'cancelled');
             } catch (\Exception $e) {
                 \Log::error('[FCM] Failed to send cancellation notification: ' . $e->getMessage());
             }
         }
 
         return back()->with('success', 'تم إلغاء الطلب');
+    }
+
+    /**
+     * Restore the coupon usage and reward points an order consumed.
+     * Must be called inside a DB transaction; mutated rows are locked here.
+     */
+    private function restoreOrderCredits(Order $order): void
+    {
+        // Refund coupon usage if used (global + per-user counters)
+        if ($order->coupon_code && !str_starts_with($order->coupon_code, 'RWD-')) {
+            $coupon = \App\Models\Coupon::where('code', $order->coupon_code)->lockForUpdate()->first();
+            if ($coupon && $coupon->usage_count > 0) {
+                $coupon->decrement('usage_count');
+
+                if ($order->user_id) {
+                    \App\Models\CouponUser::where('coupon_id', $coupon->id)
+                        ->where('user_id', $order->user_id)
+                        ->where('usage_count', '>', 0)
+                        ->decrement('usage_count');
+                }
+            }
+        }
+
+        // Restore reward redemption points if a reward was applied
+        $redemption = \App\Models\RewardRedemption::where('order_id', $order->id)
+            ->where('status', 'applied')
+            ->lockForUpdate()
+            ->first();
+
+        if ($redemption) {
+            // Lock the loyalty row the refund mutates (addPoints is read-modify-write)
+            if ($redemption->user_id) {
+                \App\Models\LoyaltyPoint::where('user_id', $redemption->user_id)->lockForUpdate()->first();
+            }
+            $redemption->cancel(); // This restores points to user
+        }
     }
 
     /**
