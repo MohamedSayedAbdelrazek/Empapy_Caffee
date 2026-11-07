@@ -1,66 +1,147 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Empapy Coffee ☕
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Empapy Coffee** is a full-stack e-commerce application for a coffee business, built with Laravel. It brings together a customer storefront, configurable coffee products, order processing, loyalty rewards, and tools for store administrators and staff.
 
-## About Laravel
+[![CI](https://github.com/MohamedSayedAbdelrazek/Empapy_Caffee/actions/workflows/ci.yml/badge.svg)](https://github.com/MohamedSayedAbdelrazek/Empapy_Caffee/actions/workflows/ci.yml)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## What it does
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The application covers the shopping journey from product discovery through checkout and order tracking, plus back-office workflows for managing products, orders, customers, staff permissions, and promotions.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Customer-facing features
 
-## Learning Laravel
+- Coffee catalog with categories, product details, and configurable options (such as weight, roast level, and additives)
+- Shopping cart, checkout, coupons, and governorate-based shipping calculations
+- Order tracking, order history, and order cancellation workflows
+- Customer registration, sign-in, password reset, and account management
+- Wishlists and product reviews
+- Loyalty points, reward redemption, referral flows, and loyalty tiers
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### Store management
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- Admin dashboard and product/category management
+- Order management, including a Kanban-style order view and payment/order statuses
+- Role- and permission-based access for administrators and staff
+- Coupon, announcement, shipping-zone, and site-setting management
+- Staff/customer management and administrative notifications
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Engineering highlights
 
-## Laravel Sponsors
+- Laravel service classes for order, cart, shipping, product, and loyalty logic
+- Server-side price calculation and database transactions for important order flows
+- Access-control checks and rate limiting on selected routes
+- Automated feature/unit tests and a GitHub Actions CI workflow
+- Docker, Nginx, and MySQL configuration for deployment workflows
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Tech stack
 
-### Premium Partners
+| Layer | Technology |
+| --- | --- |
+| Backend | PHP 8.2+, Laravel 11 |
+| Frontend | Laravel Blade, JavaScript, Tailwind CSS 3, Vite |
+| Database | MySQL 8 |
+| Testing | PHPUnit, Laravel feature/unit tests |
+| CI | GitHub Actions |
+| Infrastructure | Docker, Nginx |
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## Getting started (local development)
 
-## Contributing
+### Prerequisites
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- PHP 8.2+ with the extensions required by Laravel
+- Composer
+- Node.js and npm
+- MySQL 8
 
-## Code of Conduct
+### Install and run
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Clone the repository and install dependencies:
 
-## Security Vulnerabilities
+   ```bash
+   git clone https://github.com/MohamedSayedAbdelrazek/Empapy_Caffee.git
+   cd Empapy_Caffee
+   composer install
+   npm ci
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2. Create a local environment file:
 
-## License
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3. Create a **local development database** in MySQL and update the database settings in `.env`:
+
+   ```dotenv
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=empapy_caffee
+   DB_USERNAME=your_local_username
+   DB_PASSWORD=your_local_password
+   ```
+
+   The example environment file defaults to SQLite, but this project's database schema and CI setup use MySQL-specific behavior. MySQL is recommended for local development.
+
+4. Create the database tables and public storage symlink:
+
+   ```bash
+   php artisan migrate
+   php artisan storage:link
+   ```
+
+5. Start the development servers in separate terminals:
+
+   ```bash
+   php artisan serve
+   ```
+
+   ```bash
+   npm run dev
+   ```
+
+   Visit **http://127.0.0.1:8000**.
+
+> **Seed-data caution:** Review `database/seeders/DatabaseSeeder.php` before running `php artisan db:seed`. It includes example account credentials; do not use those credentials in a publicly accessible environment.
+
+## Testing
+
+The test configuration in `phpunit.xml` expects a **separate MySQL test database** named `empapy_caffee2_test`.
+
+Create that database locally, configure your test-database connection credentials, and run:
+
+```bash
+php artisan test
+```
+
+GitHub Actions also runs the test suite against MySQL 8 and checks formatting for the test/factory code. See [the CI workflow](.github/workflows/ci.yml).
+
+## Project structure
+
+```text
+app/
+  Http/Controllers/   # Storefront, account, checkout, and admin endpoints
+  Models/             # Products, orders, users, rewards, and related entities
+  Services/           # Business logic and third-party integrations
+database/
+  migrations/         # Database schema
+  seeders/            # Sample and configuration data
+resources/
+  views/              # Blade templates
+  css/ and js/        # Frontend assets
+routes/
+  web.php             # Application routes
+tests/
+  Feature/ and Unit/  # Automated tests
+.github/workflows/
+  ci.yml              # Continuous integration
+```
+
+## AI-assisted development
+
+AI coding assistance has been used in developing this project. The repository tracks the implementation and subsequent improvements, including security fixes, refactoring, and automated tests.
+
+## Maintainer
+
+[@MohamedSayedAbdelrazek](https://github.com/MohamedSayedAbdelrazek)
